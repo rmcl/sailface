@@ -1,17 +1,21 @@
 #include "sailface.h"
 
 #include "position.h"
+#include "helm.h"
 
 SailFaceStatus globalStatus;
 SailFacePositionManagement *positionManager;
+SailFaceHelm *helmControl;
 
 void setup(void) {
     Serial.begin(115200);
     Serial.println(";--Hello World!--");
 
     positionManager = new SailFacePositionManagement();
+    helmControl = new SailFaceHelm();
 
     positionManager->initialize(&globalStatus);
+    helmControl->initialize(&globalStatus);
 
     while (!Serial) {
         delay(1);
@@ -49,6 +53,7 @@ void loop(void) {
 
     // Call each module
     positionManager->poll(&globalStatus);
+    helmControl->poll(&globalStatus);
 
     writeStatusToSerial(&globalStatus);
     Serial.println(";---End Loop---");
