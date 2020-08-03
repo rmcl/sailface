@@ -17,8 +17,8 @@ typedef struct {
     double speed; // speed in knots
 
     // Power Management
-    int batteryVoltage;
-    int instantaneousCurrentDraw;
+    float batteryVoltage;       // voltage in Volts out of the sunny buddy chargin unit.
+    float batteryCurrentDraw;   // current in mA measured out of the sunny buddy charging unit
 
 } SailFaceStatus;
 

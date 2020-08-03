@@ -19,6 +19,6 @@ class SailFacePositionManagement {
     public:
         void initialize(SailFaceStatus *status);
         void poll(SailFaceStatus *status);
-
+        void writeStatusMessage(SailFaceStatus *status);
 };
 #endif
