@@ -1,17 +1,25 @@
 #include "sailface.h"
 
 #include "position.h"
+#include "power.h"
+#include "helm.h"
 
 SailFaceStatus globalStatus;
 SailFacePositionManagement *positionManager;
+SailFacePowerManagement *powerManager;
+SailFaceHelm *helmControl;
 
 void setup(void) {
     Serial.begin(115200);
     Serial.println(";--Hello World!--");
 
     positionManager = new SailFacePositionManagement();
+    powerManager = new SailFacePowerManagement();
+    helmControl = new SailFaceHelm();
 
     positionManager->initialize(&globalStatus);
+    powerManager->initialize(&globalStatus);
+    helmControl->initialize(&globalStatus);
 
     while (!Serial) {
         delay(1);
@@ -19,20 +27,11 @@ void setup(void) {
 }
 
 void writeStatusToSerial(SailFaceStatus *status) {
-    Serial.print(status->positionValid);
-    Serial.print(",");
-    Serial.print(status->latitude, 6);
-    Serial.print(",");
-    Serial.print(status->longitude, 6);
-    Serial.print(",");
-    Serial.print(status->speed);
-    Serial.print(",");
-    Serial.print(status->course);
-    Serial.print(",");
-    Serial.print(status->gpsFixAge);
-    Serial.print("\n");
+    positionManager->writeStatusMessage(status);
+    powerManager->writeStatusMessage(status);
 }
 
+/*
 void writeStatusToSerialHumanReadable(SailFaceStatus *status) {
     Serial.println(";--Position--");
     Serial.print(";position is valid:"); Serial.print(status->positionValid); Serial.println("");
@@ -43,15 +42,18 @@ void writeStatusToSerialHumanReadable(SailFaceStatus *status) {
     Serial.print(";age:"); Serial.print(status->gpsFixAge); Serial.println("");
     Serial.println(";---");
 }
+*/
 
 void loop(void) {
-    Serial.println(";---Start Loop---");
+    //Serial.println(";---Start Loop---");
 
     // Call each module
     positionManager->poll(&globalStatus);
+    powerManager->poll(&globalStatus);
+    helmControl->poll(&globalStatus);
 
     writeStatusToSerial(&globalStatus);
-    Serial.println(";---End Loop---");
+    //Serial.println(";---End Loop---");
 
     delay(1000);
 }
