@@ -6,15 +6,15 @@
 
 #include "sailface.h"
 
-#define HELM_PWM_PIN 9
-#define HELM_PWM_RANGE_MIN 0
-#define HELM_PWM_RANGE_MAX 1000
-
+#define COMM_MAX_COMMAND_LEN 100
 
 class SailFaceCommunication {
 
     private:
-
+        static char inputBuffer [COMM_MAX_COMMAND_LEN];
+        static unsigned int inputBufferPosition;
+        
+        char *readMessageFromSerial();
 
     public:
         void initialize(SailFaceStatus *status);

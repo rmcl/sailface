@@ -20,6 +20,11 @@ typedef struct {
     float batteryVoltage;       // voltage in Volts out of the sunny buddy chargin unit.
     float batteryCurrentDraw;   // current in mA measured out of the sunny buddy charging unit
 
+    // C&C state
+    bool disableMainController;
+    bool disablePrimaryPropulsion;
+
+
 } SailFaceStatus;
 
 #endif
