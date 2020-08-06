@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from serial import Serial
 from serial.tools.list_ports import comports
 
