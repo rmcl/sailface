@@ -5,9 +5,12 @@ from serial.tools.list_ports import comports
 
 def find_sailface_port():
     for port in comports():
-        if port.serial_number == 'DN02Z3SW':
+        print(port, port.serial_number, port.name)
+        if port.name == 'ttyUSB0':
             return port.device
 
+    raise Exception('SERIAL PORT NOT FOUND!')
+        
 
 if __name__ == '__main__':
     port_path = find_sailface_port()
