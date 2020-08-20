@@ -24,8 +24,8 @@ SailFace status messages:
 ### Power
 
 ```
-P:<batteryVoltage>,batteryCurrentDraw
-P:3.70,500
+P:<batteryVoltage>,batteryCurrentDraw,solarPanelCurrent
+P:3.70,500,400
 ```
 
 ### Navigation/Position
@@ -33,4 +33,3 @@ P:3.70,500
 ```
 N:<positionValid>,<latitude>,<longitude>,<speed>,<course>,<gpsFixAge>
 ```
-

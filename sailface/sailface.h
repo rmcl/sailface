@@ -18,6 +18,7 @@ typedef struct {
 
     // Power Management
     float batteryVoltage;       // voltage in Volts out of the sunny buddy chargin unit.
+    float solarPanelCurrent;    // current in mA measured in series with the solar panels
     float batteryCurrentDraw;   // current in mA measured out of the sunny buddy charging unit
 
     // C&C state
