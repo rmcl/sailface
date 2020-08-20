@@ -19,3 +19,5 @@ compile:
 upload:
 	$(ARDUINO_CLI) upload -v -p /dev/ttyUSB0 --fqbn $(BOARD_TYPE) sailface --input-dir $(SAILFACE_DIR)/build/arduino.avr.uno
 
+clean:
+	rm -rf $(SAILFACE_DIR)/build
