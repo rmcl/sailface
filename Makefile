@@ -1,6 +1,3 @@
-
-
-
 ARDUINO_CLI=~/sailface/bin/arduino-cli
 ARDUINO_LIB_DIR=/home/pi/Arduino/libraries
 BOARD_TYPE=arduino:avr:uno
@@ -26,7 +23,7 @@ install-control:
 
 compile:
 	$(ARDUINO_CLI) compile -v --fqbn $(BOARD_TYPE) sailface
-upload:
+upload: compile
 	$(ARDUINO_CLI) upload -v -p /dev/ttyUSB0 --fqbn $(BOARD_TYPE) sailface --input-dir $(SAILFACE_DIR)/build/arduino.avr.uno
 
 clean:

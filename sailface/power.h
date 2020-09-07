@@ -16,6 +16,7 @@ class SailFacePowerManagement {
 
     private:
         Adafruit_INA219 batteryCurrentMonitor;
+        Adafruit_INA219 solarPanelCurrentMonitor;
 
     public:
         void initialize(SailFaceStatus *status);

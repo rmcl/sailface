@@ -3,11 +3,13 @@
 #include "position.h"
 #include "power.h"
 #include "helm.h"
+#include "propulsion.h"
 
 SailFaceStatus globalStatus;
 SailFacePositionManagement *positionManager;
 SailFacePowerManagement *powerManager;
 SailFaceHelm *helmControl;
+SailFacePropulsion *propControl;
 
 void setup(void) {
     Serial.begin(115200);
@@ -16,10 +18,15 @@ void setup(void) {
     positionManager = new SailFacePositionManagement();
     powerManager = new SailFacePowerManagement();
     helmControl = new SailFaceHelm();
+    propControl = new SailFacePropulsion();
+
 
     positionManager->initialize(&globalStatus);
     powerManager->initialize(&globalStatus);
     helmControl->initialize(&globalStatus);
+    propControl->initialize(&globalStatus);
+
+
 
     while (!Serial) {
         delay(1);
@@ -51,6 +58,7 @@ void loop(void) {
     positionManager->poll(&globalStatus);
     powerManager->poll(&globalStatus);
     helmControl->poll(&globalStatus);
+    propControl->poll(&globalStatus);
 
     writeStatusToSerial(&globalStatus);
     //Serial.println(";---End Loop---");
