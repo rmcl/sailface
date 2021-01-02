@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 
 #include "sailface.h"
 
@@ -13,7 +14,9 @@ class SailFaceCommunication {
     private:
         static char inputBuffer [COMM_MAX_COMMAND_LEN];
         static unsigned int inputBufferPosition;
-        
+
+        SoftwareSerial bluetoothSerial(10, 11); // RX | TX
+  
         char *readMessageFromSerial();
 
     public:
