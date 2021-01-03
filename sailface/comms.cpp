@@ -1,4 +1,4 @@
-/* 
+/*
 
 The goal of this module is to send and receive messages via the Iridium Short-Burst Data services
 Sending messages to/from satellites is expensive so we can mock this communication with a bluetooth serial port.
@@ -20,13 +20,21 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
     inputBufferPosition = 0;
 
     bluetoothSerial.begin(9600);
-    
+
 }
 
 void SailFaceCommunication::poll(SailFaceStatus *status) {
-    char *message = readMessageFromSerial();
+    //char *message = readMessageFromSerial();
+
+    // Write teh SailFace status structure to the bluetooth serial port.
+    bluetoothSerial.write( (byte *) status, sizeof(status));
 
 }
+
+void sendDebugMessage(char *message) {
+    bluetoothSerial.write(message);
+}
+
 
 /*
 

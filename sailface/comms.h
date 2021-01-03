@@ -8,6 +8,8 @@
 #include "sailface.h"
 
 #define COMM_MAX_COMMAND_LEN 100
+#define COMM_BLUETOOTH_RX_PIN 10
+#define COMM_BLUETOOTH_TX_PIN 11
 
 class SailFaceCommunication {
 
@@ -15,13 +17,14 @@ class SailFaceCommunication {
         static char inputBuffer [COMM_MAX_COMMAND_LEN];
         static unsigned int inputBufferPosition;
 
-        SoftwareSerial bluetoothSerial(10, 11); // RX | TX
-  
+        SoftwareSerial bluetoothSerial(COMM_BLUETOOTH_RX_PIN, COMM_BLUETOOTH_TX_PIN); // RX | TX
+
         char *readMessageFromSerial();
 
     public:
         void initialize(SailFaceStatus *status);
         void poll(SailFaceStatus *status);
+        //void sendDebugMessage(char *message);
 
 };
 #endif

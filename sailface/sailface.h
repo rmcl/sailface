@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void logDebugMessage(char *message);
 
 /* Define a data structure that is continuously written to the serial port
 for ingestion into the main processor. */
