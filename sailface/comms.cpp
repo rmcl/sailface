@@ -25,14 +25,15 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
 
 void SailFaceCommunication::poll(SailFaceStatus *status) {
     //char *message = readMessageFromSerial();
-
+    //Serial.println(";---PRINT TO BLUE---");
+    //Serial.println(sizeof(*status));
     // Write teh SailFace status structure to the bluetooth serial port.
-    bluetoothSerial.write( (byte *) status, sizeof(status));
+    bluetoothSerial.write( (byte *) status, sizeof(*status));
 
 }
 
-void sendDebugMessage(char *message) {
-    bluetoothSerial.write(message);
+void SailFaceCommunication::sendDebugMessage(char *message) {
+    //bluetoothSerial.write(message);
 }
 
 

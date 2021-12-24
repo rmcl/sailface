@@ -8,15 +8,17 @@ def find_sailface_port():
         print(port, port.serial_number, port.name)
         if port.name == 'ttyUSB0':
             return port.device
-
-    raise Exception('SERIAL PORT NOT FOUND!')
         
+    raise Exception('SERIAL PORT NOT FOUND!')
+
 
 if __name__ == '__main__':
     port_path = find_sailface_port()
 
     print('FOUND SAIL FACE AT "%s".' % port_path)
-    serial_port = Serial(port_path, 115200, timeout=5)
+    #serial_port = Serial(port_path, 115200, timeout=5)
+
+    serial_port = Serial(port_path, 9600, timeout=5)
 
     while True:
         message = serial_port.readline()

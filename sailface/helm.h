@@ -7,9 +7,14 @@
 
 #include "sailface.h"
 
-#define HELM_PWM_PIN 9
-#define HELM_PWM_RANGE_MIN 0
-#define HELM_PWM_RANGE_MAX 1000
+#define HELM_PWM_PIN 5
+
+/*
+Servo is a SF4328MG
+http://wiki.sunfounder.cc/images/9/9a/TD-8120MG_Digital_Servo.pdf
+*/
+#define HELM_PWM_RANGE_MIN 500
+#define HELM_PWM_RANGE_MAX 2500
 
 
 class SailFaceHelm {

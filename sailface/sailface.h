@@ -23,8 +23,8 @@ typedef struct {
     float batteryCurrentDraw;   // current in mA measured out of the sunny buddy charging unit
 
     // C&C state
-    bool disableMainController;
-    bool disablePrimaryPropulsion;
+    //bool disableMainController;
+    //bool disablePrimaryPropulsion;
 
 
 } SailFaceStatus;

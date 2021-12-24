@@ -17,16 +17,17 @@ void SailFacePositionManagement::initialize(SailFaceStatus *status) {
 
 void SailFacePositionManagement::poll(SailFaceStatus *status) {
     while (gpsSerial.available() > 0) {
+        //Serial.write(gpsSerial.read());
         gps.encode(gpsSerial.read());
     }
 
     //if (gps.location.isValid()) {
-        status->positionValid = gps.location.isValid();
-        status->latitude = gps.location.lat();
-        status->longitude = gps.location.lng();
-        status->gpsFixAge = gps.location.age();
-        status->course = gps.course.deg(); // course in degrees
-        status->speed = gps.speed.knots(); // speed in knots
+    status->positionValid = gps.location.isValid();
+    status->latitude = gps.location.lat();
+    status->longitude = gps.location.lng();
+    status->gpsFixAge = gps.location.age();
+    status->course = gps.course.deg(); // course in degrees
+    status->speed = gps.speed.knots(); // speed in knots
     //}
 }
 

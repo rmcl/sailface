@@ -11,20 +11,21 @@
 #define COMM_BLUETOOTH_RX_PIN 10
 #define COMM_BLUETOOTH_TX_PIN 11
 
+
 class SailFaceCommunication {
 
     private:
-        static char inputBuffer [COMM_MAX_COMMAND_LEN];
-        static unsigned int inputBufferPosition;
+        char inputBuffer [COMM_MAX_COMMAND_LEN];
+        unsigned int inputBufferPosition;
 
-        SoftwareSerial bluetoothSerial(COMM_BLUETOOTH_RX_PIN, COMM_BLUETOOTH_TX_PIN); // RX | TX
+        SoftwareSerial bluetoothSerial{COMM_BLUETOOTH_RX_PIN, COMM_BLUETOOTH_TX_PIN}; // RX | TX
 
         char *readMessageFromSerial();
 
     public:
         void initialize(SailFaceStatus *status);
         void poll(SailFaceStatus *status);
-        //void sendDebugMessage(char *message);
+        void sendDebugMessage(char *message);
 
 };
 #endif
