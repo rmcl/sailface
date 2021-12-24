@@ -15,7 +15,7 @@ void SailFacePositionManagement::initialize(SailFaceStatus *status) {
     status->speed = 0;
 }
 
-void SailFacePositionManagement::poll(SailFaceStatus *status) {
+void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
     while (gpsSerial.available() > 0) {
         //Serial.write(gpsSerial.read());
         gps.encode(gpsSerial.read());

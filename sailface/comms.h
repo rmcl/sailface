@@ -17,6 +17,7 @@ class SailFaceCommunication {
     private:
         char inputBuffer [COMM_MAX_COMMAND_LEN];
         unsigned int inputBufferPosition;
+        bool inputBufferReady;
 
         SoftwareSerial bluetoothSerial{COMM_BLUETOOTH_RX_PIN, COMM_BLUETOOTH_TX_PIN}; // RX | TX
 
@@ -24,7 +25,7 @@ class SailFaceCommunication {
 
     public:
         void initialize(SailFaceStatus *status);
-        void poll(SailFaceStatus *status);
+        void pollForCommandMessages(SailFaceStatus *status);
         void sendDebugMessage(char *message);
 
 };

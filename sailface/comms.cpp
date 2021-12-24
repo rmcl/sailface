@@ -14,8 +14,6 @@ https://www.instructables.com/Setting-Up-Bluetooth-HC-05-With-Arduino/
 #include "sailface.h"
 #include "comms.h"
 
-
-
 void SailFaceCommunication::initialize(SailFaceStatus *status) {
     inputBufferPosition = 0;
 
@@ -23,17 +21,18 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
 
 }
 
-void SailFaceCommunication::poll(SailFaceStatus *status) {
-    //char *message = readMessageFromSerial();
-    //Serial.println(";---PRINT TO BLUE---");
-    //Serial.println(sizeof(*status));
-    // Write teh SailFace status structure to the bluetooth serial port.
-    bluetoothSerial.write( (byte *) status, sizeof(*status));
-
+void SailFaceCommunication::pollForCommandMessages(SailFaceStatus *status) {
+    char *message = readMessageFromSerial();
+    if (message[0] != '\0') {
+        Serial.println(";---PRINT TO BLUE---");
+        Serial.println(message);
+    }
+        // Write teh SailFace status structure to the bluetooth serial port.
+        //bluetoothSerial.write( (byte *) status, sizeof(*status));
 }
 
 void SailFaceCommunication::sendDebugMessage(char *message) {
-    //bluetoothSerial.write(message);
+    bluetoothSerial.write(message);
 }
 
 
@@ -50,6 +49,8 @@ char* SailFaceCommunication::readMessageFromSerial() {
 
                 // reset buffer for next time
                 inputBufferPosition = 0;
+
+                inputBufferReady = true;
 
                 // return the retrieved command.
                 return inputBuffer;

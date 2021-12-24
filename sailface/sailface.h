@@ -14,6 +14,7 @@ typedef struct {
     double longitude;
     uint32_t gpsFixAge;
 
+    // actual speed & course from GPS
     double course; // course in degrees
     double speed; // speed in knots
 
@@ -23,8 +24,10 @@ typedef struct {
     float batteryCurrentDraw;   // current in mA measured out of the sunny buddy charging unit
 
     // C&C state
-    //bool disableMainController;
-    //bool disablePrimaryPropulsion;
+    bool disableMainController;
+    bool disablePrimaryPropulsion;
+
+    uint32_t cmdPropellerSpeed;
 
 
 } SailFaceStatus;

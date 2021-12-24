@@ -17,11 +17,12 @@ void setup(void) {
     Serial.begin(115200);
     Serial.println(";--Hello World!--");
 
+    commsManager = new SailFaceCommunication();
     positionManager = new SailFacePositionManagement();
     powerManager = new SailFacePowerManagement();
-    //helmControl = new SailFaceHelm();
+    helmControl = new SailFaceHelm();
     propControl = new SailFacePropulsion();
-    commsManager = new SailFaceCommunication();
+
 
     positionManager->initialize(&globalStatus);
     //powerManager->initialize(&globalStatus);
@@ -44,13 +45,9 @@ void loop(void) {
     Serial.println(";---Start Loop---");
 
     // Call each module
-    positionManager->poll(&globalStatus);
-    powerManager->poll(&globalStatus);
-    /*
-    helmControl->poll(&globalStatus);
-    */
-    propControl->poll(&globalStatus);
-    commsManager->poll(&globalStatus);
+    positionManager->pollGPSForPosition(&globalStatus);
+    powerManager->pollForBatteryStatus(&globalStatus);
+    commsManager->pollForCommandMessages(&globalStatus);
 
     writeStatusToSerial(&globalStatus);
 

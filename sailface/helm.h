@@ -21,11 +21,10 @@ class SailFaceHelm {
 
     private:
         Servo helmServo;
-        uint32_t next;
 
     public:
         void initialize(SailFaceStatus *status);
-        void poll(SailFaceStatus *status);
+        void setRudderPosition(int position);
 
 };
 #endif

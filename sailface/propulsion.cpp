@@ -16,8 +16,6 @@ void SailFacePropulsion::initialize(SailFaceStatus *status) {
 	  delay(500);
 	}
 
-	//Serial.println( "ID matches 0xA9" );
-
 	//  Check to make sure the driver is done looking for slaves before beginning
 	Serial.println("Waiting for enumeration...");
 	while ( motorDriver.ready() == false );
@@ -25,23 +23,12 @@ void SailFacePropulsion::initialize(SailFaceStatus *status) {
 	while ( motorDriver.busy() );
 	motorDriver.enable();
 
-	Serial.println("propulsion initialized.");
+	Serial.println("Propulsion initialized.");
 }
 
-//void SailFacePropulsion::setSpeed(uint32_t speed)
+void SailFacePropulsion::setPropellerSpeed(uint32_t speed, SailFaceStatus *status) {
+	//Use .setDrive( motorNum, direction, level ) to drive the motors.
+	motorDriver.setDrive( PRIMARY_PROP_MOTOR, 0, speed);
 
-void SailFacePropulsion::poll(SailFaceStatus *status) {
-
-  //Serial.println("start motors!");
-
-    //Use .setDrive( motorNum, direction, level ) to drive the motors.
-    motorDriver.setDrive( PRIMARY_PROP_MOTOR, 0, 128);
-    //motorDriver.setDrive( 1, 0, 255);
-    //delay(5000);
-    //motorDriver.setDrive( PRIMARY_PROP_MOTOR, 0, 0);
-    //delay(10000);
-}
-
-void SailFacePropulsion::writeStatusMessage(SailFaceStatus *status) {
-
+	status->cmdPropellerSpeed = speed;
 }

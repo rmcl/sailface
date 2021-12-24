@@ -24,7 +24,7 @@ void SailFacePowerManagement::initialize(SailFaceStatus *status) {
     //ina219.setCalibration_16V_400mA();
 }
 
-void SailFacePowerManagement::poll(SailFaceStatus *status) {
+void SailFacePowerManagement::pollForBatteryStatus(SailFaceStatus *status) {
     // Measure the voltage directly out of Battery Charging circuit.
     float sampleCount = 0;
     float measuredVoltageSum = 0;

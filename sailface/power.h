@@ -20,7 +20,7 @@ class SailFacePowerManagement {
 
     public:
         void initialize(SailFaceStatus *status);
-        void poll(SailFaceStatus *status);
+        void pollForBatteryStatus(SailFaceStatus *status);
         void writeStatusMessage(SailFaceStatus *status);
 };
 #endif
