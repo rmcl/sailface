@@ -41,13 +41,28 @@ void writeStatusToSerial(SailFaceStatus *status) {
     powerManager->writeStatusMessage(status);
 }
 
+void processCommand(char *command) {
+    Serial.println("PROCESS COMMAND");
+    Serial.println(command);
+    if (command[0] == 'E') {
+        Serial.println("START PROP");
+        propControl->setPropellerSpeed(128, &globalStatus);
+    } else if (command[0] == 'S') {
+        Serial.println("STOP PROP");
+        propControl->setPropellerSpeed(0, &globalStatus);
+    }
+}
+
 void loop(void) {
-    Serial.println(";---Start Loop---");
+    Serial.println(";---Start Loopz---");
 
     // Call each module
     positionManager->pollGPSForPosition(&globalStatus);
     powerManager->pollForBatteryStatus(&globalStatus);
-    commsManager->pollForCommandMessages(&globalStatus);
+    char *command = commsManager->pollForCommandMessages(&globalStatus);
+    if (command != NULL) {
+        processCommand(command);
+    }
 
     writeStatusToSerial(&globalStatus);
 

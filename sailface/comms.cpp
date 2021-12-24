@@ -21,14 +21,15 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
 
 }
 
-void SailFaceCommunication::pollForCommandMessages(SailFaceStatus *status) {
+char *SailFaceCommunication::pollForCommandMessages(SailFaceStatus *status) {
     char *message = readMessageFromSerial();
     if (message[0] != '\0') {
-        Serial.println(";---PRINT TO BLUE---");
         Serial.println(message);
+        return message;
     }
-        // Write teh SailFace status structure to the bluetooth serial port.
-        //bluetoothSerial.write( (byte *) status, sizeof(*status));
+
+    // no command messages available
+    return NULL;
 }
 
 void SailFaceCommunication::sendDebugMessage(char *message) {
@@ -40,8 +41,9 @@ void SailFaceCommunication::sendDebugMessage(char *message) {
 
 */
 char* SailFaceCommunication::readMessageFromSerial() {
+    String command = "";
     while (bluetoothSerial.available() > 0) {
-        char inByte = Serial.read();
+        char inByte = bluetoothSerial.read();
 
         switch (inByte) {
             case '\n':   // end of text
@@ -49,8 +51,6 @@ char* SailFaceCommunication::readMessageFromSerial() {
 
                 // reset buffer for next time
                 inputBufferPosition = 0;
-
-                inputBufferReady = true;
 
                 // return the retrieved command.
                 return inputBuffer;
@@ -67,5 +67,5 @@ char* SailFaceCommunication::readMessageFromSerial() {
                 }
         }
     }
-    return 0;
+    return '\0';
 }

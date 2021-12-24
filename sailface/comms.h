@@ -25,7 +25,7 @@ class SailFaceCommunication {
 
     public:
         void initialize(SailFaceStatus *status);
-        void pollForCommandMessages(SailFaceStatus *status);
+        char *pollForCommandMessages(SailFaceStatus *status);
         void sendDebugMessage(char *message);
 
 };
