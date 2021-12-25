@@ -1,5 +1,6 @@
 #include "sailface.h"
 #include "position.h"
+#include "comms.h"
 
 /* When configuring accelerometer check out: https://www.i2cdevlib.com/forums/topic/8-mpu6050-connection-failed/ */
 
@@ -10,13 +11,25 @@ void SailFacePositionManagement::initialize(SailFaceStatus *status) {
     status->positionValid = false;
     status->latitude = 0;
     status->longitude = 0;
-    status->gpsFixAge = -1;
+    status->gpsFixAge = 0;
     status->course = 0;
     status->speed = 0;
 }
 
 void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
+
+
+    //switch to listening on this software serial
+    if (!gpsSerial.isListening()) {
+        Serial.println("gps is not listening");
+        gpsSerial.listen();
+    } else {
+        Serial.println("gps is listening");
+    }
+
+    Serial.println("gps attempt");
     while (gpsSerial.available() > 0) {
+        //Serial.println("gps available");
         //Serial.write(gpsSerial.read());
         gps.encode(gpsSerial.read());
     }
@@ -31,7 +44,7 @@ void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
     //}
 }
 
-void SailFacePositionManagement::writeStatusMessage(SailFaceStatus *status) {
+void SailFacePositionManagement::writeStatusMessage(SailFaceCommunication *comms, SailFaceStatus *status) {
     Serial.print("N:");
     Serial.print(status->positionValid);
     Serial.print(",");

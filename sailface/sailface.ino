@@ -1,3 +1,5 @@
+
+
 #include "sailface.h"
 
 #include "position.h"
@@ -19,16 +21,17 @@ void setup(void) {
 
     commsManager = new SailFaceCommunication();
     positionManager = new SailFacePositionManagement();
+
     powerManager = new SailFacePowerManagement();
     helmControl = new SailFaceHelm();
     propControl = new SailFacePropulsion();
 
-
-    positionManager->initialize(&globalStatus);
-    //powerManager->initialize(&globalStatus);
-    //helmControl->initialize(&globalStatus);
-    propControl->initialize(&globalStatus);
     commsManager->initialize(&globalStatus);
+    powerManager->initialize(&globalStatus);
+    positionManager->initialize(&globalStatus);
+    helmControl->initialize(&globalStatus);
+    propControl->initialize(&globalStatus);
+
 
 }
 
@@ -37,7 +40,7 @@ void logDebugMessage(char *message) {
 }
 
 void writeStatusToSerial(SailFaceStatus *status) {
-    positionManager->writeStatusMessage(status);
+    positionManager->writeStatusMessage(commsManager, status);
     powerManager->writeStatusMessage(status);
 }
 
@@ -50,6 +53,12 @@ void processCommand(char *command) {
     } else if (command[0] == 'S') {
         Serial.println("STOP PROP");
         propControl->setPropellerSpeed(0, &globalStatus);
+    } else if (command[0] == 'R') {
+        int degrees = 0;
+        sscanf(&(command[1]), "%d", &degrees);
+        Serial.print("ROTATING TO ");
+        Serial.println(degrees);
+        helmControl->setRudderPosition(degrees);
     }
 }
 
@@ -59,7 +68,7 @@ void loop(void) {
     // Call each module
     positionManager->pollGPSForPosition(&globalStatus);
     powerManager->pollForBatteryStatus(&globalStatus);
-    char *command = commsManager->pollForCommandMessages(&globalStatus);
+    char *command = NULL; //commsManager->pollForCommandMessages(&globalStatus);
     if (command != NULL) {
         processCommand(command);
     }
