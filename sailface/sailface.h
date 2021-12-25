@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void logDebugMessage(char *message);
 
 /* Define a data structure that is continuously written to the serial port
 for ingestion into the main processor. */
@@ -13,12 +14,21 @@ typedef struct {
     double longitude;
     uint32_t gpsFixAge;
 
+    // actual speed & course from GPS
     double course; // course in degrees
     double speed; // speed in knots
 
     // Power Management
-    int batteryVoltage;
-    int instantaneousCurrentDraw;
+    float batteryVoltage;       // voltage in Volts out of the sunny buddy chargin unit.
+    float solarPanelCurrent;    // current in mA measured in series with the solar panels
+    float batteryCurrentDraw;   // current in mA measured out of the sunny buddy charging unit
+
+    // C&C state
+    bool disableMainController;
+    bool disablePrimaryPropulsion;
+
+    uint32_t cmdPropellerSpeed;
+
 
 } SailFaceStatus;
 

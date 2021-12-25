@@ -1,57 +1,79 @@
+
+
 #include "sailface.h"
 
 #include "position.h"
+#include "power.h"
+#include "helm.h"
+#include "propulsion.h"
+#include "comms.h"
 
 SailFaceStatus globalStatus;
 SailFacePositionManagement *positionManager;
+SailFacePowerManagement *powerManager;
+SailFaceHelm *helmControl;
+SailFacePropulsion *propControl;
+SailFaceCommunication *commsManager;
 
 void setup(void) {
     Serial.begin(115200);
     Serial.println(";--Hello World!--");
 
+    commsManager = new SailFaceCommunication();
     positionManager = new SailFacePositionManagement();
 
-    positionManager->initialize(&globalStatus);
+    powerManager = new SailFacePowerManagement();
+    helmControl = new SailFaceHelm();
+    propControl = new SailFacePropulsion();
 
-    while (!Serial) {
-        delay(1);
-    }
+    commsManager->initialize(&globalStatus);
+    powerManager->initialize(&globalStatus);
+    positionManager->initialize(&globalStatus);
+    helmControl->initialize(&globalStatus);
+    propControl->initialize(&globalStatus);
+
+
+}
+
+void logDebugMessage(char *message) {
+    //commsManager->sendDebugMessage(message);
 }
 
 void writeStatusToSerial(SailFaceStatus *status) {
-    Serial.print(status->positionValid);
-    Serial.print(",");
-    Serial.print(status->latitude, 6);
-    Serial.print(",");
-    Serial.print(status->longitude, 6);
-    Serial.print(",");
-    Serial.print(status->speed);
-    Serial.print(",");
-    Serial.print(status->course);
-    Serial.print(",");
-    Serial.print(status->gpsFixAge);
-    Serial.print("\n");
+    positionManager->writeStatusMessage(commsManager, status);
+    powerManager->writeStatusMessage(status);
 }
 
-void writeStatusToSerialHumanReadable(SailFaceStatus *status) {
-    Serial.println(";--Position--");
-    Serial.print(";position is valid:"); Serial.print(status->positionValid); Serial.println("");
-    Serial.print(";speed:"); Serial.print(status->speed); Serial.println("");
-    Serial.print(";course:"); Serial.print(status->course); Serial.println("");
-    Serial.print(";lat:"); Serial.print(status->latitude, 6); Serial.println("");
-    Serial.print(";long:"); Serial.print(status->longitude, 6); Serial.println("");
-    Serial.print(";age:"); Serial.print(status->gpsFixAge); Serial.println("");
-    Serial.println(";---");
+void processCommand(char *command) {
+    Serial.println("PROCESS COMMAND");
+    Serial.println(command);
+    if (command[0] == 'E') {
+        Serial.println("START PROP");
+        propControl->setPropellerSpeed(128, &globalStatus);
+    } else if (command[0] == 'S') {
+        Serial.println("STOP PROP");
+        propControl->setPropellerSpeed(0, &globalStatus);
+    } else if (command[0] == 'R') {
+        int degrees = 0;
+        sscanf(&(command[1]), "%d", &degrees);
+        Serial.print("ROTATING TO ");
+        Serial.println(degrees);
+        helmControl->setRudderPosition(degrees);
+    }
 }
 
 void loop(void) {
-    Serial.println(";---Start Loop---");
+    Serial.println(";---Start Loopz---");
 
     // Call each module
-    positionManager->poll(&globalStatus);
+    positionManager->pollGPSForPosition(&globalStatus);
+    powerManager->pollForBatteryStatus(&globalStatus);
+    char *command = NULL; //commsManager->pollForCommandMessages(&globalStatus);
+    if (command != NULL) {
+        processCommand(command);
+    }
 
     writeStatusToSerial(&globalStatus);
-    Serial.println(";---End Loop---");
 
     delay(1000);
 }

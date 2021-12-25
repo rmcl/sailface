@@ -67,3 +67,8 @@ lib64
 pyvenv.cfg
 share/
 venv/
+
+sailface.ino.bin
+sailface.ino.elf
+sailface.ino.hex
+sailface.ino.eep
