@@ -1,6 +1,6 @@
 ARDUINO_CLI=/Users/rmcl/Documents/Arduino/sailface/bin/arduino-cli
 ARDUINO_LIB_DIR=/Users/rmcl/Documents/Arduino/libraries
-BOARD_TYPE=arduino:avr:uno
+BOARD_TYPE=arduino:avr:mega
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 SAILFACE_DIR=$(ROOT_DIR)/sailface
@@ -9,6 +9,7 @@ USB_DEVICE=/dev/cu.usbserial-1410
 
 install-libraries:
 	$(ARDUINO_CLI) lib install "Adafruit INA219"
+	$(ARDUINO_CLI) lib install "Iridium SBD"
 	$(ARDUINO_CLI) lib install Servo
 	curl -L "https://github.com/mikalhart/TinyGPSPlus/archive/v1.0.2b.zip" --output "$(ARDUINO_LIB_DIR)/v1.0.2b.zip"
 	unzip "$(ARDUINO_LIB_DIR)/v1.0.2b.zip" -d $(ARDUINO_LIB_DIR)

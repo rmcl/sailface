@@ -1,3 +1,4 @@
+/* Define a class for retrieving GPS position data. */
 #include "sailface.h"
 #include "position.h"
 #include "comms.h"
@@ -19,18 +20,19 @@ void SailFacePositionManagement::initialize(SailFaceStatus *status) {
 void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
 
 
+    /* now that we have hardware serial can probably delete this!
     //switch to listening on this software serial
     if (!gpsSerial.isListening()) {
-        Serial.println("gps is not listening");
+        //Serial.println("gps is not listening");
         gpsSerial.listen();
+        delay(100);
     } else {
-        Serial.println("gps is listening");
-    }
+        //Serial.println("gps is listening");
+    }*/
 
-    Serial.println("gps attempt");
+    //Serial.println("gps attempt");
     while (gpsSerial.available() > 0) {
         //Serial.println("gps available");
-        //Serial.write(gpsSerial.read());
         gps.encode(gpsSerial.read());
     }
 
@@ -57,5 +59,5 @@ void SailFacePositionManagement::writeStatusMessage(SailFaceCommunication *comms
     Serial.print(status->course);
     Serial.print(",");
     Serial.print(status->gpsFixAge);
-    Serial.print("\n");
+    Serial.println("");
 }

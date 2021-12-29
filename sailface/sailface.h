@@ -10,8 +10,16 @@ for ingestion into the main processor. */
 typedef struct {
     // Position
     bool positionValid;
+
+    // NOTE: lat/long are stored in units of decimal degrees*1x106
+    // i.e. Multiply decimal degrees (in floating point representation) by
+    // 1000000 to get an integer.
+
+    // TODO: CONVERT LAT/LONG everywhere to longs from double to actually achieve
+    // the above
     double latitude;
     double longitude;
+
     uint32_t gpsFixAge;
 
     // actual speed & course from GPS
@@ -27,8 +35,20 @@ typedef struct {
     bool disableMainController;
     bool disablePrimaryPropulsion;
 
+    // the last time a status message
+    // was sent relative to Millis() - the time the board started running
+    // the current program
+    unsigned long lastStatusMessageTime;
+
     uint32_t cmdPropellerSpeed;
 
+    // Waypoint
+    double waypointLatitude;
+    double waypointLongitude;
+
+    // Desired course to meet waypoint objective
+    double desiredCourse;
+    float distanceToWaypoint;
 
 } SailFaceStatus;
 

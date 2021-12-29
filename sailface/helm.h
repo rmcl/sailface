@@ -7,6 +7,15 @@
 
 #include "sailface.h"
 
+
+
+// 155 - All the way to PORT
+// 120 - Centered
+// 85 - All the way to STARBOARD
+#define RUDDER_SERVO_MAX_PORT 155
+#define RUDDER_SERVO_MAX_STARBOARD 85
+#define RUDDER_SERVO_CENTER 120
+
 #define HELM_PWM_PIN 5
 
 /*

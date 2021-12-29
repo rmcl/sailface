@@ -3,13 +3,10 @@
 
 #include <stdint.h>
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 
 #include "sailface.h"
 
 #define COMM_MAX_COMMAND_LEN 100
-#define COMM_BLUETOOTH_RX_PIN 10
-#define COMM_BLUETOOTH_TX_PIN 11
 
 
 class SailFaceCommunication {
@@ -19,7 +16,9 @@ class SailFaceCommunication {
         unsigned int inputBufferPosition;
         bool inputBufferReady;
 
-        SoftwareSerial bluetoothSerial{COMM_BLUETOOTH_RX_PIN, COMM_BLUETOOTH_TX_PIN}; // RX | TX
+        // TODO DOCUMENT THE CORRECT ARDUINO MEGA PINS HERE!
+        //SoftwareSerial bluetoothSerial{COMM_BLUETOOTH_RX_PIN, COMM_BLUETOOTH_TX_PIN}; // RX | TX
+        HardwareSerial &bluetoothSerial = Serial2;
 
         char *readMessageFromSerial();
 

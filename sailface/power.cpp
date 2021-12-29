@@ -49,5 +49,5 @@ void SailFacePowerManagement::writeStatusMessage(SailFaceStatus *status) {
     Serial.print(status->batteryCurrentDraw);
     Serial.print(",");
     Serial.print(status->solarPanelCurrent);
-    Serial.print("\n");
+    Serial.println("");
 }

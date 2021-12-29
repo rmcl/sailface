@@ -23,8 +23,8 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
 
 char *SailFaceCommunication::pollForCommandMessages(SailFaceStatus *status) {
     char *message = readMessageFromSerial();
-    if (message[0] != '\0') {
-        Serial.println(message);
+    if (message[0] != 0) {
+        //Serial.println(message);
         return message;
     }
 
@@ -33,7 +33,7 @@ char *SailFaceCommunication::pollForCommandMessages(SailFaceStatus *status) {
 }
 
 void SailFaceCommunication::sendDebugMessage(char *message) {
-    //bluetoothSerial.write(message);
+    bluetoothSerial.write(message);
 }
 
 
@@ -47,10 +47,10 @@ char* SailFaceCommunication::readMessageFromSerial() {
     //switch to listening on this software serial
     //bluetoothSerial.listen();
     if (!bluetoothSerial.isListening()) {
-        Serial.println("bluetooth is not listening");
+        //Serial.println("bluetooth is not listening");
         bluetoothSerial.listen();
-    }
-    */
+        delay(100);
+    }*/
 
     while (bluetoothSerial.available() > 0) {
         char inByte = bluetoothSerial.read();
