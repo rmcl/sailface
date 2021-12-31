@@ -6,7 +6,7 @@ from serial.tools.list_ports import comports
 def find_sailface_port():
     for port in comports():
         print(port, port.serial_number, port.name)
-        if port.name == 'cu.usbserial-1410':
+        if port.name == 'cu.usbmodem14201':
             return port.device
 
     raise Exception('SERIAL PORT NOT FOUND!')

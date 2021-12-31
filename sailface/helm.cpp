@@ -1,6 +1,11 @@
 #include "sailface.h"
 #include "helm.h"
 
+
+// TODO: If we wanna setup the RC receiver for close range driving.
+// https://www.youtube.com/watch?v=u0Ft8SB3pkw
+//
+
 void SailFaceHelm::initialize(SailFaceStatus *status) {
 
     helmServo.attach(

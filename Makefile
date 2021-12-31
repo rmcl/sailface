@@ -18,6 +18,10 @@ install-libraries:
 	unzip "$(ARDUINO_LIB_DIR)/Serial_Controlled_Motor_Driver-1.0.4.zip" -d $(ARDUINO_LIB_DIR)
 	rm "$(ARDUINO_LIB_DIR)/Serial_Controlled_Motor_Driver-1.0.4.zip"
 
+install-test-libraries:
+	$(ARDUINO_CLI) lib install "AUnit"
+	git clone "https://github.com/bxparks/EpoxyDuino.git" "$(ARDUINO_LIB_DIR)/EpoxyDuino"
+
 install-control:
 	sudo rm /etc/systemd/system/sailface.service
 	sudo cp $(SAILFACE_CONTROL_DIR)/sailface.systemd.conf /etc/systemd/system/sailface.service
@@ -27,6 +31,7 @@ install-control:
 
 compile:
 	$(ARDUINO_CLI) compile -v --fqbn $(BOARD_TYPE) sailface
+
 upload: compile
 	$(ARDUINO_CLI) upload -v -p $(USB_DEVICE) --fqbn $(BOARD_TYPE) sailface --input-dir $(SAILFACE_DIR)
 

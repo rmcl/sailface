@@ -16,6 +16,6 @@ class SailFacePropulsion {
 
     public:
         void initialize(SailFaceStatus *status);
-        void setPropellerSpeed(uint32_t speed, SailFaceStatus *status);
+        void setPropellerSpeed(int speed, SailFaceStatus *status);
 };
 #endif

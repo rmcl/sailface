@@ -19,31 +19,30 @@ void SailFacePositionManagement::initialize(SailFaceStatus *status) {
 
 void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
 
-
-    /* now that we have hardware serial can probably delete this!
-    //switch to listening on this software serial
-    if (!gpsSerial.isListening()) {
-        //Serial.println("gps is not listening");
-        gpsSerial.listen();
-        delay(100);
-    } else {
-        //Serial.println("gps is listening");
-    }*/
-
     //Serial.println("gps attempt");
     while (gpsSerial.available() > 0) {
         //Serial.println("gps available");
         gps.encode(gpsSerial.read());
     }
 
-    //if (gps.location.isValid()) {
     status->positionValid = gps.location.isValid();
     status->latitude = gps.location.lat();
     status->longitude = gps.location.lng();
     status->gpsFixAge = gps.location.age();
     status->course = gps.course.deg(); // course in degrees
     status->speed = gps.speed.knots(); // speed in knots
-    //}
+
+    struct tm inputTime;
+    inputTime.tm_year = gps.date.year();
+    inputTime.tm_mon = gps.date.month();
+    inputTime.tm_mday = gps.date.day();
+    inputTime.tm_hour = gps.time.hour();
+    inputTime.tm_min = gps.time.minute();
+    inputTime.tm_sec = gps.time.second();
+    inputTime.tm_isdst = -1;
+
+    status->time = gmtime(mktime(&inputTime));
+
 }
 
 void SailFacePositionManagement::writeStatusMessage(SailFaceCommunication *comms, SailFaceStatus *status) {

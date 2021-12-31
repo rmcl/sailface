@@ -26,9 +26,14 @@ void SailFacePropulsion::initialize(SailFaceStatus *status) {
 	Serial.println("Propulsion initialized.");
 }
 
-void SailFacePropulsion::setPropellerSpeed(uint32_t speed, SailFaceStatus *status) {
-	//Use .setDrive( motorNum, direction, level ) to drive the motors.
-	motorDriver.setDrive( PRIMARY_PROP_MOTOR, 0, speed);
+void SailFacePropulsion::setPropellerSpeed(int speed, SailFaceStatus *status) {
+	if (speed < 0) {
+		speed = 0;
+	} else if (speed > 255) {
+		speed = 255;
+	}
 
-	status->cmdPropellerSpeed = speed;
+	motorDriver.setDrive(PRIMARY_PROP_MOTOR, 0, speed);
+
+	status->propSpeed = speed;
 }

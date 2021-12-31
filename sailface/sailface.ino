@@ -90,16 +90,30 @@ void processCommand(char *command) {
 }
 
 void loop(void) {
-    //Serial.println(";---Start Loopz---");
-
     positionManager->pollGPSForPosition(&globalStatus);
     powerManager->pollForBatteryStatus(&globalStatus);
-    char *command = commsManager->pollForCommandMessages(&globalStatus);
+    char *command = commsManager->pollForBluetoothCommandMessages(&globalStatus);
     if (command != NULL) {
-        processCommand(command);
+        processBluetoothCommand(command);
+    }
+
+    SailFaceCommandMessage command = commsManager->pollForSatteliteCommandMessages(&globalStatus);
+    if (command != null) {
+        if (command.waypointLatitude > 0 || command.waypointLongitude > 0) {
+            navigation->setWaypoint(command.waypointLatitude, command.waypointLongitude);
+        }
+
+        if (command.propSpeed >= 0) {
+            propControl->setPropellerSpeed(command.propSpeed);
+        }
+
+        //commsManager->toggleBluetooth(command.bluetoothActive);
+
+        //if (commsManager->iridiumUpdateFrequencySeconds > 0) {
+        //  commsManager->setIridiumStatusUpdateFreq(iridiumUpdateFrequencySeconds);
+        //}
+
     }
 
     writeStatusToSerial(&globalStatus);
-
-    //delay(1000);
 }
