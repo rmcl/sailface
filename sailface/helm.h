@@ -1,9 +1,16 @@
+/* Adjust the rudder to keep SailFace on a desired bearing.
+
+Utilize proportional, integral, derivative (PID) theory to control the Rudder
+based on desired bearing and current heading.
+
+*/
 #ifndef _SAIL_FACE_HELM
 #define _SAIL_FACE_HELM
 
 #include <stdint.h>
 #include <Arduino.h>
 #include <Servo.h>
+#include <PID_v1.h>
 
 #include "sailface.h"
 
@@ -30,10 +37,25 @@ class SailFaceHelm {
 
     private:
         Servo helmServo;
+        PID *rudderPID;
+
+        double pidRudderPositionOut = 0;
+        double difference = 1;
+        int Kp = 3;
+        int Ki = 2;
+        int Kd = 1;
+
 
     public:
         void initialize(SailFaceStatus *status);
+
+        // The angle that we want the boat to go in
+        void setBearingAndEnablePID(int bearing, SailFaceStatus *status);
+        void disablePID(SailFaceStatus *status);
         void setRudderPosition(int position);
+
+        // Adjust the rudder to keep us on the desired bearing.
+        void pollForRudderAdjustment(SailFaceStatus *status);
 
 };
 #endif

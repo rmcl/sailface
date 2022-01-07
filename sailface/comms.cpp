@@ -20,6 +20,13 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
 
     bluetoothSerial.begin(9600);
 
+    // Set radio contorl pins for INPUT.
+    pinMode(RADIO_CONTROL_PROP_SPEED_PIN, INPUT);
+    pinMode(RADIO_CONTROL_RUDDER_CONTROL_PIN, INPUT);
+
+    status->bluetoothActive = true;
+    status->radioControlActive = false;
+
 }
 
 void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
@@ -33,7 +40,7 @@ void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
     if (errorCode != ISBD_SUCCESS) {
         Serial.print("Begin failed: error ");
         Serial.println(errorCode);
-        if (err == ISBD_NO_MODEM_DETECTED) {
+        if (errorCode == ISBD_NO_MODEM_DETECTED) {
             Serial.println("No modem detected: check wiring.");
         }
         return;
@@ -52,7 +59,7 @@ void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
 // The IridiumSBD will set the "Ring" pin to high if their are messages
 // waiting for download. Return the number of messages waiting for
 // download.
-int SailFaceCommunication::pollForRingAlerts() {
+int SailFaceCommunication::pollForIridiumRingAlerts() {
     bool ring = modem.hasRingAsserted();
     if (ring) {
         return modem.getWaitingMessageCount();
@@ -60,13 +67,15 @@ int SailFaceCommunication::pollForRingAlerts() {
     return 0;
 }
 
-int SailFaceCommunication::retieveMessage() {
+// Retrieve a message from Iridium and process it into a SailFaceCommandMessage
+// Return the number of messages remaining for download.
+int SailFaceCommunication::retieveIridiumMessage(SailFaceCommandMessage message) {
     uint8_t buffer[200];
     size_t bufferSize = sizeof(buffer);
-    err = modem.sendReceiveSBDText(NULL, buffer, bufferSize);
-    if (err != ISBD_SUCCESS) {
+    int errorCode = modem.sendReceiveSBDText(NULL, buffer, bufferSize);
+    if (errorCode != ISBD_SUCCESS) {
         Serial.print("sendReceiveSBDBinary failed: error ");
-        Serial.println(err);
+        Serial.println(errorCode);
         return;
     }
 
@@ -89,7 +98,8 @@ int SailFaceCommunication::retieveMessage() {
 }
 
 void SailFaceCommunication::sendIridiumStatusMessage(SailFaceStatus *status) {
-    int err = modem.sendSBDBinary(status, sizeof(SailFaceStatus))
+    // TODO NEEDS WORK!
+    int err = -1; //modem.sendSBDBinary(status, sizeof(SailFaceStatus))
 
     if (err != ISBD_SUCCESS) {
         Serial.print("sendSBDText failed: error ");
@@ -102,21 +112,24 @@ void SailFaceCommunication::sendIridiumStatusMessage(SailFaceStatus *status) {
         Serial.println("Hey, it worked!");
 
         // FIGURE OUT WHAT TO SET THIS TOO!
-        //status->lastStatusMessageTime = 
+        //status->lastStatusMessageTime =
     }
 }
 
-SailFaceCommandMessage SailFaceCommunication::pollForIridumCommandMessages(SailFaceStatus *status) {
-    if (!status->iridiumSBDActive) {
-        return NULL;
+int SailFaceCommunication::pollForIridumCommandMessages(SailFaceStatus *status, SailFaceCommandMessage *firstReceivedCommand) {
+    if (!status->iridiumActive) {
+        return -1;
     }
 
-    int messageCount = pollForRingAlerts();
+    int messageCount = pollForIridiumRingAlerts();
     if (messageCount == 0) {
-        return NULL;
+        return 0;
     }
 
-    return retieveMessage();
+    messageCount = retieveIridiumMessage(*firstReceivedCommand);
+
+    // Current message + some number of outstanding messages.
+    return 1 + messageCount;
 }
 
 
@@ -177,4 +190,26 @@ char* SailFaceCommunication::readMessageFromBluetooth() {
         }
     }
     return '\0';
+}
+
+//
+//
+// Source: https://www.youtube.com/watch?v=Bx0y1qyLHQ4
+//
+void SailFaceCommunication::pollForCurrentRadioCommand(SailFaceRadioCommandMessage *radioCommand) {
+    int propSpeedPulseWidth = pulseIn(
+        RADIO_CONTROL_PROP_SPEED_PIN, HIGH);
+    int rudderPositionPulseWidth = pulseIn(
+        RADIO_CONTROL_RUDDER_CONTROL_PIN, HIGH);
+
+    if (propSpeedPulseWidth < 1000) {
+        radioCommand->propSpeed = -1;
+        radioCommand->rudderPosition = 0;
+    } else {
+        int propSpeed = map(propSpeedPulseWidth, 1000, 2000, -20, 255);
+        radioCommand->propSpeed = constrain(propSpeed, 0, 255);
+
+        int rudderPosition = map(rudderPositionPulseWidth, 1000, 2000, -10, 10);
+        radioCommand->rudderPosition = constrain(rudderPosition, -10, 10);
+    }
 }

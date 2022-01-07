@@ -1,3 +1,22 @@
+/* Adjust the rudder to keep SailFace on a desired bearing.
+
+
+A little PID theory from (https://playground.arduino.cc/Code/PIDLibrary/)
+
+You tell the PID module what to measure (the "Input",) Where you want that
+measurement to be (the "Setpoint",) and the variable to adjust that can make
+that happen (the "Output".) The PID then adjusts the output trying to make
+the input equal the setpoint.
+
+For reference, in a car, the Input, Setpoint, and Output would be the speed,
+desired speed, and gas pedal angle respectively.
+
+In the case of SailFACE,
+    Input - Current heading according to GPS module
+    SetPoint - Desired Bearing (angle from current position to waypoint)
+    and Output - Rudder position.
+
+*/
 #include "sailface.h"
 #include "helm.h"
 
@@ -26,6 +45,7 @@ void SailFaceHelm::setRudderPosition(int position) {
     10 is full to port
 
     */
+    position = constrain(position, -10, 10);
 
     float stepSize = 0;
     if (position > 0) {
@@ -37,4 +57,52 @@ void SailFaceHelm::setRudderPosition(int position) {
 
     Serial.println(servoAngle);
     helmServo.write(servoAngle);
+}
+
+void SailFaceHelm::setBearingAndEnablePID(int bearing, SailFaceStatus *status) {
+
+/*
+    // if PID control already enabled and if the new bearing is basically
+    // same as the old bearing don't reinitialize the PID
+    if (status->enablePIDControl) {
+        if (abs(status->desiredBearing - bearing) < .5) {
+            return;
+        }
+    }
+
+    // clean up any old PID objects if needed
+    disablePID();
+
+    sailface->desiredBearing = bearing;
+    sailface->enablePIDControl = true;
+
+    rudderPID = new PID(
+        &difference,
+        &pidRudderPositionOut,
+        &(sailface->desiredBearing),
+        Kp, Ki, Kd, DIRECT)
+
+    rudderPID->SetOutputLimits(-10, 10);
+*/
+}
+void SailFaceHelm::disablePID(SailFaceStatus *status) {
+    status->enablePIDControl = false;
+
+    if (rudderPID) {
+        delete rudderPID;
+        rudderPID = NULL;
+    }
+}
+
+void SailFaceHelm::pollForRudderAdjustment(SailFaceStatus *status) {
+/*
+    if (status->enablePIDControl == false) {
+        return;
+    }
+
+    rudderPID->compute()
+
+    int newRudderPosition = int(pidRudderPositionOut);
+    setRudderPosition(newRudderPosition);
+*/
 }

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <Arduino.h>
+#include <IridiumSBD.h>
+
 
 #include "sailface.h"
 
@@ -26,6 +28,20 @@ typedef struct {
 
 } SailFaceCommandMessage;
 
+/* Radio Control Related */
+
+#define RADIO_CONTROL_PROP_SPEED_PIN 11
+#define RADIO_CONTROL_RUDDER_CONTROL_PIN 10
+
+// Structure of messages received from the RC controller.
+typedef struct {
+    // speed of prop between 0 and 255. Set to -1 for no change.
+    int propSpeed;
+    int rudderPosition;
+
+} SailFaceRadioCommandMessage;
+
+/* End Radio Control Related */
 
 class SailFaceCommunication {
 
@@ -43,16 +59,22 @@ class SailFaceCommunication {
         // Iridium RXD pin1 -> RX3 pin 15
         // Iridium TXD pin6 -> TX3 pin 14
         HardwareSerial &IridiumSerial = Serial3;
-        IridiumSBD modem(IridiumSerial);
+        IridiumSBD modem{IridiumSerial};
 
 
         char *readMessageFromBluetooth();
+        int pollForIridiumRingAlerts();
+        int retieveIridiumMessage(SailFaceCommandMessage message);
 
     public:
         void initialize(SailFaceStatus *status);
         void initializeIridium(SailFaceStatus *status);
         char *pollForBluetoothCommandMessages(SailFaceStatus *status);
-        SailFaceCommandMessage pollForIridumCommandMessages(SailFaceStatus *status);
+        void pollForCurrentRadioCommand(SailFaceRadioCommandMessage *radioCommand);
+
+        int pollForIridumCommandMessages(SailFaceStatus *status, SailFaceCommandMessage *firstReceivedCommand);
+        void sendIridiumStatusMessage(SailFaceStatus *status);
+
         void sendDebugMessage(char *message);
 
 };

@@ -35,5 +35,11 @@ compile:
 upload: compile
 	$(ARDUINO_CLI) upload -v -p $(USB_DEVICE) --fqbn $(BOARD_TYPE) sailface --input-dir $(SAILFACE_DIR)
 
+compile-tests:
+	APP_NAME := test_navigation
+	ARDUINOLIBS := AUnit,$(ARDUINO_LIB_DIR)
+	include /Users/rmcl/Documents/Arduino/libraries/EpoxyDuino/EpoxyDuino.mk
+
+
 clean:
 	rm -rf $(SAILFACE_DIR)/build

@@ -27,10 +27,16 @@ void SailFacePropulsion::initialize(SailFaceStatus *status) {
 }
 
 void SailFacePropulsion::setPropellerSpeed(int speed, SailFaceStatus *status) {
+
 	if (speed < 0) {
 		speed = 0;
 	} else if (speed > 255) {
 		speed = 255;
+	}
+
+	// Don't change the prop speed if the new value is the same as old value.
+	if (status->propSpeed == speed) {
+		return;
 	}
 
 	motorDriver.setDrive(PRIMARY_PROP_MOTOR, 0, speed);

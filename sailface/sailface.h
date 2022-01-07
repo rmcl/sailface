@@ -36,6 +36,7 @@ typedef struct {
     bool primaryPropulsionActive;
     bool bluetoothActive;
     bool iridiumActive;
+    bool radioControlActive;
     int propSpeed;
 
     // the last time a status message
@@ -52,8 +53,11 @@ typedef struct {
     double waypointLatitude;
     double waypointLongitude;
 
-    // Desired course to meet waypoint objective
-    double desiredCourse;
+    // Desired bearing to meet waypoint objective
+    // Course is the direction from the previous waypoint to the next waypoint.
+    // Bearing is the direction from the boat to the next waypoint.
+    bool enablePIDControl;
+    int desiredBearing;
     float distanceToWaypoint;
 
     // The signal quality accessing the iridium satellite network

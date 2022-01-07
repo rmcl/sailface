@@ -1,7 +1,9 @@
 /* Define a class for retrieving GPS position data. */
+#include <time.h>
 #include "sailface.h"
 #include "position.h"
 #include "comms.h"
+
 
 /* When configuring accelerometer check out: https://www.i2cdevlib.com/forums/topic/8-mpu6050-connection-failed/ */
 

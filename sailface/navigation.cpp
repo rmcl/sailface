@@ -40,7 +40,7 @@ void SailFaceNavigation::recomputeCourseToWaypoint(SailFaceStatus *status) {
     */
 
     Serial.println("plotting a course");
-    status->desiredCourse = -1;
+    status->desiredBearing = -1;
 }
 
 //
