@@ -34,7 +34,13 @@ void SailFacePowerManagement::pollForBatteryStatus(SailFaceStatus *status) {
         delay(1);
     }
 
-    status->batteryVoltage = ((float)measuredVoltageSum / (float)POWER_BATTERY_VOLTAGE_NUM_SAMPLES * 5.0) / 1023.0;
+    // Voltage divider in place
+    // R1 = 10k Ohms
+    // R2 = 4.7k Ohms
+    // Vout = (R2 / (R1 + R2)) * Vin
+    // So Vin = Vout / (R2 / (R1 + R2))
+    float pinVoltage = ((float)measuredVoltageSum / (float)POWER_BATTERY_VOLTAGE_NUM_SAMPLES * 5.0) / 1023.0;
+    status->batteryVoltage = pinVoltage / (4700.0 / (4700.0 + 10000.0));
 
     // Measure the present current draw at the Battery Charging circuit
     status->batteryCurrentDraw = batteryCurrentMonitor.getCurrent_mA();
