@@ -12,11 +12,11 @@ void SailFacePowerManagement::initialize(SailFaceStatus *status) {
     // By default the initialization will use the largest range (32V, 2A).  However
     // you can call a setCalibration function to change this range (see comments).
     if (!batteryCurrentMonitor.begin()) {
-        Serial.println("Failed to find INA219 chip for battery");
+        logDebugMessage("Failed to find INA219 chip for battery\n");
     }
 
     if (!solarPanelCurrentMonitor.begin()) {
-        Serial.println("Failed to find INA219 chip for solar panel");
+        logDebugMessage("Failed to find INA219 chip for solar panel\n");
     }
     // To use a slightly lower 32V, 1A range (higher precision on amps):
     //ina219.setCalibration_32V_1A();
@@ -49,11 +49,11 @@ void SailFacePowerManagement::pollForBatteryStatus(SailFaceStatus *status) {
 }
 
 void SailFacePowerManagement::writeStatusMessage(SailFaceStatus *status) {
-    Serial.print("P:");
-    Serial.print(status->batteryVoltage);
-    Serial.print(",");
-    Serial.print(status->batteryCurrentDraw);
-    Serial.print(",");
-    Serial.print(status->solarPanelCurrent);
-    Serial.println("");
+    logDebugMessage("P:");
+    logDebugMessage(status->batteryVoltage);
+    logDebugMessage(",");
+    logDebugMessage(status->batteryCurrentDraw);
+    logDebugMessage(",");
+    logDebugMessage(status->solarPanelCurrent);
+    logDebugMessage("\n");
 }

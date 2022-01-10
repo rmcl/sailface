@@ -48,17 +48,17 @@ void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
 }
 
 void SailFacePositionManagement::writeStatusMessage(SailFaceCommunication *comms, SailFaceStatus *status) {
-    Serial.print("N:");
-    Serial.print(status->positionValid);
-    Serial.print(",");
-    Serial.print(status->latitude, 6);
-    Serial.print(",");
-    Serial.print(status->longitude, 6);
-    Serial.print(",");
-    Serial.print(status->speed);
-    Serial.print(",");
-    Serial.print(status->course);
-    Serial.print(",");
-    Serial.print(status->gpsFixAge);
-    Serial.println("");
+    logDebugMessage("N:");
+    logDebugMessage(status->positionValid);
+    logDebugMessage(",");
+    logDebugMessage(status->latitude, 6);
+    logDebugMessage(",");
+    logDebugMessage(status->longitude, 6);
+    logDebugMessage(",");
+    logDebugMessage(status->speed);
+    logDebugMessage(",");
+    logDebugMessage(status->course);
+    logDebugMessage(",");
+    logDebugMessage(status->gpsFixAge);
+    logDebugMessage("\n");
 }

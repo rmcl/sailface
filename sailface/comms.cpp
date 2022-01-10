@@ -98,21 +98,19 @@ int SailFaceCommunication::retieveIridiumMessage(SailFaceCommandMessage message)
 }
 
 void SailFaceCommunication::sendIridiumStatusMessage(SailFaceStatus *status) {
-    // TODO NEEDS WORK!
-    int err = -1; //modem.sendSBDBinary(status, sizeof(SailFaceStatus))
-
+    int err = modem.sendSBDBinary((uint8_t*)status, sizeof(*status));
     if (err != ISBD_SUCCESS) {
-        Serial.print("sendSBDText failed: error ");
-        Serial.println(err);
+        sendDebugMessage("sendSBDText failed: error ");
+        sendDebugMessage(err);
+        sendDebugMessage("\n");
 
         if (err == ISBD_SENDRECEIVE_TIMEOUT) {
-            Serial.println("Try again with a better view of the sky.");
+            sendDebugMessage("Try again with a better view of the sky.");
         }
-    } else {
-        Serial.println("Hey, it worked!");
 
-        // FIGURE OUT WHAT TO SET THIS TOO!
-        //status->lastStatusMessageTime =
+    } else {
+        sendDebugMessage("Iridium successfully transmitted message.");
+        status->lastIridiumStatusMessageSentTime = status->time;
     }
 }
 
@@ -144,10 +142,18 @@ char *SailFaceCommunication::pollForBluetoothCommandMessages(SailFaceStatus *sta
     return NULL;
 }
 
+//
+// Send a debug message over the appropriate channel.
 void SailFaceCommunication::sendDebugMessage(char *message) {
     bluetoothSerial.write(message);
+    // we could fall back to good ol' Serial.print here.
 }
 
+void SailFaceCommunication::writeStatusMessage(SailFaceStatus *status) {
+    bluetoothSerial.write("R");
+    bluetoothSerial.write((byte*)status, sizeof(*status));
+    bluetoothSerial.write("\n");
+}
 
 /*
 

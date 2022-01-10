@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+void logDebugMessage(int number);
+void logDebugMessage(uint32_t number);
+void logDebugMessage(float number);
+void logDebugMessage(float number, int num_digits_after_decimal);
+void logDebugMessage(double number);
 void logDebugMessage(char *message);
 
 /* Define a data structure that is continuously written to the serial port
@@ -46,7 +51,12 @@ typedef struct {
     // todo: this might not be a good idea! What if the battery is low and it grays
     //  out the microcontroller?
     // maybe replace with this: IridiumSBD::getSystemTime(struct tm &tm)
-    unsigned long lastStatusMessageTime;
+    uint32_t lastIridiumStatusMessageSentTime;
+    uint32_t lastStatusMessageSentTime;
+
+    // how frequently should we send updates via sattelite.
+    // this should be persisted to EPROM in comms module.
+    int iridiumUpdateFrequencySeconds;
 
 
     // Waypoint

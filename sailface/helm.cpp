@@ -55,7 +55,9 @@ void SailFaceHelm::setRudderPosition(int position) {
     }
     int servoAngle = RUDDER_SERVO_CENTER + int(stepSize * position);
 
-    Serial.println(servoAngle);
+    logDebugMessage("ANGLE TO SERVO");
+    logDebugMessage(servoAngle);
+    logDebugMessage("\n");
     helmServo.write(servoAngle);
 }
 

@@ -75,6 +75,7 @@ class SailFaceCommunication {
         int pollForIridumCommandMessages(SailFaceStatus *status, SailFaceCommandMessage *firstReceivedCommand);
         void sendIridiumStatusMessage(SailFaceStatus *status);
 
+        void writeStatusMessage(SailFaceStatus *status);
         void sendDebugMessage(char *message);
 
 };
