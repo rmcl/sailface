@@ -8,6 +8,7 @@ void logDebugMessage(int number);
 void logDebugMessage(uint32_t number);
 void logDebugMessage(float number);
 void logDebugMessage(float number, int num_digits_after_decimal);
+void logDebugMessage(long number);
 void logDebugMessage(double number);
 void logDebugMessage(char *message);
 
@@ -68,8 +69,12 @@ typedef struct {
     // Course is the direction from the previous waypoint to the next waypoint.
     // Bearing is the direction from the boat to the next waypoint.
     bool enablePIDControl;
-    int desiredBearing;
-    float distanceToWaypoint;
+
+    // Desired bearing towards waypoint.
+    double desiredBearing;
+
+    // Distance in meters between current location and waypoint.
+    double distanceToWaypoint;
 
     // The signal quality accessing the iridium satellite network
     // This returns a number between 0 and 5. 2 or better is preferred.

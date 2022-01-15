@@ -26,10 +26,7 @@ typedef struct {
 // Use GPS data and operator input to decide course.
 //
 class SailFaceNavigation {
-
-    private:
-        float course_to(long lat1, long lon1, long lat2, long lon2, float* distance);
-
+        
     public:
         void initialize(SailFaceStatus *status);
         void recomputeCourseToWaypoint(SailFaceStatus *status);
