@@ -27,33 +27,57 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
     status->bluetoothActive = true;
     status->radioControlActive = false;
 
+    startIridium(status);
 }
 
-void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
+void SailFaceCommunication::startIridium(SailFaceStatus *status) {
     int errorCode = -1;
+
+    // SET THE SLEEP PIN TO OUTPUT
+    pinMode(ROCKBLOCK_SLEEP_PIN, OUTPUT);
+    digitalWrite(ROCKBLOCK_SLEEP_PIN, HIGH);
+
+    logDebugMessage("Attempting to start iridium rockblock.");
 
     IridiumSerial.begin(19200);
     modem.setPowerProfile(IridiumSBD::DEFAULT_POWER_PROFILE);
+    modem.adjustATTimeout(45);
 
     // Begin satellite modem operation
     errorCode = modem.begin();
     if (errorCode != ISBD_SUCCESS) {
-        Serial.print("Begin failed: error ");
-        Serial.println(errorCode);
+        logDebugMessage("Begin failed: error ");
+        logDebugMessage(errorCode);
+        logDebugMessage("\n");
         if (errorCode == ISBD_NO_MODEM_DETECTED) {
-            Serial.println("No modem detected: check wiring.");
+            logDebugMessage("No modem detected: check wiring.");
         }
-        return;
-    }
 
-    errorCode = modem.getSignalQuality(status->iridiumSignalQuality);
+        status->iridiumActive = false;
+    } else {
+
+        // TODO: DO WE WANT THIS!?
+        // move this somewhere! SHOULD WE REALLY TURN THIS OFF? OR IS IT ALREADY OFF?
+        modem.useMSSTMWorkaround(false);
+
+        pollIridiumSignalQuality(status);
+        status->iridiumActive = true;
+    }
+}
+
+void SailFaceCommunication::sleepIridium(SailFaceStatus *status) {
+    digitalWrite(ROCKBLOCK_SLEEP_PIN, LOW);
+    status->iridiumActive = false;
+}
+
+void SailFaceCommunication::pollIridiumSignalQuality(SailFaceStatus *status) {
+    int errorCode = modem.getSignalQuality(status->iridiumSignalQuality);
     if (errorCode != ISBD_SUCCESS) {
-        Serial.print("SignalQuality failed: error ");
-        Serial.println(errorCode);
+        logDebugMessage("SignalQuality failed: error ");
+        logDebugMessage(errorCode);
+        logDebugMessage("\n");
         return;
     }
-
-    status->iridiumActive = true;
 }
 
 // The IridiumSBD will set the "Ring" pin to high if their are messages
@@ -98,13 +122,24 @@ int SailFaceCommunication::retieveIridiumMessage(SailFaceCommandMessage message)
 }
 
 void SailFaceCommunication::sendIridiumStatusMessage(SailFaceStatus *status) {
-    int err = modem.sendSBDBinary((uint8_t*)status, sizeof(*status));
-    if (err != ISBD_SUCCESS) {
-        sendDebugMessage("sendSBDText failed: error ");
-        sendDebugMessage(err);
+
+    SailFaceIridiumStatusMessage message;
+    message.batteryVoltage = status->batteryVoltage * 10; // multiple by ten to convert to short int
+    message.latitude = status->latitude;
+    message.longitude = status->longitude;
+    message.waypointLatitude = status->waypointLatitude;
+    message.waypointLongitude = status->waypointLongitude;
+    message.propSpeed = status->propSpeed;
+
+    int errorCode = modem.sendSBDBinary((uint8_t*)&message, sizeof(message));
+    if (errorCode != ISBD_SUCCESS) {
+        sendDebugMessage("sendSBDText failed error:");
+        char numberMessage[16];
+        itoa(errorCode, numberMessage, 10);
+        sendDebugMessage(numberMessage);
         sendDebugMessage("\n");
 
-        if (err == ISBD_SENDRECEIVE_TIMEOUT) {
+        if (errorCode == ISBD_SENDRECEIVE_TIMEOUT) {
             sendDebugMessage("Try again with a better view of the sky.");
         }
 
@@ -159,23 +194,13 @@ void SailFaceCommunication::writeStatusMessage(SailFaceStatus *status) {
 
 */
 char* SailFaceCommunication::readMessageFromBluetooth() {
-    String command = "";
-
-    /*
-    //switch to listening on this software serial
-    //bluetoothSerial.listen();
-    if (!bluetoothSerial.isListening()) {
-        //Serial.println("bluetooth is not listening");
-        bluetoothSerial.listen();
-        delay(100);
-    }*/
 
     while (bluetoothSerial.available() > 0) {
         char inByte = bluetoothSerial.read();
 
         switch (inByte) {
             case '\n':   // end of text
-                inputBuffer[inputBufferPosition] = 0;  // terminating null byte
+                inputBuffer[inputBufferPosition] = '\0';  // terminating null byte
 
                 // reset buffer for next time
                 inputBufferPosition = 0;
@@ -218,4 +243,15 @@ void SailFaceCommunication::pollForCurrentRadioCommand(SailFaceRadioCommandMessa
         int rudderPosition = map(rudderPositionPulseWidth, 1000, 2000, -10, 10);
         radioCommand->rudderPosition = constrain(rudderPosition, -10, 10);
     }
+}
+
+
+void ISBDConsoleCallback(IridiumSBD *device, char c)
+{
+  Serial.write(c);
+}
+
+void ISBDDiagsCallback(IridiumSBD *device, char c)
+{
+  Serial.write(c);
 }

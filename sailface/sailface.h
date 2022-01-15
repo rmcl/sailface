@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void logDebugMessage(char c);
 void logDebugMessage(int number);
 void logDebugMessage(uint32_t number);
 void logDebugMessage(float number);
@@ -16,14 +17,14 @@ typedef struct {
     // Position
     bool positionValid;
 
-    // NOTE: lat/long are stored in units of decimal degrees*1x106
+    // NOTE: lat/long are stored in units of decimal degrees*1x10e6
     // i.e. Multiply decimal degrees (in floating point representation) by
     // 1000000 to get an integer.
 
     // TODO: CONVERT LAT/LONG everywhere to longs from double to actually achieve
     // the above
-    double latitude;
-    double longitude;
+    long latitude;
+    long longitude;
 
     uint32_t time;     // UTC time
     uint32_t gpsFixAge;
@@ -42,7 +43,7 @@ typedef struct {
     bool bluetoothActive;
     bool iridiumActive;
     bool radioControlActive;
-    int propSpeed;
+    short propSpeed;
 
     // the last time a status message
     // was sent relative to Millis() - the time the board started running
@@ -60,8 +61,8 @@ typedef struct {
 
 
     // Waypoint
-    double waypointLatitude;
-    double waypointLongitude;
+    long waypointLatitude;
+    long waypointLongitude;
 
     // Desired bearing to meet waypoint objective
     // Course is the direction from the previous waypoint to the next waypoint.

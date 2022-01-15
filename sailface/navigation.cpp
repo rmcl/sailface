@@ -14,10 +14,11 @@ void SailFaceNavigation::initialize(SailFaceStatus *status) {
     status->waypointLatitude = persistedData.waypointLatitude;
     status->waypointLongitude = persistedData.waypointLongitude;
 
-    Serial.print("NAV DATA:");
-    Serial.print(persistedData.waypointLatitude);
-    Serial.print(",");
-    Serial.print(persistedData.waypointLongitude);
+    logDebugMessage("PERSISTED NAV DATA:");
+    logDebugMessage(persistedData.waypointLatitude, 0);
+    logDebugMessage(",");
+    logDebugMessage(persistedData.waypointLongitude, 0);
+    logDebugMessage("\n");
 }
 
 //
@@ -26,33 +27,41 @@ void SailFaceNavigation::initialize(SailFaceStatus *status) {
 //
 void SailFaceNavigation::recomputeCourseToWaypoint(SailFaceStatus *status) {
     if (!status->positionValid) {
-        Serial.println("Course cannot be computed. GPS Position invalid.");
+        //logDebugMessage("Course cannot be computed. GPS Position invalid.\n");
         return;
     }
 
-    /*
-    float newCourse = course_to(
+    logDebugMessage("Compute Course\n current:\n");
+    logDebugMessage(status->latitude);
+    logDebugMessage("\n");
+    logDebugMessage(status->longitude);
+    logDebugMessage("waypoint\n:");
+    logDebugMessage(status->waypointLatitude);
+    logDebugMessage("\n");
+    logDebugMessage(status->waypointLongitude);
+
+    status->desiredBearing = course_to(
         status->latitude,
         status->longitude,
         status->waypointLatitude,
         status->waypointLongitude,
         &status->distanceToWaypoint);
-    */
 
-    Serial.println("plotting a course");
-    status->desiredBearing = -1;
 }
 
 //
 // Update the lat/long which sailface should head towards.
 //
-void SailFaceNavigation::setWaypoint(double latitude, double longitude) {
+void SailFaceNavigation::setWaypoint(long latitude, long longitude, SailFaceStatus *status) {
     SailFacePersistedData persistedData = {
         latitude,
         longitude
     };
 
     EEPROM.put(SAILFACE_EEPROM_ADDRESS, persistedData);
+
+    status->waypointLatitude = latitude;
+    status->waypointLongitude = longitude;
 }
 
 

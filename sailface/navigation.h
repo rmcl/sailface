@@ -13,12 +13,11 @@
 #define RAD2DEG M_PI/360.0*2.0
 #define DEG2RAD 360.0/M_PI/2.0
 
-
 #define SAILFACE_EEPROM_ADDRESS 0x0
 
 typedef struct {
-    double waypointLatitude;
-    double waypointLongitude;
+    long waypointLatitude;
+    long waypointLongitude;
 
 } SailFacePersistedData;
 
@@ -34,7 +33,7 @@ class SailFaceNavigation {
     public:
         void initialize(SailFaceStatus *status);
         void recomputeCourseToWaypoint(SailFaceStatus *status);
-        void setWaypoint(double latitude, double longitude);
+        void setWaypoint(long latitude, long longitude, SailFaceStatus *status);
 
 };
 #endif

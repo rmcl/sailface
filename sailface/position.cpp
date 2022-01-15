@@ -28,8 +28,8 @@ void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
     }
 
     status->positionValid = gps.location.isValid();
-    status->latitude = gps.location.lat();
-    status->longitude = gps.location.lng();
+    status->latitude = gps.location.lat() * 1.0e6;
+    status->longitude = gps.location.lng() * 1.0e6;
     status->gpsFixAge = gps.location.age();
     status->course = gps.course.deg(); // course in degrees
     status->speed = gps.speed.knots(); // speed in knots
@@ -51,13 +51,13 @@ void SailFacePositionManagement::writeStatusMessage(SailFaceCommunication *comms
     logDebugMessage("N:");
     logDebugMessage(status->positionValid);
     logDebugMessage(",");
-    logDebugMessage(status->latitude, 6);
+    logDebugMessage(status->latitude,0);
     logDebugMessage(",");
-    logDebugMessage(status->longitude, 6);
+    logDebugMessage(status->longitude,0);
     logDebugMessage(",");
     logDebugMessage(status->speed);
     logDebugMessage(",");
-    logDebugMessage(status->course);
+    logDebugMessage(status->course,1);
     logDebugMessage(",");
     logDebugMessage(status->gpsFixAge);
     logDebugMessage("\n");

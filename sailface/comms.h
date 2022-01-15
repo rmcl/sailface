@@ -10,13 +10,31 @@
 
 #define COMM_MAX_COMMAND_LEN 100
 
+#define ROCKBLOCK_SLEEP_PIN 40
+#define ROCKBLOCK_RING_PIN 38
+
+typedef struct {
+
+    long latitude;
+    long longitude;
+
+    long waypointLatitude;
+    long waypointLongitude;
+
+    short batteryVoltage;
+
+    // speed of prop between 0 and 255. Set to -1 for no change.
+    short propSpeed;
+
+} SailFaceIridiumStatusMessage;
+
 // Structure of messages received from Iridium.
 typedef struct {
 
     // Desired Waypoint
     // Set to 0 for no change.
-    double waypointLatitude;
-    double waypointLongitude;
+    long waypointLatitude;
+    long waypointLongitude;
 
     // speed of prop between 0 and 255. Set to -1 for no change.
     int propSpeed;
@@ -59,8 +77,11 @@ class SailFaceCommunication {
         // Iridium RXD pin1 -> RX3 pin 15
         // Iridium TXD pin6 -> TX3 pin 14
         HardwareSerial &IridiumSerial = Serial3;
-        IridiumSBD modem{IridiumSerial};
-
+        IridiumSBD modem{
+            IridiumSerial,
+            ROCKBLOCK_SLEEP_PIN,
+            ROCKBLOCK_RING_PIN
+        };
 
         char *readMessageFromBluetooth();
         int pollForIridiumRingAlerts();
@@ -68,9 +89,14 @@ class SailFaceCommunication {
 
     public:
         void initialize(SailFaceStatus *status);
-        void initializeIridium(SailFaceStatus *status);
+
+        void startIridium(SailFaceStatus *status);
+        void sleepIridium(SailFaceStatus *status);
+
+        void pollIridiumSignalQuality(SailFaceStatus *status);
         char *pollForBluetoothCommandMessages(SailFaceStatus *status);
         void pollForCurrentRadioCommand(SailFaceRadioCommandMessage *radioCommand);
+
 
         int pollForIridumCommandMessages(SailFaceStatus *status, SailFaceCommandMessage *firstReceivedCommand);
         void sendIridiumStatusMessage(SailFaceStatus *status);

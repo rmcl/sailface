@@ -19,7 +19,7 @@ SailFaceCommunication *commsManager;
 SailFaceNavigation *navigation;
 
 void setup(void) {
-    //Serial.begin(115200);
+    Serial.begin(115200);
 
     //Serial.println(";--Hello world!--");
 
@@ -57,6 +57,13 @@ void setup(void) {
 
 void logDebugMessage(char *message) {
     commsManager->sendDebugMessage(message);
+}
+
+void logDebugMessage(char c) {
+    char msg[10];
+    msg[0] = c;
+    msg[1] = '\0';
+    commsManager->sendDebugMessage(msg);
 }
 void logDebugMessage(int number) {
     char numberMessage[16];
@@ -100,7 +107,7 @@ void writeStatusToSerial(SailFaceStatus *status) {
     powerManager->writeStatusMessage(status);
 
     //commsManager->sendDebugMessage("HELLO BT!\r\n");
-    commsManager->writeStatusMessage(status);
+    //commsManager->writeStatusMessage(status);
 }
 
 void processBluetoothCommand(char *command) {
@@ -125,6 +132,47 @@ void processBluetoothCommand(char *command) {
         logDebugMessage(degrees);
         logDebugMessage("\n");
         helmControl->setRudderPosition(degrees);
+    } else if (command[0] == 'W') {
+        // Set a new waypoint
+        // Expected format is: "W34197644,-120035801"
+        logDebugMessage("SET WAYPOINT: ");
+
+        char *firstVal = strtok(&(command[1]), ",");
+        char *secondVal = strtok(NULL, ",");
+        if (secondVal == NULL) {
+            logDebugMessage("MALFORMED WAYPOINT");
+        } else {
+            long newLatitude = atol(firstVal);
+            long newLongitude = atol(secondVal);
+
+            logDebugMessage(newLatitude,2);
+            logDebugMessage(",");
+            logDebugMessage(newLongitude,2);
+            logDebugMessage("\n");
+            navigation->setWaypoint(newLatitude, newLongitude, &globalStatus);
+        }
+
+    } else if (command[0] == 'C') {
+        logDebugMessage("COMPUTE COURSE TO! CURRENT COURSE:");
+        logDebugMessage(globalStatus.course);
+        logDebugMessage("\nDESIRED BEARING: ");
+        logDebugMessage(globalStatus.desiredBearing);
+        logDebugMessage("\nDISTANCE TO WAYPOINT: ");
+        logDebugMessage(globalStatus.distanceToWaypoint);
+        logDebugMessage("\n");
+
+    } else if (command[0] == 'Q') {
+        logDebugMessage("IRIDIUM SIGNAL QUALITY: ");
+        commsManager->pollIridiumSignalQuality(&globalStatus);
+        logDebugMessage(globalStatus.iridiumSignalQuality);
+        logDebugMessage("\n");
+    } else if (command[0] == 'X') {
+        logDebugMessage("SEND STATUS THROUGH IRIDIUM. SIGNAL QUALITY: ");
+        logDebugMessage(globalStatus.iridiumSignalQuality);
+        logDebugMessage("\n");
+        commsManager->sendIridiumStatusMessage(&globalStatus);
+    } else if (command[0] == 'R') {
+
     }
 }
 
@@ -137,12 +185,15 @@ void pollAndProcessBluetoothCommands(SailFaceStatus *status) {
 
 void pollAndProcessSatteliteCommands(SailFaceStatus *status) {
     SailFaceCommandMessage satCommand;
+    logDebugMessage("Polling for sat messages!\n");
     int numMessages = commsManager->pollForIridumCommandMessages(status, &satCommand);
     if (numMessages > 0) {
+        logDebugMessage("AT LEAST ONE SAT MESSAGE RECEIVED!");
         if (satCommand.waypointLatitude > 0 || satCommand.waypointLongitude > 0) {
             navigation->setWaypoint(
                 satCommand.waypointLatitude,
-                satCommand.waypointLongitude);
+                satCommand.waypointLongitude,
+                status);
         }
 
         if (satCommand.propSpeed >= 0) {
@@ -177,6 +228,7 @@ void pollAndProcessRadioCommands(SailFaceStatus *status) {
 void loop(void) {
     positionManager->pollGPSForPosition(&globalStatus);
     powerManager->pollForBatteryStatus(&globalStatus);
+    navigation->recomputeCourseToWaypoint(&globalStatus);
 
     //helmControl->pollForRudderAdjustment(&globalStatus);
 
@@ -185,7 +237,7 @@ void loop(void) {
     }
 
     if (globalStatus.iridiumActive) {
-        pollAndProcessSatteliteCommands(&globalStatus);
+        //pollAndProcessSatteliteCommands(&globalStatus);
     }
 
     if (globalStatus.radioControlActive) {
