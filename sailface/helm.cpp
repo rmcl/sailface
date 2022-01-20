@@ -33,6 +33,7 @@ void SailFaceHelm::initialize(SailFaceStatus *status) {
         HELM_PWM_RANGE_MAX
     );
 
+    status->enablePIDControl = false;
     //setRudderPosition(0);
 
 }
@@ -55,7 +56,9 @@ void SailFaceHelm::setRudderPosition(int position) {
     }
     int servoAngle = RUDDER_SERVO_CENTER + int(stepSize * position);
 
-    logDebugMessage("ANGLE TO SERVO");
+    logDebugMessage("POS INTPUT:");
+    logDebugMessage(position);
+    logDebugMessage("ANGLE TO SERVO: ");
     logDebugMessage(servoAngle);
     logDebugMessage("\n");
     helmServo.write(servoAngle);
@@ -63,29 +66,31 @@ void SailFaceHelm::setRudderPosition(int position) {
 
 void SailFaceHelm::setBearingAndEnablePID(int bearing, SailFaceStatus *status) {
 
-/*
     // if PID control already enabled and if the new bearing is basically
     // same as the old bearing don't reinitialize the PID
-    if (status->enablePIDControl) {
+    if (status->enablePIDControl == true) {
         if (abs(status->desiredBearing - bearing) < .5) {
             return;
         }
     }
 
     // clean up any old PID objects if needed
-    disablePID();
+    disablePID(status);
 
-    sailface->desiredBearing = bearing;
-    sailface->enablePIDControl = true;
+    status->desiredBearing = bearing;
+    status->enablePIDControl = true;
+
+    difference = status->course - status->desiredBearing;
 
     rudderPID = new PID(
         &difference,
         &pidRudderPositionOut,
-        &(sailface->desiredBearing),
-        Kp, Ki, Kd, DIRECT)
+        &setPoint,
+        Kp, Ki, Kd, DIRECT);
 
+    rudderPID->SetMode(AUTOMATIC);
     rudderPID->SetOutputLimits(-10, 10);
-*/
+
 }
 void SailFaceHelm::disablePID(SailFaceStatus *status) {
     status->enablePIDControl = false;
@@ -97,14 +102,31 @@ void SailFaceHelm::disablePID(SailFaceStatus *status) {
 }
 
 void SailFaceHelm::pollForRudderAdjustment(SailFaceStatus *status) {
-/*
     if (status->enablePIDControl == false) {
         return;
     }
 
-    rudderPID->compute()
+    // only recompute rudder position every 2 seconds.
+    unsigned long curTime = millis();
+    if ((curTime - lastAdjustTime) < 4000) {
+        return;
+    }
+    lastAdjustTime = curTime;
+
+    logDebugMessage("Recompute rudder position\n");
+
+    difference = status->course - status->desiredBearing;
+    logDebugMessage("current course");
+    logDebugMessage(status->course);
+    logDebugMessage("\nnew difference: ");
+    logDebugMessage(difference);
+
+    rudderPID->Compute();
+
+    logDebugMessage("\npid output: ");
+    logDebugMessage(pidRudderPositionOut);
+    logDebugMessage("\n");
 
     int newRudderPosition = int(pidRudderPositionOut);
     setRudderPosition(newRudderPosition);
-*/
 }

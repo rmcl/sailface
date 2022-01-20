@@ -106,7 +106,6 @@ void logDebugMessage(double number) {
 }
 
 
-
 void logDebugMessage(float number, int num_digits_after_decimal) {
     char numberMessage[50];
     dtostrf(number,5, num_digits_after_decimal, numberMessage);
@@ -123,7 +122,7 @@ void writeStatusToSerial(SailFaceStatus *status) {
 
     // write status messages every 20 seconds
     unsigned long curTime = millis();
-    if ((curTime - status->lastStatusMessageSentTime) < 20000) {
+    if ((curTime - status->lastStatusMessageSentTime) < 10000) {
         //Serial.println(curTime);
         //Serial.println(status->lastStatusMessageTime);
         return;
@@ -199,6 +198,14 @@ void processBluetoothCommand(char *command) {
         logDebugMessage(globalStatus.distanceToWaypoint);
         logDebugMessage("\n");
 
+    } else if (command[0] == 'N') {
+        logDebugMessage("ENABLE PID CONTROL OF RUDDER AND NAVIGATE TO WAYPOINT\n");
+        helmControl->setBearingAndEnablePID(globalStatus.desiredBearing, &globalStatus);
+
+    } else if (command[0] == 'M') {
+        logDebugMessage("DISABLE PID CONTROL OF RUDDER\n");
+        helmControl->disablePID(&globalStatus);
+
     } else if (command[0] == 'Q') {
         logDebugMessage("IRIDIUM SIGNAL QUALITY: ");
         commsManager->pollIridiumSignalQuality(&globalStatus);
@@ -209,8 +216,12 @@ void processBluetoothCommand(char *command) {
         logDebugMessage(globalStatus.iridiumSignalQuality);
         logDebugMessage("\n");
         commsManager->sendIridiumStatusMessage(&globalStatus);
-    } else if (command[0] == 'R') {
-
+    } else if (command[0] == 'P') {
+        logDebugMessage("PUT THE IRIDIUM TO SLEEP\n");
+        commsManager->sleepIridium(&globalStatus);
+    } else if (command[0] == 'K') {
+        logDebugMessage("START IRIDIUM\n");
+        commsManager->wakeIridium(&globalStatus);
     }
 }
 
@@ -224,7 +235,7 @@ void pollAndProcessBluetoothCommands(SailFaceStatus *status) {
 void pollAndProcessSatteliteCommands(SailFaceStatus *status) {
     SailFaceCommandMessage satCommand;
     logDebugMessage("Polling for sat messages!\n");
-    int numMessages = commsManager->pollForIridumCommandMessages(status, &satCommand);
+    int numMessages = commsManager->pollForIridumCommandMessages(status, &satCommand, false);
     if (numMessages > 0) {
         logDebugMessage("AT LEAST ONE SAT MESSAGE RECEIVED!");
         if (satCommand.waypointLatitude > 0 || satCommand.waypointLongitude > 0) {
@@ -268,7 +279,7 @@ void loop(void) {
     powerManager->pollForBatteryStatus(&globalStatus);
     navigation->recomputeCourseToWaypoint(&globalStatus);
 
-    //helmControl->pollForRudderAdjustment(&globalStatus);
+    helmControl->pollForRudderAdjustment(&globalStatus);
 
     if (globalStatus.bluetoothActive) {
         pollAndProcessBluetoothCommands(&globalStatus);

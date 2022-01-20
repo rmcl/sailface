@@ -40,10 +40,13 @@ class SailFaceHelm {
         PID *rudderPID;
 
         double pidRudderPositionOut = 0;
-        double difference = 1;
+        double difference = 0;
+        double setPoint = 0;
         int Kp = 3;
         int Ki = 2;
         int Kd = 1;
+
+        long lastAdjustTime = 0;
 
 
     public:
