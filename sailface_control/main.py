@@ -7,8 +7,8 @@ from serial.tools.list_ports import comports
 
 def find_sailface_port():
     allowed_ports = [
-        #'cu.usbmodem14101',
-        'cu.HC-05-DevB',
+        'cu.usbmodem14101',
+        #'cu.HC-05-DevB',
     ]
     for port in comports():
         print(port, port.serial_number, port.name)
@@ -22,10 +22,9 @@ if __name__ == '__main__':
     port_path = find_sailface_port()
 
     print('FOUND SAIL FACE AT "%s".' % port_path)
-    #serial_port = Serial(port_path, 115200, timeout=5)
 
-    # baud_rate = 115200
-    baud_rate = 9600
+    baud_rate = 115200
+    #baud_rate = 9600
 
     serial_port = Serial(port_path, baud_rate, timeout=30)
 
