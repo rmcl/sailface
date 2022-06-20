@@ -33,6 +33,10 @@ void SailFaceNavigation::recomputeCourseToWaypoint(SailFaceStatus *status) {
         return;
     }
 
+    if (!status->navigateToWaypoint) {
+        return;
+    }
+
     status->desiredBearing = TinyGPSPlus::courseTo(
         status->latitude * 1e-6,
         status->longitude * 1e-6,

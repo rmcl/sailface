@@ -87,6 +87,8 @@ class SailFaceCommunication {
         int pollForIridiumRingAlerts();
         int retieveIridiumMessage(SailFaceCommandMessage message);
         void initializeIridium(SailFaceStatus *status);
+        SailFaceIridiumStatusMessage buildStatusMessage(SailFaceStatus *status);
+
 
     public:
         void initialize(SailFaceStatus *status);
@@ -98,7 +100,15 @@ class SailFaceCommunication {
         char *pollForBluetoothCommandMessages(SailFaceStatus *status);
         void pollForCurrentRadioCommand(SailFaceRadioCommandMessage *radioCommand);
 
-        int pollForIridumCommandMessages(SailFaceStatus *status, SailFaceCommandMessage *firstReceivedCommand, bool sendStatusMessage);
+        int pollForIridumCommandMessages(
+            SailFaceStatus *status,
+            SailFaceCommandMessage *firstReceivedCommand,
+            bool sendStatusMessage
+        );
+        int sendReceiveIridiumStatusCommandMessage(
+            SailFaceIridiumStatusMessage *txMessage,
+            SailFaceCommandMessage *rxCommandMessage
+        );
 
         void writeStatusMessage(SailFaceStatus *status);
         void sendDebugMessage(char *message);

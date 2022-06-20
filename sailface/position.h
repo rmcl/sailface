@@ -3,15 +3,13 @@
 
 #include <Arduino.h>
 #include <TinyGPS++.h>
+#include "MPU9250.h"
 
 #include "sailface.h"
 #include "comms.h"
 
-//#define GPS_RX_PIN 3
-//#define GPS_TX_PIN 4
 
-
-
+#define AVERAGE_COURSE_BUFFER_SIZE 50
 
 class SailFacePositionManagement {
 
@@ -21,12 +19,15 @@ class SailFacePositionManagement {
         //serial ports: Serial1 on pins 19 (RX) and 18 (TX)
         HardwareSerial &gpsSerial = Serial1;
 
-        //https://www.i2cdevlib.com/forums/topic/8-mpu6050-connection-failed/
-        //MPU6050 mpu{0x68};
+        MPU9250 mpu;
+
+        float averageCourseBuffer[AVERAGE_COURSE_BUFFER_SIZE];
+        int averageCourseBufferIdx;
 
     public:
         void initialize(SailFaceStatus *status);
         void pollGPSForPosition(SailFaceStatus *status);
+        void pollForMPU(SailFaceStatus *status);
         //void writeStatusMessage(SailFaceStatus *status);
         void writeStatusMessage(SailFaceCommunication *comms, SailFaceStatus *status);
 };

@@ -27,7 +27,7 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
     status->bluetoothActive = true;
     status->radioControlActive = false;
 
-    initializeIridium(status);
+    //initializeIridium(status);
 }
 
 void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
@@ -70,7 +70,7 @@ void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
 
 void SailFaceCommunication::wakeIridium(SailFaceStatus *status) {
     digitalWrite(ROCKBLOCK_SLEEP_PIN, HIGH);
-    status->iridiumActive = false;
+    status->iridiumActive = true;
 }
 
 void SailFaceCommunication::sleepIridium(SailFaceStatus *status) {
@@ -122,13 +122,16 @@ int SailFaceCommunication::sendReceiveIridiumStatusCommandMessage(
     if (txMessage != NULL) {
         txMessageSize = sizeof(*txMessage);
     }
-    int rxMessageSize = sizeof(*rxMessage);
+    int rxMessageSize = sizeof(*rxCommandMessage);
 
+    int errorCode = -1;
+    /*
     int errorCode = modem.sendReceiveSBDBinary(
         (uint8_t*)txMessage,
         txMessageSize,
-        (uint8_t*)rxMessage,
+        (uint8_t*)rxCommandMessage,
         &rxMessageSize);
+    */
 
     if (errorCode != ISBD_SUCCESS) {
         sendDebugMessage("sendReceiveSBDBinary failed error:");
@@ -145,7 +148,7 @@ int SailFaceCommunication::sendReceiveIridiumStatusCommandMessage(
 
     } else {
         sendDebugMessage("Iridium successfully sent/recv message.");
-        status->lastIridiumStatusMessageSentTime = status->time;
+        //status->lastIridiumStatusMessageSentTime = status->time;
 
         int messageCount = modem.getWaitingMessageCount();
         if (rxMessageSize > 0) {
@@ -174,13 +177,13 @@ int SailFaceCommunication::pollForIridumCommandMessages(SailFaceStatus *status, 
     SailFaceIridiumStatusMessage *txStatusMessagePtr = NULL;
     if (sendStatusMessage == true) {
         SailFaceIridiumStatusMessage statusMessage;
-        buildStatusMessage(status, &txStatusMessage);
+        //buildStatusMessage(status, &statusMessage);
         txStatusMessagePtr = &statusMessage;
     }
 
-    messageCount = sendReceiveIridiumStatusCommandMessage(
-        txStatusMessagePtr,
-        firstReceivedCommand);
+    //messageCount = sendReceiveIridiumStatusCommandMessage(
+    //    txStatusMessagePtr,
+    //    firstReceivedCommand);
 
     // Current message + some number of outstanding messages.
     return 1 + messageCount;

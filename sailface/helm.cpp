@@ -80,7 +80,7 @@ void SailFaceHelm::setBearingAndEnablePID(int bearing, SailFaceStatus *status) {
     status->desiredBearing = bearing;
     status->enablePIDControl = true;
 
-    difference = status->course - status->desiredBearing;
+    difference = status->magneticCourse - status->magneticCourseVariation - status->desiredBearing;
 
     rudderPID = new PID(
         &difference,
@@ -108,17 +108,23 @@ void SailFaceHelm::pollForRudderAdjustment(SailFaceStatus *status) {
 
     // only recompute rudder position every 2 seconds.
     unsigned long curTime = millis();
-    if ((curTime - lastAdjustTime) < 4000) {
+    if ((curTime - lastAdjustTime) < 1000) {
         return;
     }
     lastAdjustTime = curTime;
 
     logDebugMessage("Recompute rudder position\n");
 
-    difference = status->course - status->desiredBearing;
-    logDebugMessage("current course");
+    difference = status->magneticCourse - status->magneticCourseVariation - status->desiredBearing;
+    logDebugMessage("desired bearing: ");
+    logDebugMessage(status->desiredBearing);
+    logDebugMessage("\n current gps course");
     logDebugMessage(status->course);
-    logDebugMessage("\nnew difference: ");
+    logDebugMessage("\nmagnetic course: ");
+    logDebugMessage(status->magneticCourse);
+    logDebugMessage("\ncourse variation: ");
+    logDebugMessage(status->magneticCourseVariation);
+    logDebugMessage("\ndifference: ");
     logDebugMessage(difference);
 
     rudderPID->Compute();

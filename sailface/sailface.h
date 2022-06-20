@@ -34,6 +34,11 @@ typedef struct {
     double course; // course in degrees
     double speed; // speed in knots
 
+    // MPU details
+    float magneticCourse;
+    float magneticCourseVariation;
+
+
     // Power Management
     float batteryVoltage;       // voltage in Volts out of the sunny buddy chargin unit.
     float solarPanelCurrent;    // current in mA measured in series with the solar panels
@@ -64,6 +69,7 @@ typedef struct {
     // Waypoint
     long waypointLatitude;
     long waypointLongitude;
+    bool navigateToWaypoint;
 
     // Desired bearing to meet waypoint objective
     // Course is the direction from the previous waypoint to the next waypoint.

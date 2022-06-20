@@ -21,7 +21,9 @@ SailFaceNavigation *navigation;
 void setup(void) {
     Serial.begin(115200);
 
-    //Serial.println(";--Hello world!--");
+    Serial.println(";Hello world!");
+
+    globalStatus.navigateToWaypoint = false;
 
     commsManager = new SailFaceCommunication();
     positionManager = new SailFacePositionManagement();
@@ -197,6 +199,14 @@ void processBluetoothCommand(char *command) {
         logDebugMessage("\nDISTANCE TO WAYPOINT: ");
         logDebugMessage(globalStatus.distanceToWaypoint);
         logDebugMessage("\n");
+    } else if (command[0] == 'B') {
+        int desiredBearing = 0;
+        sscanf(&(command[1]), "%d", &desiredBearing);
+        logDebugMessage("DESIRED BEARING: ");
+        logDebugMessage(desiredBearing);
+        logDebugMessage("\n");
+
+        helmControl->setBearingAndEnablePID(desiredBearing, &globalStatus);
 
     } else if (command[0] == 'N') {
         logDebugMessage("ENABLE PID CONTROL OF RUDDER AND NAVIGATE TO WAYPOINT\n");
@@ -215,7 +225,7 @@ void processBluetoothCommand(char *command) {
         logDebugMessage("SEND STATUS THROUGH IRIDIUM. SIGNAL QUALITY: ");
         logDebugMessage(globalStatus.iridiumSignalQuality);
         logDebugMessage("\n");
-        commsManager->sendIridiumStatusMessage(&globalStatus);
+        //commsManager->sendIridiumStatusMessage(&globalStatus);
     } else if (command[0] == 'P') {
         logDebugMessage("PUT THE IRIDIUM TO SLEEP\n");
         commsManager->sleepIridium(&globalStatus);
@@ -276,6 +286,8 @@ void pollAndProcessRadioCommands(SailFaceStatus *status) {
 
 void loop(void) {
     positionManager->pollGPSForPosition(&globalStatus);
+    positionManager->pollForMPU(&globalStatus);
+
     powerManager->pollForBatteryStatus(&globalStatus);
     navigation->recomputeCourseToWaypoint(&globalStatus);
 
