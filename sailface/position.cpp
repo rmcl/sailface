@@ -9,6 +9,15 @@
 
 
 void SailFacePositionManagement::initialize(SailFaceStatus *status) {
+
+    pinMode(GPS_ENABLE_PIN, OUTPUT);
+    digitalWrite(GPS_ENABLE_PIN, HIGH);
+
+    pinMode(MPU_ENABLE_PIN, OUTPUT);
+    digitalWrite(MPU_ENABLE_PIN, HIGH);
+
+    delay(1000);
+
     gpsSerial.begin(9600);
 
     if (!mpu.setup(0x68)) {
@@ -104,7 +113,7 @@ void SailFacePositionManagement::pollGPSForPosition(SailFaceStatus *status) {
 }
 
 void SailFacePositionManagement::writeStatusMessage(SailFaceCommunication *comms, SailFaceStatus *status) {
-    logDebugMessage("N:");
+    logDebugMessage("GPS:");
     logDebugMessage(status->positionValid);
     logDebugMessage(",");
     logDebugMessage(status->latitude,0);

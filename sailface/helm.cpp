@@ -26,7 +26,6 @@ In the case of SailFACE,
 //
 
 void SailFaceHelm::initialize(SailFaceStatus *status) {
-
     helmServo.attach(
         HELM_PWM_PIN,
         HELM_PWM_RANGE_MIN,

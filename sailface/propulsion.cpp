@@ -3,8 +3,11 @@
 
 void SailFacePropulsion::initialize(SailFaceStatus *status) {
 
-	Serial.println(";--Prop World!--");
+	//Serial.println(";--Prop World!--");
 
+	pinMode(PRIMARY_PROP_PWM_PIN, OUTPUT);
+
+	/*
 	//  set address if I2C configuration selected with the config jumpers
 	motorDriver.settings.commInterface = I2C_MODE;
 	motorDriver.settings.I2CAddress = 0x5A; //config pattern "0101" on board for address 0x5A
@@ -16,14 +19,16 @@ void SailFacePropulsion::initialize(SailFaceStatus *status) {
 	  delay(500);
 	}
 
+
 	//  Check to make sure the driver is done looking for slaves before beginning
 	Serial.println("Waiting for enumeration...");
 	while ( motorDriver.ready() == false );
 
 	while ( motorDriver.busy() );
 	motorDriver.enable();
+	*/
 
-	Serial.println("Propulsion initialized.");
+	//Serial.println("Propulsion initialized.");
 }
 
 void SailFacePropulsion::setPropellerSpeed(int speed, SailFaceStatus *status) {
@@ -39,7 +44,8 @@ void SailFacePropulsion::setPropellerSpeed(int speed, SailFaceStatus *status) {
 		return;
 	}
 
-	motorDriver.setDrive(PRIMARY_PROP_MOTOR, 0, speed);
+	//motorDriver.setDrive(PRIMARY_PROP_MOTOR, 0, speed);
+	analogWrite(PRIMARY_PROP_PWM_PIN, speed);
 
 	status->propSpeed = speed;
 }

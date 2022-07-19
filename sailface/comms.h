@@ -8,6 +8,8 @@
 
 #include "sailface.h"
 
+#define BLUETOOTH_ENABLE_PIN 9
+
 #define COMM_MAX_COMMAND_LEN 100
 
 #define ROCKBLOCK_SLEEP_PIN 40

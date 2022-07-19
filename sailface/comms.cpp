@@ -20,6 +20,13 @@ void SailFaceCommunication::initialize(SailFaceStatus *status) {
 
     bluetoothSerial.begin(9600);
 
+    // Turn on bluetooth module
+    pinMode(BLUETOOTH_ENABLE_PIN, OUTPUT);
+    digitalWrite(BLUETOOTH_ENABLE_PIN, HIGH);
+
+    delay(1000);
+
+
     // Set radio contorl pins for INPUT.
     pinMode(RADIO_CONTROL_PROP_SPEED_PIN, INPUT);
     pinMode(RADIO_CONTROL_RUDDER_CONTROL_PIN, INPUT);

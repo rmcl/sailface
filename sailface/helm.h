@@ -23,7 +23,8 @@ based on desired bearing and current heading.
 #define RUDDER_SERVO_MAX_STARBOARD 85
 #define RUDDER_SERVO_CENTER 120
 
-#define HELM_PWM_PIN 5
+//used to be 5 now i think its
+#define HELM_PWM_PIN 3
 
 /*
 Servo is a SF4328MG

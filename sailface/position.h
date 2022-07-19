@@ -11,6 +11,11 @@
 
 #define AVERAGE_COURSE_BUFFER_SIZE 50
 
+// PIN must be set to HIGH for GPS to be powered
+// GPS FUSED ON IN V0.2
+#define GPS_ENABLE_PIN 8
+#define MPU_ENABLE_PIN 10
+
 class SailFacePositionManagement {
 
     private:
