@@ -17,7 +17,6 @@ In the case of SailFACE,
     and Output - Rudder position.
 
 */
-#include "sailface.h"
 #include "helm.h"
 
 
@@ -25,20 +24,18 @@ In the case of SailFACE,
 // https://www.youtube.com/watch?v=u0Ft8SB3pkw
 //
 
-void SailFaceHelm::initialize(SailFaceStatus *status) {
+void HelmManager::initialize() {
     helmServo.attach(
         HELM_PWM_PIN,
         HELM_PWM_RANGE_MIN,
         HELM_PWM_RANGE_MAX
     );
 
-    status->enablePIDControl = false;
-    //setRudderPosition(0);
-
+    enablePIDControl = false;
 }
 
 /* Set the position of the rudder */
-void SailFaceHelm::setRudderPosition(int position) {
+void HelmManager::setRudderPosition(int position) {
     /* Take a range between -10 and 10
 
     -10 is full to starboard
@@ -54,32 +51,27 @@ void SailFaceHelm::setRudderPosition(int position) {
         stepSize = (RUDDER_SERVO_CENTER - RUDDER_SERVO_MAX_STARBOARD) / 10.0;
     }
     int servoAngle = RUDDER_SERVO_CENTER + int(stepSize * position);
-
-    logDebugMessage("POS INTPUT:");
-    logDebugMessage(position);
-    logDebugMessage("ANGLE TO SERVO: ");
-    logDebugMessage(servoAngle);
-    logDebugMessage("\n");
     helmServo.write(servoAngle);
 }
 
-void SailFaceHelm::setBearingAndEnablePID(int bearing, SailFaceStatus *status) {
+void HelmManager::setBearingAndEnablePID(int bearing) {
 
     // if PID control already enabled and if the new bearing is basically
     // same as the old bearing don't reinitialize the PID
-    if (status->enablePIDControl == true) {
-        if (abs(status->desiredBearing - bearing) < .5) {
+    if (enablePIDControl == true) {
+        if (abs(desiredBearing - bearing) < .5) {
             return;
         }
     }
 
     // clean up any old PID objects if needed
-    disablePID(status);
+    disablePID();
 
-    status->desiredBearing = bearing;
-    status->enablePIDControl = true;
+    desiredBearing = bearing;
+    enablePIDControl = true;
 
-    difference = status->magneticCourse - status->magneticCourseVariation - status->desiredBearing;
+    difference = 0; // can we set this to a constant to start?
+    //status->magneticCourse - status->magneticCourseVariation - status->desiredBearing;
 
     rudderPID = new PID(
         &difference,
@@ -91,8 +83,8 @@ void SailFaceHelm::setBearingAndEnablePID(int bearing, SailFaceStatus *status) {
     rudderPID->SetOutputLimits(-10, 10);
 
 }
-void SailFaceHelm::disablePID(SailFaceStatus *status) {
-    status->enablePIDControl = false;
+void HelmManager::disablePID() {
+    enablePIDControl = false;
 
     if (rudderPID) {
         delete rudderPID;
@@ -100,8 +92,12 @@ void SailFaceHelm::disablePID(SailFaceStatus *status) {
     }
 }
 
-void SailFaceHelm::pollForRudderAdjustment(SailFaceStatus *status) {
-    if (status->enablePIDControl == false) {
+void HelmManager::pollForRudderAdjustment(
+    double curMagHeading,
+    double curMagHeadingVariation,
+    double desiredBearing
+) {
+    if (enablePIDControl == false) {
         return;
     }
 
@@ -112,25 +108,9 @@ void SailFaceHelm::pollForRudderAdjustment(SailFaceStatus *status) {
     }
     lastAdjustTime = curTime;
 
-    logDebugMessage("Recompute rudder position\n");
-
-    difference = status->magneticCourse - status->magneticCourseVariation - status->desiredBearing;
-    logDebugMessage("desired bearing: ");
-    logDebugMessage(status->desiredBearing);
-    logDebugMessage("\n current gps course");
-    logDebugMessage(status->course);
-    logDebugMessage("\nmagnetic course: ");
-    logDebugMessage(status->magneticCourse);
-    logDebugMessage("\ncourse variation: ");
-    logDebugMessage(status->magneticCourseVariation);
-    logDebugMessage("\ndifference: ");
-    logDebugMessage(difference);
-
+    // TODO(rmcl): This likely doesn't quite work. Revisit later.
+    difference = curMagHeading - curMagHeadingVariation - desiredBearing;
     rudderPID->Compute();
-
-    logDebugMessage("\npid output: ");
-    logDebugMessage(pidRudderPositionOut);
-    logDebugMessage("\n");
 
     int newRudderPosition = int(pidRudderPositionOut);
     setRudderPosition(newRudderPosition);

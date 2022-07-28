@@ -34,11 +34,19 @@ http://wiki.sunfounder.cc/images/9/9a/TD-8120MG_Digital_Servo.pdf
 #define HELM_PWM_RANGE_MAX 2500
 
 
-class SailFaceHelm {
+class HelmManager {
 
     private:
         Servo helmServo;
         PID *rudderPID;
+
+        // Desired bearing to meet waypoint objective
+        // Course is the direction from the previous waypoint to the next waypoint.
+        // Bearing is the direction from the boat to the next waypoint.
+        bool enablePIDControl;
+
+        // Desired bearing towards waypoint.
+        double desiredBearing;
 
         double pidRudderPositionOut = 0;
         double difference = 0;
@@ -51,15 +59,19 @@ class SailFaceHelm {
 
 
     public:
-        void initialize(SailFaceStatus *status);
+        void initialize();
 
         // The angle that we want the boat to go in
-        void setBearingAndEnablePID(int bearing, SailFaceStatus *status);
-        void disablePID(SailFaceStatus *status);
+        void setBearingAndEnablePID(int bearing);
+        void disablePID();
         void setRudderPosition(int position);
 
         // Adjust the rudder to keep us on the desired bearing.
-        void pollForRudderAdjustment(SailFaceStatus *status);
+        void pollForRudderAdjustment(
+            double curMagHeading,
+            double curMagHeadingVariation,
+            double desiredBearing
+        );
 
 };
 #endif

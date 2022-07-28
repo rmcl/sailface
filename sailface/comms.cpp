@@ -12,32 +12,27 @@ https://www.instructables.com/Setting-Up-Bluetooth-HC-05-With-Arduino/
 
 */
 
-#include "sailface.h"
 #include "comms.h"
 
-void SailFaceCommunication::initialize(SailFaceStatus *status) {
-    inputBufferPosition = 0;
-
-    bluetoothSerial.begin(9600);
-
-    // Turn on bluetooth module
-    pinMode(BLUETOOTH_ENABLE_PIN, OUTPUT);
-    digitalWrite(BLUETOOTH_ENABLE_PIN, HIGH);
-
-    delay(1000);
-
+void CommunicationManager::initialize() {
 
     // Set radio contorl pins for INPUT.
     pinMode(RADIO_CONTROL_PROP_SPEED_PIN, INPUT);
     pinMode(RADIO_CONTROL_RUDDER_CONTROL_PIN, INPUT);
 
-    status->bluetoothActive = true;
-    status->radioControlActive = false;
+    bluetoothActive = true;
+    radioControlActive = false;
 
     //initializeIridium(status);
 }
 
-void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
+/*
+* Iridium Specific Code
+*
+/
+
+
+void CommunicationManager::initializeIridium() {
     int errorCode = -1;
 
     // SET THE SLEEP PIN TO OUTPUT
@@ -47,8 +42,6 @@ void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
     // Setup the Ring Indicator Pin
     pinMode(ROCKBLOCK_RING_PIN, INPUT);
 
-    logDebugMessage("Attempting to start iridium rockblock.");
-
     IridiumSerial.begin(19200);
     modem.setPowerProfile(IridiumSBD::DEFAULT_POWER_PROFILE);
     modem.adjustATTimeout(45);
@@ -56,41 +49,42 @@ void SailFaceCommunication::initializeIridium(SailFaceStatus *status) {
     // Begin satellite modem operation
     errorCode = modem.begin();
     if (errorCode != ISBD_SUCCESS) {
-        logDebugMessage("Begin failed: error ");
+        /*logDebugMessage("Begin failed: error ");
         logDebugMessage(errorCode);
         logDebugMessage("\n");
         if (errorCode == ISBD_NO_MODEM_DETECTED) {
             logDebugMessage("No modem detected: check wiring.");
         }
+        */
 
-        status->iridiumActive = false;
+        iridiumActive = false;
     } else {
 
         // TODO: DO WE WANT THIS!?
         // move this somewhere! SHOULD WE REALLY TURN THIS OFF? OR IS IT ALREADY OFF?
         modem.useMSSTMWorkaround(false);
 
-        pollIridiumSignalQuality(status);
-        status->iridiumActive = true;
+        pollIridiumSignalQuality();
+        iridiumActive = true;
     }
 }
 
-void SailFaceCommunication::wakeIridium(SailFaceStatus *status) {
+void CommunicationManager::wakeIridium() {
     digitalWrite(ROCKBLOCK_SLEEP_PIN, HIGH);
-    status->iridiumActive = true;
+    iridiumActive = true;
 }
 
-void SailFaceCommunication::sleepIridium(SailFaceStatus *status) {
+void CommunicationManager::sleepIridium() {
     digitalWrite(ROCKBLOCK_SLEEP_PIN, LOW);
-    status->iridiumActive = false;
+    iridiumActive = false;
 }
 
-void SailFaceCommunication::pollIridiumSignalQuality(SailFaceStatus *status) {
-    int errorCode = modem.getSignalQuality(status->iridiumSignalQuality);
+void CommunicationManager::pollIridiumSignalQuality() {
+    int errorCode = modem.getSignalQuality(iridiumSignalQuality);
     if (errorCode != ISBD_SUCCESS) {
-        logDebugMessage("SignalQuality failed: error ");
+        /*logDebugMessage("SignalQuality failed: error ");
         logDebugMessage(errorCode);
-        logDebugMessage("\n");
+        logDebugMessage("\n");*/
         return;
     }
 }
@@ -98,7 +92,7 @@ void SailFaceCommunication::pollIridiumSignalQuality(SailFaceStatus *status) {
 // The IridiumSBD will set the "Ring" pin to high if their are messages
 // waiting for download. Return the number of messages waiting for
 // download.
-int SailFaceCommunication::pollForIridiumRingAlerts() {
+int CommunicationManager::pollForIridiumRingAlerts() {
     bool ring = modem.hasRingAsserted();
     if (ring) {
         return modem.getWaitingMessageCount();
@@ -107,20 +101,28 @@ int SailFaceCommunication::pollForIridiumRingAlerts() {
 }
 
 
-SailFaceIridiumStatusMessage SailFaceCommunication::buildStatusMessage(SailFaceStatus *status) {
+SailFaceIridiumStatusMessage CommunicationManager::buildStatusMessage(
+    long curBatteryVoltage,
+    long curLatitude,
+    long curLongitude,
+    long curWaypointLat,
+    long curWaypointLong,
+    long curPropSpeed
+
+) {
     SailFaceIridiumStatusMessage message;
-    message.batteryVoltage = status->batteryVoltage * 10; // multiple by ten to convert to short int
-    message.latitude = status->latitude;
-    message.longitude = status->longitude;
-    message.waypointLatitude = status->waypointLatitude;
-    message.waypointLongitude = status->waypointLongitude;
-    message.propSpeed = status->propSpeed;
+    message.batteryVoltage = curBatteryVoltage * 10; // multiple by ten to convert to short int
+    message.latitude = curLatitude;
+    message.longitude = curLongitude;
+    message.waypointLatitude = curWaypointLat;
+    message.waypointLongitude = curWaypointLong;
+    message.propSpeed = curPropSpeed;
     return message;
 }
 
 //
 // Send and Receive messages from Iridium.
-int SailFaceCommunication::sendReceiveIridiumStatusCommandMessage(
+int CommunicationManager::sendReceiveIridiumStatusCommandMessage(
     SailFaceIridiumStatusMessage *txMessage,
     SailFaceCommandMessage *rxCommandMessage
 ) {
@@ -141,20 +143,20 @@ int SailFaceCommunication::sendReceiveIridiumStatusCommandMessage(
     */
 
     if (errorCode != ISBD_SUCCESS) {
-        sendDebugMessage("sendReceiveSBDBinary failed error:");
+        //sendDebugMessage("sendReceiveSBDBinary failed error:");
         char numberMessage[16];
         itoa(errorCode, numberMessage, 10);
-        sendDebugMessage(numberMessage);
-        sendDebugMessage("\n");
+        //sendDebugMessage(numberMessage);
+        //sendDebugMessage("\n");
 
         if (errorCode == ISBD_SENDRECEIVE_TIMEOUT) {
-            sendDebugMessage("Try again with a better view of the sky.");
+            //sendDebugMessage("Try again with a better view of the sky.");
         }
 
         return -1;
 
     } else {
-        sendDebugMessage("Iridium successfully sent/recv message.");
+        //sendDebugMessage("Iridium successfully sent/recv message.");
         //status->lastIridiumStatusMessageSentTime = status->time;
 
         int messageCount = modem.getWaitingMessageCount();
@@ -171,8 +173,12 @@ int SailFaceCommunication::sendReceiveIridiumStatusCommandMessage(
 // waiting messages after the send.
 // if command message received populate it into firstReceivedCommand and return
 // the number of messages waiting INCLUDING the just returned message.
-int SailFaceCommunication::pollForIridumCommandMessages(SailFaceStatus *status, SailFaceCommandMessage *firstReceivedCommand, bool sendStatusMessage) {
-    if (!status->iridiumActive) {
+int CommunicationManager::pollForIridumCommandMessages(
+    SailFaceIridiumStatusMessage statusMessage,
+    SailFaceCommandMessage *firstReceivedCommand,
+    bool sendStatusMessage
+) {
+    if (iridiumActive) {
         return -1;
     }
 
@@ -181,12 +187,7 @@ int SailFaceCommunication::pollForIridumCommandMessages(SailFaceStatus *status, 
         return 0;
     }
 
-    SailFaceIridiumStatusMessage *txStatusMessagePtr = NULL;
-    if (sendStatusMessage == true) {
-        SailFaceIridiumStatusMessage statusMessage;
-        //buildStatusMessage(status, &statusMessage);
-        txStatusMessagePtr = &statusMessage;
-    }
+    SailFaceIridiumStatusMessage *txStatusMessagePtr = &statusMessage;
 
     //messageCount = sendReceiveIridiumStatusCommandMessage(
     //    txStatusMessagePtr,
@@ -198,7 +199,7 @@ int SailFaceCommunication::pollForIridumCommandMessages(SailFaceStatus *status, 
 
 
 
-char *SailFaceCommunication::pollForBluetoothCommandMessages(SailFaceStatus *status) {
+char *CommunicationManager::pollForBluetoothCommandMessages() {
     char *message = readMessageFromBluetooth();
     if (message[0] != 0) {
         return message;
@@ -210,21 +211,19 @@ char *SailFaceCommunication::pollForBluetoothCommandMessages(SailFaceStatus *sta
 
 //
 // Send a debug message over the appropriate channel.
-void SailFaceCommunication::sendDebugMessage(char *message) {
-    bluetoothSerial.write(message);
-    // we could fall back to good ol' Serial.print here.
+void CommunicationManager::sendBluetoothMessage(String *message) {
+    //bluetoothSerial.print(message);
 }
 
-void SailFaceCommunication::writeStatusMessage(SailFaceStatus *status) {
-    bluetoothSerial.write("R");
-    bluetoothSerial.write((byte*)status, sizeof(*status));
-    bluetoothSerial.write("\n");
+HardwareSerial *CommunicationManager::getBluetoothSerial() {
+    return &bluetoothSerial;
 }
+
 
 /*
 
 */
-char* SailFaceCommunication::readMessageFromBluetooth() {
+char* CommunicationManager::readMessageFromBluetooth() {
 
     while (bluetoothSerial.available() > 0) {
         char inByte = bluetoothSerial.read();
@@ -258,7 +257,7 @@ char* SailFaceCommunication::readMessageFromBluetooth() {
 //
 // Source: https://www.youtube.com/watch?v=Bx0y1qyLHQ4
 //
-void SailFaceCommunication::pollForCurrentRadioCommand(SailFaceRadioCommandMessage *radioCommand) {
+void CommunicationManager::pollForCurrentRadioCommand(SailFaceRadioCommandMessage *radioCommand) {
     int propSpeedPulseWidth = pulseIn(
         RADIO_CONTROL_PROP_SPEED_PIN, HIGH);
     int rudderPositionPulseWidth = pulseIn(
