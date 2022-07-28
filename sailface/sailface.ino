@@ -1,19 +1,24 @@
+#include "sailface.h"
+
 #include "position.h"
 #include "power.h"
 #include "helm.h"
 #include "propulsion.h"
 #include "comms.h"
 #include "navigation.h"
+#include "bluetooth_command.h"
 
 PositionManager *position;
 PowerManager *power;
 HelmManager *helm;
 PropManager *prop;
 CommunicationManager *comms;
+BluetoothCommand *bluetooth;
 NavigationManager *navigation;
 
+
 void setup(void) {
-    //Serial.begin(115200);
+    Serial.begin(115200);
 
     comms = new CommunicationManager();
     position = new PositionManager();
@@ -22,20 +27,22 @@ void setup(void) {
     prop = new PropManager();
     navigation = new NavigationManager();
 
+    bluetooth = new BluetoothCommand();
+
     comms->initialize();
     position->initialize();
     power->initialize();
     helm->initialize();
     prop->initialize();
     navigation->initialize();
+
+    bluetooth->initialize();
 }
 
 
 void loop(void) {
     position->pollGPSForPosition();
     position->pollForMPU();
-
-    HardwareSerial *bluetooth = comms->getBluetoothSerial();
 
     PositionInfo curPosition = position->getCurPosition();
     if (curPosition.positionValid) {
@@ -55,6 +62,9 @@ void loop(void) {
         }
     }
 
+    bluetooth->pollForBluetoothCommandMessages();
+
+    /*
     //bluetooth->println(curPosition.positionValid);
     bluetooth->print("HEAD: " + String(curPosition.magneticHeading, 5));
     bluetooth->println(" LAT: " + String(curPosition.latitude, 5) + " LONG: " + String(curPosition.longitude, 5));
@@ -62,8 +72,11 @@ void loop(void) {
     PowerInfo powInfo;
     power->getPowerInfo(&powInfo);
     bluetooth->println("BAT VOLT:" + String(powInfo.batteryVoltage) + " Current:" + String(powInfo.batteryCurrentDraw));
+    */
 
-    delay(2000);
+    //HardwareSerial *bSerial = bluetooth->getBluetoothSerial();
+    //bSerial->println("HELLO");
+    //delay(2000);
 
     /*
     if (globalStatus.bluetoothActive) {

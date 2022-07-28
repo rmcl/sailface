@@ -18,8 +18,6 @@ void PositionManager::initialize() {
     pinMode(MPU_ENABLE_PIN, OUTPUT);
     digitalWrite(MPU_ENABLE_PIN, HIGH);
 
-    delay(1000);
-
     gpsSerial.begin(9600);
 
     if (!mpu.setup(0x68)) {

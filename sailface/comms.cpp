@@ -20,7 +20,6 @@ void CommunicationManager::initialize() {
     pinMode(RADIO_CONTROL_PROP_SPEED_PIN, INPUT);
     pinMode(RADIO_CONTROL_RUDDER_CONTROL_PIN, INPUT);
 
-    bluetoothActive = true;
     radioControlActive = false;
 
     //initializeIridium(status);
@@ -29,7 +28,7 @@ void CommunicationManager::initialize() {
 /*
 * Iridium Specific Code
 *
-/
+*/
 
 
 void CommunicationManager::initializeIridium() {
@@ -198,7 +197,7 @@ int CommunicationManager::pollForIridumCommandMessages(
 }
 
 
-
+/*
 char *CommunicationManager::pollForBluetoothCommandMessages() {
     char *message = readMessageFromBluetooth();
     if (message[0] != 0) {
@@ -220,9 +219,7 @@ HardwareSerial *CommunicationManager::getBluetoothSerial() {
 }
 
 
-/*
 
-*/
 char* CommunicationManager::readMessageFromBluetooth() {
 
     while (bluetoothSerial.available() > 0) {
@@ -252,7 +249,7 @@ char* CommunicationManager::readMessageFromBluetooth() {
     }
     return '\0';
 }
-
+*/
 //
 //
 // Source: https://www.youtube.com/watch?v=Bx0y1qyLHQ4

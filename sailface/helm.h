@@ -12,8 +12,6 @@ based on desired bearing and current heading.
 #include <Servo.h>
 #include <PID_v1.h>
 
-#include "sailface.h"
-
 
 
 // 155 - All the way to PORT

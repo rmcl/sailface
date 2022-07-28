@@ -61,7 +61,6 @@ typedef struct {
 class CommunicationManager {
 
     private:
-        bool bluetoothActive;
         bool radioControlActive;
         bool iridiumActive;
 
