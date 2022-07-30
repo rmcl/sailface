@@ -4,7 +4,7 @@
 #include "power.h"
 #include "helm.h"
 #include "propulsion.h"
-#include "comms.h"
+#include "iridium.h"
 #include "navigation.h"
 #include "bluetooth_command.h"
 
@@ -12,7 +12,7 @@ PositionManager *position;
 PowerManager *power;
 HelmManager *helm;
 PropManager *prop;
-CommunicationManager *comms;
+IridiumManager *iridium;
 BluetoothCommand *bluetooth;
 NavigationManager *navigation;
 
@@ -20,25 +20,22 @@ NavigationManager *navigation;
 void setup(void) {
     Serial.begin(115200);
 
-    comms = new CommunicationManager();
     position = new PositionManager();
     power = new PowerManager();
     helm = new HelmManager();
     prop = new PropManager();
     navigation = new NavigationManager();
-
     bluetooth = new BluetoothCommand();
+    iridium = new IridiumManager();
 
-    comms->initialize();
     position->initialize();
     power->initialize();
     helm->initialize();
     prop->initialize();
     navigation->initialize();
-
     bluetooth->initialize();
+    iridium->initialize();
 }
-
 
 void loop(void) {
     position->pollGPSForPosition();
@@ -52,7 +49,8 @@ void loop(void) {
                 curPosition.longitude
             );
 
-            if (bearing < -365) {
+            /// figure out a more appopriate error state
+            if (bearing >= -365) {
                 helm->pollForRudderAdjustment(
                     curPosition.magneticHeading,
                     curPosition.magneticHeadingVariation,
@@ -64,19 +62,11 @@ void loop(void) {
 
     bluetooth->pollForBluetoothCommandMessages();
 
-    /*
-    //bluetooth->println(curPosition.positionValid);
-    bluetooth->print("HEAD: " + String(curPosition.magneticHeading, 5));
-    bluetooth->println(" LAT: " + String(curPosition.latitude, 5) + " LONG: " + String(curPosition.longitude, 5));
+    //iridium->pollForCommandMessages()
 
-    PowerInfo powInfo;
-    power->getPowerInfo(&powInfo);
-    bluetooth->println("BAT VOLT:" + String(powInfo.batteryVoltage) + " Current:" + String(powInfo.batteryCurrentDraw));
-    */
 
-    //HardwareSerial *bSerial = bluetooth->getBluetoothSerial();
-    //bSerial->println("HELLO");
-    //delay(2000);
+
+
 
     /*
     if (globalStatus.bluetoothActive) {
@@ -92,6 +82,7 @@ void loop(void) {
     }
     */
 }
+
 
 
 /*
@@ -113,24 +104,8 @@ void processBluetoothCommand(char *command) {
     logDebugMessage("PROCESS COMMAND: ");
     logDebugMessage(command);
     logDebugMessage("\n");
-    if (command[0] == 'E') {
-        logDebugMessage("START PROP\n");
-        int propLevel = 0;
-        sscanf(&(command[1]), "%d", &propLevel);
-        logDebugMessage("POWER TO ");
-        logDebugMessage(propLevel);
-        logDebugMessage("\n");
-        propControl->setPropellerSpeed(propLevel, &globalStatus);
-    } else if (command[0] == 'S') {
-        logDebugMessage("STOP PROP\n");
-        propControl->setPropellerSpeed(0, &globalStatus);
-    } else if (command[0] == 'R') {
-        int degrees = 0;
-        sscanf(&(command[1]), "%d", &degrees);
-        logDebugMessage("ROTATING TO ");
-        logDebugMessage(degrees);
-        logDebugMessage("\n");
-        helmControl->setRudderPosition(degrees);
+
+
     } else if (command[0] == 'W') {
         // Set a new waypoint
         // Expected format is: "W34197644,-120035801"
@@ -207,12 +182,6 @@ void processBluetoothCommand(char *command) {
 }
 
 
-void pollAndProcessBluetoothCommands(SailFaceStatus *status) {
-    char *command = commsManager->pollForBluetoothCommandMessages(status);
-    if (command != NULL) {
-        processBluetoothCommand(command);
-    }
-}
 
 void pollAndProcessSatteliteCommands(SailFaceStatus *status) {
     SailFaceCommandMessage satCommand;

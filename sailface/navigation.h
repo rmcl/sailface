@@ -42,6 +42,7 @@ class NavigationManager {
             long curLongitude
         );
         void setWaypoint(long latitude, long longitude);
+        Waypoint getNextWaypoint();
         bool isNavigatingToWaypoint();
 
 };

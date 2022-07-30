@@ -21,3 +21,7 @@ void PropManager::setPropellerSpeed(int newSpeed) {
 	analogWrite(PRIMARY_PROP_PWM_PIN, newSpeed);
 	propSpeed = newSpeed;
 }
+
+int PropManager::getPropellerSpeed() {
+	return propSpeed;
+}

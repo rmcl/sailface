@@ -53,5 +53,8 @@ void NavigationManager::setWaypoint(long latitude, long longitude) {
     currentWaypoint.longitude = longitude;
     navigateToWaypoint = true;
     EEPROM.put(SAILFACE_EEPROM_ADDRESS, currentWaypoint);
+}
 
+Waypoint NavigationManager::getNextWaypoint() {
+    return currentWaypoint;
 }
