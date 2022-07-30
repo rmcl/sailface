@@ -18,6 +18,9 @@ void BluetoothCommand::initialize() {
     bluetoothSerialCommands.SetDefaultHandler(cmdUnrecognized);
 	bluetoothSerialCommands.AddCommand(&blueCmdStatus);
     bluetoothSerialCommands.AddCommand(&blueCmdSetRudder);
+    bluetoothSerialCommands.AddCommand(&blueCmdStartProp);
+    bluetoothSerialCommands.AddCommand(&blueCmdStopProp);
+
 
 }
 
@@ -70,4 +73,22 @@ void cmdSetRudder(SerialCommands* sender) {
 
     sender->GetSerial()->println(
         "INFO: Set rudder position: " + String(rudderPosition));
+}
+
+void cmdStartProp(SerialCommands* sender) {
+    // Expect one argument of type int specifying the rudder position from -10->+10
+    char* propSpeedStr = sender->Next();
+	if (propSpeedStr == NULL) {
+		sender->GetSerial()->println("ERROR: Prop speed not specified");
+		return;
+	}
+	int propLevel = atoi(propSpeedStr);
+
+    sender->GetSerial()->println("INFO: Set prop speed: " + String(propLevel));
+    prop->setPropellerSpeed(propLevel);
+}
+
+void cmdStopProp(SerialCommands* sender) {
+    sender->GetSerial()->println("INFO: Set prop speed: 0");
+    prop->setPropellerSpeed(0);
 }

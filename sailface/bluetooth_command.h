@@ -12,8 +12,10 @@
 
 /* Commands */
 void cmdUnrecognized(SerialCommands* sender, const char* cmd);
-void cmdStatus(SerialCommands* sender) ;
-void cmdSetRudder(SerialCommands* sender) ;
+void cmdStatus(SerialCommands* sender);
+void cmdSetRudder(SerialCommands* sender);
+void cmdStartProp(SerialCommands* sender);
+void cmdStopProp(SerialCommands* sender);
 
 
 
@@ -40,6 +42,9 @@ class BluetoothCommand {
         /* Command Calls */
         SerialCommand blueCmdStatus{"STATUS", cmdStatus};
         SerialCommand blueCmdSetRudder{"RUDDER", cmdSetRudder};
+        SerialCommand blueCmdStartProp{"ENGAGE", cmdStartProp};
+        SerialCommand blueCmdStopProp{"STOP", cmdStopProp};
+
 
     public:
         void initialize();
