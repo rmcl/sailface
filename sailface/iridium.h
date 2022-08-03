@@ -7,8 +7,9 @@
 
 #define COMM_MAX_COMMAND_LEN 100
 
-#define ROCKBLOCK_SLEEP_PIN 40
-#define ROCKBLOCK_RING_PIN 38
+#define IRIDIUM_POWER_PIN 11
+#define ROCKBLOCK_SLEEP_PIN 38
+#define ROCKBLOCK_RING_PIN 40
 
 typedef struct {
 

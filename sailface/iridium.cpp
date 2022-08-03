@@ -13,6 +13,9 @@ void IridiumManager::initialize() {
     pinMode(ROCKBLOCK_SLEEP_PIN, OUTPUT);
     digitalWrite(ROCKBLOCK_SLEEP_PIN, HIGH);
 
+    pinMode(IRIDIUM_POWER_PIN, OUTPUT);
+    digitalWrite(IRIDIUM_POWER_PIN, HIGH);
+
     // Setup the Ring Indicator Pin
     pinMode(ROCKBLOCK_RING_PIN, INPUT);
 
@@ -26,16 +29,31 @@ void IridiumManager::initialize() {
     // Todo: Commit this to PRAM so it survives power cycles
     updateFrequencyMinutes = 60;
 
+}
+
+void IridiumManager::wakeIridium() {
+    digitalWrite(ROCKBLOCK_SLEEP_PIN, HIGH);
+
+    if (bluetooth->isBluetoothActive()) {
+        HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+        bluetoothDebug->println("Attempting to begin Iridium modem");
+    }
+
     // Begin satellite modem operation
     int errorCode = modem.begin();
-    if (errorCode != ISBD_SUCCESS) {
-        /*logDebugMessage("Begin failed: error ");
-        logDebugMessage(errorCode);
-        logDebugMessage("\n");
-        if (errorCode == ISBD_NO_MODEM_DETECTED) {
-            logDebugMessage("No modem detected: check wiring.");
+    if (errorCode != ISBD_SUCCESS && errorCode != ISBD_ALREADY_AWAKE) {
+
+        if (bluetooth->isBluetoothActive()) {
+            HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+            bluetoothDebug->println(
+                String("ERR: Iridium begin failed CODE:") + \
+                String(errorCode)
+            );
+
+            if (errorCode == ISBD_NO_MODEM_DETECTED) {
+                bluetoothDebug->println("No modem detected: check wiring.");
+            }
         }
-        */
 
         iridiumActive = false;
     } else {
@@ -46,12 +64,13 @@ void IridiumManager::initialize() {
 
         pollIridiumSignalQuality();
         iridiumActive = true;
-    }
-}
 
-void IridiumManager::wakeIridium() {
-    digitalWrite(ROCKBLOCK_SLEEP_PIN, HIGH);
-    iridiumActive = true;
+        if (bluetooth->isBluetoothActive()) {
+            HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+            bluetoothDebug->println("INFO: Iridium successfully begin.");
+        }
+    }
+
 }
 
 void IridiumManager::sleepIridium() {
@@ -62,10 +81,22 @@ void IridiumManager::sleepIridium() {
 void IridiumManager::pollIridiumSignalQuality() {
     int errorCode = modem.getSignalQuality(signalQuality);
     if (errorCode != ISBD_SUCCESS) {
-        /*logDebugMessage("SignalQuality failed: error ");
-        logDebugMessage(errorCode);
-        logDebugMessage("\n");*/
+        if (bluetooth->isBluetoothActive()) {
+            HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+            bluetoothDebug->println(
+                String("ERR: Iridium Signal Quality Failure CODE:") + \
+                String(errorCode)
+            );
+        }
         return;
+    }
+
+    if (bluetooth->isBluetoothActive()) {
+        HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+        bluetoothDebug->println(
+            String("INFO: Iridium Signal Quality: ") + \
+            String(signalQuality)
+        );
     }
 }
 
@@ -114,40 +145,50 @@ int IridiumManager::sendStatusReceiveCommandMessage(
     IridiumCommandMessage *rxCommandMessage
 ) {
 
-    int txMessageSize = 0;
+    size_t txMessageSize = 0;
     if (txMessage != NULL) {
         txMessageSize = sizeof(*txMessage);
     }
-    int rxMessageSize = sizeof(*rxCommandMessage);
+
+    size_t rxBufferSize = sizeof(*rxCommandMessage);
     int errorCode = modem.sendReceiveSBDBinary(
         (uint8_t*)txMessage,
         txMessageSize,
         (uint8_t*)rxCommandMessage,
-        &rxMessageSize);
-
-    // Update the last transmit time to be when the Iridium Send/Receive command
-    // completes.
-    lastTransmitTime = millis();
+        rxBufferSize);
 
     if (errorCode != ISBD_SUCCESS) {
-        //sendDebugMessage("sendReceiveSBDBinary failed error:");
-        //char numberMessage[16];
-        //itoa(errorCode, numberMessage, 10);
-        //sendDebugMessage(numberMessage);
-        //sendDebugMessage("\n");
+        if (bluetooth->isBluetoothActive()) {
+            HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+            bluetoothDebug->println(
+                String("ERROR: sendReceiveSBDBinary error") + \
+                String(errorCode)
+            );
+        }
 
         if (errorCode == ISBD_SENDRECEIVE_TIMEOUT) {
             //sendDebugMessage("Try again with a better view of the sky.");
+            //TODO: Maybe we put a retry in place?
         }
 
         return -1;
 
     } else {
-        //sendDebugMessage("Iridium successfully sent/recv message.");
-        //status->lastIridiumStatusMessageSentTime = status->time;
+        if (bluetooth->isBluetoothActive()) {
+            HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+            bluetoothDebug->println(
+                String("INFO: sendReceiveSBDBinary success") + \
+                String(errorCode)
+            );
+        }
+
+        // Update the last transmit time to be when the Iridium Send/Receive command
+        // completes.
+        lastTransmitTime = millis();
 
         int messageCount = modem.getWaitingMessageCount();
-        if (rxMessageSize > 0) {
+        if (rxBufferSize > 0) {
+            // If we received a message add it to number of messages waiting.
             messageCount += 1;
         }
 
@@ -156,17 +197,21 @@ int IridiumManager::sendStatusReceiveCommandMessage(
 }
 
 // Poll for messages via the RockBlock Ring Alert Pin
-
 int IridiumManager::pollForCommandMessages() {
     if (iridiumActive) {
-        return;
+        return 0;
     }
 
     bool shouldTransmit = shouldTransmitStatus();
 
     int messageCount = pollForIridiumRingAlerts();
     if (messageCount == 0 && !shouldTransmit) {
-        return;
+        return 0;
+    }
+
+    HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+    if (bluetooth->isBluetoothActive()) {
+        bluetoothDebug->println("Iridium attempting to RX/TX")
     }
 
     IridiumStatusMessage statusMessage = buildStatusMessage();
@@ -175,11 +220,25 @@ int IridiumManager::pollForCommandMessages() {
     IridiumStatusMessage *txStatusMessagePtr = &statusMessage;
 
     IridiumCommandMessage firstReceivedCommand;
-    messageCount = sendStatusReceiveCommandMessage(
-        txStatusMessagePtr,
-        &firstReceivedCommand);
+    while (true) {
+        messageCount = sendStatusReceiveCommandMessage(
+            txStatusMessagePtr,
+            &firstReceivedCommand);
 
-    processCommandMessage(&firstReceivedCommand);
+        if (messageCount > 0) {
+            processCommandMessage(&firstReceivedCommand);
+        }
+
+        if (messageCount > 1) {
+            // there are more messages to retrieve
+            // dont send status again
+            txStatusMessagePtr = NULL;
+        } else {
+            // otherwise we have sent and retrieved all messages so we are done
+            return 1;
+        }
+    }
+
 
     // Current message + some number of outstanding messages.
     return 1 + messageCount;

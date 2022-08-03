@@ -16,7 +16,9 @@ void cmdStatus(SerialCommands* sender);
 void cmdSetRudder(SerialCommands* sender);
 void cmdStartProp(SerialCommands* sender);
 void cmdStopProp(SerialCommands* sender);
-
+void cmdStartIridium(SerialCommands* sender);
+void cmdSleepIridium(SerialCommands* sender);
+void cmdPollIridium(SerialCommands* sender);
 
 
 class BluetoothCommand {
@@ -44,15 +46,17 @@ class BluetoothCommand {
         SerialCommand blueCmdSetRudder{"RUDDER", cmdSetRudder};
         SerialCommand blueCmdStartProp{"ENGAGE", cmdStartProp};
         SerialCommand blueCmdStopProp{"STOP", cmdStopProp};
+        SerialCommand blueCmdStartIridium{"SATSTART", cmdStartIridium};
+        SerialCommand blueCmdSleepIridium{"SATSLEEP", cmdSleepIridium};
+        SerialCommand blueCmdPollIridium{"SATPOLL", cmdPollIridium};
 
 
     public:
         void initialize();
 
-        void pollForBluetoothCommandMessages(
-
-        );
+        void pollForBluetoothCommandMessages();
         //void sendBluetoothMessage(String *message);
+        bool isBluetoothActive();
         HardwareSerial *getBluetoothSerial();
 };
 #endif

@@ -35,6 +35,8 @@ void setup(void) {
     navigation->initialize();
     bluetooth->initialize();
     iridium->initialize();
+
+    Serial.println("setup complete");
 }
 
 void loop(void) {
@@ -60,12 +62,12 @@ void loop(void) {
         }
     }
 
+    //Serial.println("command poll");
+
     bluetooth->pollForBluetoothCommandMessages();
+    //iridium->pollForCommandMessages();
 
-    //iridium->pollForCommandMessages()
-
-
-
+    //Serial.println("command poll complete");
 
 
     /*

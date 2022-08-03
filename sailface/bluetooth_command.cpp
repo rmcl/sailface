@@ -20,8 +20,13 @@ void BluetoothCommand::initialize() {
     bluetoothSerialCommands.AddCommand(&blueCmdSetRudder);
     bluetoothSerialCommands.AddCommand(&blueCmdStartProp);
     bluetoothSerialCommands.AddCommand(&blueCmdStopProp);
+    bluetoothSerialCommands.AddCommand(&blueCmdStartIridium);
+    bluetoothSerialCommands.AddCommand(&blueCmdSleepIridium);
+    bluetoothSerialCommands.AddCommand(&blueCmdPollIridium);
+}
 
-
+bool BluetoothCommand::isBluetoothActive() {
+    return bluetoothActive;
 }
 
 void BluetoothCommand::pollForBluetoothCommandMessages() {
@@ -34,7 +39,6 @@ HardwareSerial *BluetoothCommand::getBluetoothSerial() {
 
 
 void cmdUnrecognized(SerialCommands* sender, const char* cmd) {
-    Serial.println("AHRGGG");
 	sender->GetSerial()->print("Unrecognized command [");
 	sender->GetSerial()->print(cmd);
 	sender->GetSerial()->println("]");
@@ -46,7 +50,9 @@ void cmdStatus(SerialCommands* sender) {
     sender->GetSerial()->println(
         String("LAT:") + String(curPosition.latitude) + \
         String(" LONG:") + String(curPosition.longitude) + \
-        String(" VALID:") + String(curPosition.positionValid)
+        String(" VAL:") + String(curPosition.positionValid) + \
+        String(" MPU:") + String(curPosition.magneticHeading) + \
+        String(" VAR:") + String(curPosition.magneticHeadingVariation)
     );
 
     PowerInfo powInfo;
@@ -91,4 +97,15 @@ void cmdStartProp(SerialCommands* sender) {
 void cmdStopProp(SerialCommands* sender) {
     sender->GetSerial()->println("INFO: Set prop speed: 0");
     prop->setPropellerSpeed(0);
+}
+
+void cmdStartIridium(SerialCommands* sender) {
+    iridium->wakeIridium();
+}
+void cmdSleepIridium(SerialCommands* sender) {
+    iridium->sleepIridium();
+}
+
+void cmdPollIridium(SerialCommands* sender) {
+    iridium->pollForCommandMessages();
 }

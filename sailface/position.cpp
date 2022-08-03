@@ -20,7 +20,12 @@ void PositionManager::initialize() {
     gpsSerial.begin(9600);
 
     if (!mpu.setup(0x68)) {
-        Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
+        if (bluetooth->isBluetoothActive()) {
+            HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+            bluetoothDebug->println(
+                String("ERR: MPU connection failed. Please check wiring")
+            );
+        }
     }
 
     mpu.setMagBias(171.38, 633.19, -22.61);
