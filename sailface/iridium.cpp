@@ -209,9 +209,9 @@ int IridiumManager::pollForCommandMessages() {
         return 0;
     }
 
-    HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
     if (bluetooth->isBluetoothActive()) {
-        bluetoothDebug->println("Iridium attempting to RX/TX")
+        HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+        bluetoothDebug->println("Iridium attempting to RX/TX");
     }
 
     IridiumStatusMessage statusMessage = buildStatusMessage();
