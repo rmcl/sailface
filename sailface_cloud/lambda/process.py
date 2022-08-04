@@ -1,4 +1,5 @@
-from sailface.status_parser import SailFaceStatusMessageParser
+import json
+from sailface_cloud.status_parser import SailFaceStatusMessageParser
 
 def lambda_handler(event, context):
     """Receive a POST payload and persist to a S3 bucket."""
@@ -12,4 +13,4 @@ def lambda_handler(event, context):
         print('%s:\t%20s' % (key, value))
     print()
 
-    json.dumps(values)
+    return json.dumps(values)

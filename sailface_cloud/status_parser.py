@@ -12,6 +12,7 @@ class SailFaceStatusMessageParser:
         ('waypoint_latitude', 'l'),
         ('waypoint_longitude', 'l'),
         ('battery_voltage', 'h'),
+        ('battery_current', 'h'),
         ('prop_speed', 'h')
     )
 
