@@ -68,7 +68,7 @@ void loop()
     //  This walks through all 34 motor positions driving them forward and back.
     //  It uses .setDrive( motorNum, direction, level ) to drive the motors.
 
-    myMotorDriver.setDrive( LEFT_MOTOR, 0, 200);
+    myMotorDriver.setDrive( LEFT_MOTOR, 0, 80);
 
     //delay(10000);
 

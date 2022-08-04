@@ -10,13 +10,14 @@
 #define PRIMARY_PROP_MOTOR 0
 #define PRIMARY_PROP_PWM_PIN 13
 
-class SailFacePropulsion {
+class PropManager {
 
     private:
-        //SCMD motorDriver;
+        int propSpeed;
 
     public:
-        void initialize(SailFaceStatus *status);
-        void setPropellerSpeed(int speed, SailFaceStatus *status);
+        void initialize();
+        void setPropellerSpeed(int newSpeed);
+        int getPropellerSpeed();
 };
 #endif

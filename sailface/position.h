@@ -5,18 +5,43 @@
 #include <TinyGPS++.h>
 #include "MPU9250.h"
 
-#include "sailface.h"
-#include "comms.h"
 
 
-#define AVERAGE_COURSE_BUFFER_SIZE 50
+#define AVERAGE_HEADING_BUFFER_SIZE 50
 
 // PIN must be set to HIGH for GPS to be powered
 // GPS FUSED ON IN V0.2
 #define GPS_ENABLE_PIN 8
 #define MPU_ENABLE_PIN 10
 
-class SailFacePositionManagement {
+/* Define a data structure stores position and heading information */
+typedef struct {
+    // Position
+    bool positionValid;
+
+    // NOTE: lat/long are stored in units of decimal degrees*1x10e6
+    // i.e. Multiply decimal degrees (in floating point representation) by
+    // 1000000 to get an integer.
+
+    // TODO: CONVERT LAT/LONG everywhere to longs from double to actually achieve
+    // the above
+    long latitude;
+    long longitude;
+
+    uint32_t time;     // UTC time
+    uint32_t gpsFixAge;
+
+    // actual speed & course from GPS
+    double course; // course in degrees
+    double speed; // speed in knots
+
+    // MPU details
+    float magneticHeading;
+    float magneticHeadingVariation;
+
+} PositionInfo;
+
+class PositionManager {
 
     private:
         TinyGPSPlus gps;
@@ -26,14 +51,16 @@ class SailFacePositionManagement {
 
         MPU9250 mpu;
 
-        float averageCourseBuffer[AVERAGE_COURSE_BUFFER_SIZE];
-        int averageCourseBufferIdx;
+        PositionInfo currentPosition;
+
+        float averageHeadingBuffer[AVERAGE_HEADING_BUFFER_SIZE];
+        int averageHeadingBufferIdx;
 
     public:
-        void initialize(SailFaceStatus *status);
-        void pollGPSForPosition(SailFaceStatus *status);
-        void pollForMPU(SailFaceStatus *status);
-        //void writeStatusMessage(SailFaceStatus *status);
-        void writeStatusMessage(SailFaceCommunication *comms, SailFaceStatus *status);
+        void initialize();
+        void pollGPSForPosition();
+        void pollForMPU();
+
+        PositionInfo getCurPosition();
 };
 #endif

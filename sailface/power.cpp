@@ -1,23 +1,16 @@
-#include "sailface.h"
-#include "position.h"
-
 #include "power.h"
 
-void SailFacePowerManagement::initialize(SailFaceStatus *status) {
-
-    status->batteryVoltage = 0;
-    status->batteryCurrentDraw = 0;
-
+void PowerManager::initialize() {
     // Initialize the INA219 current sensor.
     // By default the initialization will use the largest range (32V, 2A).  However
     // you can call a setCalibration function to change this range (see comments).
     if (!batteryCurrentMonitor.begin()) {
-        logDebugMessage("Failed to find INA219 chip for battery\n");
+        //logDebugMessage("Failed to find INA219 chip for battery\n");
     }
 
 }
 
-void SailFacePowerManagement::pollForBatteryStatus(SailFaceStatus *status) {
+void PowerManager::getPowerInfo(PowerInfo *powerInfo) {
     // Measure the voltage directly out of Battery Charging circuit.
     float sampleCount = 0;
     float measuredVoltageSum = 0;
@@ -33,17 +26,9 @@ void SailFacePowerManagement::pollForBatteryStatus(SailFaceStatus *status) {
     // Vout = (R2 / (R1 + R2)) * Vin
     // So Vin = Vout / (R2 / (R1 + R2))
     float pinVoltage = ((float)measuredVoltageSum / (float)POWER_BATTERY_VOLTAGE_NUM_SAMPLES * 5.0) / 1023.0;
-    status->batteryVoltage = pinVoltage / (1000.0 / (4700.0 + 1000.0));
+    powerInfo->batteryVoltage = pinVoltage / (1000.0 / (4700.0 + 1000.0));
 
     // Measure the present current draw at the Battery Charging circuit
-    status->batteryCurrentDraw = batteryCurrentMonitor.getCurrent_mA();
+    powerInfo->batteryCurrentDraw = batteryCurrentMonitor.getCurrent_mA();
 
-}
-
-void SailFacePowerManagement::writeStatusMessage(SailFaceStatus *status) {
-    logDebugMessage("P:");
-    logDebugMessage(status->batteryVoltage);
-    logDebugMessage(",");
-    logDebugMessage(status->batteryCurrentDraw);
-    logDebugMessage("\n");
 }
