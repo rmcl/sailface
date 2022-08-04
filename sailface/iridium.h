@@ -90,8 +90,9 @@ class IridiumManager {
 
         void wakeIridium();
         void sleepIridium();
+        bool isIridiumActive();
 
         void pollIridiumSignalQuality();
-        int pollForCommandMessages();
+        int pollForCommandMessages(bool forceTransmitStatus);
 };
 #endif

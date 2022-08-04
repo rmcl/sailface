@@ -6,9 +6,12 @@
 
 #define BLUETOOTH_ENABLE_PIN 9
 
-#define COMM_MAX_COMMAND_LEN 100
+//#define COMM_MAX_COMMAND_LEN 500
 
 #define SERIAL_COMMANDS_DEBUG true
+
+
+
 
 /* Commands */
 void cmdUnrecognized(SerialCommands* sender, const char* cmd);
@@ -31,7 +34,7 @@ class BluetoothCommand {
         // Bluetooth TXD -> RX2 pin 17
         HardwareSerial &bluetoothSerial = Serial2;
 
-        char serialCommandBuffer[100];
+        char serialCommandBuffer[32];
 
         SerialCommands bluetoothSerialCommands{
             &bluetoothSerial,
@@ -55,7 +58,6 @@ class BluetoothCommand {
         void initialize();
 
         void pollForBluetoothCommandMessages();
-        //void sendBluetoothMessage(String *message);
         bool isBluetoothActive();
         HardwareSerial *getBluetoothSerial();
 };

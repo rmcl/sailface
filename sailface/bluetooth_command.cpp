@@ -31,6 +31,9 @@ bool BluetoothCommand::isBluetoothActive() {
 
 void BluetoothCommand::pollForBluetoothCommandMessages() {
     bluetoothSerialCommands.ReadSerial();
+
+    // wait for send buffer to empty before proceeding.
+    bluetoothSerial.flush();
 }
 
 HardwareSerial *BluetoothCommand::getBluetoothSerial() {
@@ -39,9 +42,11 @@ HardwareSerial *BluetoothCommand::getBluetoothSerial() {
 
 
 void cmdUnrecognized(SerialCommands* sender, const char* cmd) {
-	sender->GetSerial()->print("Unrecognized command [");
-	sender->GetSerial()->print(cmd);
-	sender->GetSerial()->println("]");
+    Stream *serial = sender->GetSerial();
+    serial->print("Unrecognized command [");
+	serial->print(cmd);
+	serial->println("]");
+    serial->flush();
 }
 
 void cmdStatus(SerialCommands* sender) {
@@ -62,6 +67,7 @@ void cmdStatus(SerialCommands* sender) {
         String(" CURRENT:") + String(powInfo.batteryCurrentDraw)
     );
     sender->GetSerial()->println();
+    sender->GetSerial()->flush();
 
 }
 
@@ -107,5 +113,14 @@ void cmdSleepIridium(SerialCommands* sender) {
 }
 
 void cmdPollIridium(SerialCommands* sender) {
-    iridium->pollForCommandMessages();
+    sender->GetSerial()->println("INFO: IRIDIUM POLL");
+    sender->GetSerial()->println(
+        String("ACTIVE:" ) + \
+        String(iridium->isIridiumActive())
+    );
+    int messageCount = iridium->pollForCommandMessages(true);
+    sender->GetSerial()->println(
+        String("Num MSG: ") + \
+        String(messageCount)
+    );
 }

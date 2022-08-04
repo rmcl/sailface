@@ -31,6 +31,10 @@ void IridiumManager::initialize() {
 
 }
 
+bool IridiumManager::isIridiumActive() {
+    return iridiumActive;
+}
+
 void IridiumManager::wakeIridium() {
     digitalWrite(ROCKBLOCK_SLEEP_PIN, HIGH);
 
@@ -67,7 +71,7 @@ void IridiumManager::wakeIridium() {
 
         if (bluetooth->isBluetoothActive()) {
             HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
-            bluetoothDebug->println("INFO: Iridium successfully begin.");
+            bluetoothDebug->println("INFO: Iridium successfully started.");
         }
     }
 
@@ -197,15 +201,15 @@ int IridiumManager::sendStatusReceiveCommandMessage(
 }
 
 // Poll for messages via the RockBlock Ring Alert Pin
-int IridiumManager::pollForCommandMessages() {
-    if (iridiumActive) {
+int IridiumManager::pollForCommandMessages(bool forceTransmitStatus) {
+    if (!iridiumActive) {
         return 0;
     }
 
     bool shouldTransmit = shouldTransmitStatus();
 
     int messageCount = pollForIridiumRingAlerts();
-    if (messageCount == 0 && !shouldTransmit) {
+    if (messageCount == 0 && !shouldTransmit && !forceTransmitStatus) {
         return 0;
     }
 
@@ -220,6 +224,7 @@ int IridiumManager::pollForCommandMessages() {
     IridiumStatusMessage *txStatusMessagePtr = &statusMessage;
 
     IridiumCommandMessage firstReceivedCommand;
+
     while (true) {
         messageCount = sendStatusReceiveCommandMessage(
             txStatusMessagePtr,

@@ -65,7 +65,7 @@ void loop(void) {
     //Serial.println("command poll");
 
     bluetooth->pollForBluetoothCommandMessages();
-    //iridium->pollForCommandMessages();
+    //iridium->pollForCommandMessages(false);
 
     //Serial.println("command poll complete");
 

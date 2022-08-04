@@ -4,7 +4,9 @@
 #include "position.h"
 
 
-/* When configuring accelerometer check out: https://www.i2cdevlib.com/forums/topic/8-mpu6050-connection-failed/ */
+/* NOTE: When configuring accelerometer check out:
+ * https://www.i2cdevlib.com/forums/topic/8-mpu6050-connection-failed/
+ */
 
 /*
  * Configure the position manager and initialize devices.
@@ -52,7 +54,6 @@ void PositionManager::pollForMPU() {
     if (mpu.update()) {
         static uint32_t prev_ms = millis();
         if (millis() > prev_ms + 100) {
-
             float magX = mpu.getMagX();
             float magY = mpu.getMagY();
             float instantHeading;
