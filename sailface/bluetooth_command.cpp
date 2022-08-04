@@ -16,7 +16,7 @@ void BluetoothCommand::initialize() {
     bluetoothSerial.begin(57600);
 
     bluetoothSerialCommands.SetDefaultHandler(cmdUnrecognized);
-	bluetoothSerialCommands.AddCommand(&blueCmdStatus);
+    bluetoothSerialCommands.AddCommand(&blueCmdStatus);
     bluetoothSerialCommands.AddCommand(&blueCmdSetRudder);
     bluetoothSerialCommands.AddCommand(&blueCmdStartProp);
     bluetoothSerialCommands.AddCommand(&blueCmdStopProp);
