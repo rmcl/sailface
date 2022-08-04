@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+    cloud:
+        build:
+            dockerfile: Dockerfile
+            context: ./sailface_cloud
+        volumes:
+            - ./sailface_cloud:/app/sailface_cloud
