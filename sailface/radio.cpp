@@ -43,3 +43,22 @@ void RadioManager::pollForCurrentRadioCommand(SailFaceRadioCommandMessage *radio
         radioCommand->rudderPosition = constrain(rudderPosition, -10, 10);
     }
 }
+
+/*
+void pollAndProcessRadioCommands(SailFaceStatus *status) {
+    SailFaceRadioCommandMessage radioCommand;
+    pollForCurrentRadioCommand(&radioCommand);
+
+    logDebugMessage("RADIO CMD ");
+    logDebugMessage(radioCommand.propSpeed);
+    logDebugMessage(" ");
+    logDebugMessage(radioCommand.rudderPosition);
+    logDebugMessage("\n");
+
+    if (radioCommand.propSpeed > 0) {
+        prop->setPropellerSpeed(radioCommand.propSpeed, status);
+    }
+    helm->setRudderPosition(radioCommand.rudderPosition);
+}
+
+*/
