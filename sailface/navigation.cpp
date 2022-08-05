@@ -52,7 +52,8 @@ void NavigationManager::setWaypoint(long latitude, long longitude) {
     currentWaypoint.latitude = latitude;
     currentWaypoint.longitude = longitude;
     navigateToWaypoint = true;
-    EEPROM.put(SF_EEPROM_WAYPOINT_ADDRESS, currentWaypoint);
+
+    persistedData->storeWaypoints((Waypoint[])&currentWaypoint, 1);
 }
 
 Waypoint NavigationManager::getNextWaypoint() {

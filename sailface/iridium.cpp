@@ -23,11 +23,14 @@ void IridiumManager::initialize() {
     modem.setPowerProfile(IridiumSBD::DEFAULT_POWER_PROFILE);
     modem.adjustATTimeout(45);
 
-    // Default values
-    lastTransmitTime = 0;
-
+    // Retrieve values from persisted EEPROM data.
+    lastTransmitTime = persistedData->getIridiumLastTransmitTime();
     updateFrequencyMinutes = persistedData->getIridiumTransmitFrequency();
 
+    // If the Iridium was active before the power failure; start it up now.
+    if (persistedData->getIridiumActive() == true) {
+        wakeIridium();
+    }
 }
 
 bool IridiumManager::isIridiumActive() {
@@ -73,6 +76,9 @@ void IridiumManager::wakeIridium() {
             bluetoothDebug->println("INFO: Iridium successfully started.");
         }
     }
+
+    // Persist if the Iridium is active into EEPROM memory.
+    persistedData->storeIridiumActive(iridiumActive);
 
 }
 
@@ -188,6 +194,7 @@ int IridiumManager::sendStatusReceiveCommandMessage(
         // Update the last transmit time to be when the Iridium Send/Receive command
         // completes.
         lastTransmitTime = millis();
+        persistedData->storeIridiumLastTransmitTime(lastTransmitTime);
 
         int messageCount = modem.getWaitingMessageCount();
         if (rxBufferSize > 0) {

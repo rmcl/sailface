@@ -11,7 +11,9 @@ void PersistDataManager::load() {
         // Data is not valid. Set to some reasonable defaults
         currentData.propSpeed = 0;
         currentData.bluetoothActive = true;
+        currentData.iridiumActive = false;
         currentData.iridiumTransmitFrequency = 60;
+        currentData.iridiumLastTransmitTime = 0;
     }
 }
 
@@ -46,4 +48,37 @@ void PersistDataManager::storeIridiumTransmitFrequency(int frequency) {
 
 int PersistDataManager::getIridiumTransmitFrequency() {
     return currentData.iridiumTransmitFrequency;
+}
+
+void PersistDataManager::storeWaypoints(Waypoint[] waypoint, int count) {
+    int actualWaypointCount = min(MAX_WAYPOINTS, count)
+
+    // Iterate over the total number of waypoints that can be stored and either
+    // persist new value or set to zero.
+    for (int i = 0; i<MAX_WAYPOINTS; i++) {
+        if (i < actualWaypointCount) {
+            currentData.waypoints[i] = waypoint[i];
+        } else {
+            currentData.waypoints[i].latitude = 0;
+            currentData.waypoints[i].longitude = 0;
+        }
+    }
+    persist();
+}
+
+void PersistDataManager::storeIridiumLastTransmitTime(unsigned long lastTransmitTime) {
+    currentData->iridiumLastTransmitTime = lastTransmitTime;
+    persist();
+}
+
+unsigned long PersistDataManager::getIridiumLastTransmitTime() {
+    return currentData->iridiumLastTransmitTime;
+}
+
+void PersistDataManager::storeIridiumActive(bool iridiumActive) {
+    currentData->iridiumActive = true;
+    persist();
+}
+bool PersistDataManager::getIridiumActive() {
+    return currentData->iridiumActive;
 }

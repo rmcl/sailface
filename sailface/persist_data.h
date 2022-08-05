@@ -10,6 +10,7 @@
 
 #define SF_PERSISTED_DATA_ADDRESS 0x0
 #define SF_CURRENT_PERSIST_VALID 0x69
+#define MAX_WAYPOINTS 10
 
 
 //
@@ -20,12 +21,15 @@ typedef struct {
     short persistValid;
 
     short propSpeed;
-    short bluetoothActive;
+    bool bluetoothActive;
+
+    bool iridiumActive;
 
     // Time in seconds that status updates are sent through Iridium.
     int iridiumTransmitFrequency;
+    unsigned long iridiumLastTransmitTime;
 
-    //Waypoint waypoints[10];
+    Waypoint waypoints[MAX_WAYPOINTS];
 
 } PersistedData;
 
@@ -46,11 +50,17 @@ class PersistDataManager {
         void storeBluetoothActive(bool bluetoothActive);
         bool getBluetoothAcive();
 
+        void storeIridiumActive(bool iridiumActive);
+        bool getIridiumActive();
+
         void storeIridiumTransmitFrequency(int frequency);
         int getIridiumTransmitFrequency();
 
-        //void storeWaypoints(Waypoint[] waypoints, int count);
-        //Waypoint[] getWaypoints();
+        void storeIridiumLastTransmitTime(unsigned long lastTransmitTime);
+        unsigned long getIridiumLastTransmitTime();
+
+        void storeWaypoints(Waypoint waypoints[], int count);
+        //Waypoint[MAX_WAYPOINTS] getWaypoints();
 
 };
 
