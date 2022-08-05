@@ -67,18 +67,18 @@ void PersistDataManager::storeWaypoints(Waypoint[] waypoint, int count) {
 }
 
 void PersistDataManager::storeIridiumLastTransmitTime(unsigned long lastTransmitTime) {
-    currentData->iridiumLastTransmitTime = lastTransmitTime;
+    currentData.iridiumLastTransmitTime = lastTransmitTime;
     persist();
 }
 
 unsigned long PersistDataManager::getIridiumLastTransmitTime() {
-    return currentData->iridiumLastTransmitTime;
+    return currentData.iridiumLastTransmitTime;
 }
 
 void PersistDataManager::storeIridiumActive(bool iridiumActive) {
-    currentData->iridiumActive = true;
+    currentData.iridiumActive = true;
     persist();
 }
 bool PersistDataManager::getIridiumActive() {
-    return currentData->iridiumActive;
+    return currentData.iridiumActive;
 }
