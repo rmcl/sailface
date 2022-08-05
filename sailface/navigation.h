@@ -12,7 +12,8 @@
 #define RAD2DEG M_PI/360.0*2.0
 #define DEG2RAD 360.0/M_PI/2.0
 
-#define SAILFACE_EEPROM_ADDRESS 0x0
+#define SF_EEPROM_WAYPOINT_ADDRESS 0x0
+
 
 typedef struct {
     long latitude;

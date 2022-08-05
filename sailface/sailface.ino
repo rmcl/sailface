@@ -8,6 +8,7 @@
 #include "navigation.h"
 #include "bluetooth_command.h"
 
+PersistDataManager *persistedData;
 PositionManager *position;
 PowerManager *power;
 HelmManager *helm;

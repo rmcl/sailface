@@ -17,7 +17,7 @@ class PropManager {
 
     public:
         void initialize();
-        void setPropellerSpeed(int newSpeed);
-        int getPropellerSpeed();
+        void setPropellerSpeed(short newSpeed);
+        short getPropellerSpeed();
 };
 #endif

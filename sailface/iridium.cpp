@@ -26,8 +26,7 @@ void IridiumManager::initialize() {
     // Default values
     lastTransmitTime = 0;
 
-    // Todo: Commit this to PRAM so it survives power cycles
-    updateFrequencyMinutes = 60;
+    updateFrequencyMinutes = persistedData->getIridiumTransmitFrequency();
 
 }
 
@@ -254,6 +253,7 @@ void IridiumManager::processCommandMessage(IridiumCommandMessage *commandMessage
     prop->setPropellerSpeed(commandMessage->propSpeed);
 
     updateFrequencyMinutes = commandMessage->updateFrequencyMinutes;
+    persistedData->storeIridiumTransmitFrequency(updateFrequencyMinutes);
 
     switch(commandMessage->waypointAction) {
         case 2:

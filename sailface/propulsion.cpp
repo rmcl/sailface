@@ -3,9 +3,12 @@
 
 void PropManager::initialize() {
 	pinMode(PRIMARY_PROP_PWM_PIN, OUTPUT);
+
+	// Set prop speed to what has been stored in persistent memory.
+	setPropellerSpeed(persistedData->getPropSeed());
 }
 
-void PropManager::setPropellerSpeed(int newSpeed) {
+void PropManager::setPropellerSpeed(short newSpeed) {
 
 	if (newSpeed < 0) {
 		newSpeed = 0;
@@ -20,8 +23,11 @@ void PropManager::setPropellerSpeed(int newSpeed) {
 
 	analogWrite(PRIMARY_PROP_PWM_PIN, newSpeed);
 	propSpeed = newSpeed;
+
+	//Persist the prop speed into persistant memory.
+	persistedData->storePropSpeed(propSpeed);
 }
 
-int PropManager::getPropellerSpeed() {
+short PropManager::getPropellerSpeed() {
 	return propSpeed;
 }

@@ -7,7 +7,7 @@
 // from the EEPROM persistant storage.
 //
 void NavigationManager::initialize() {
-    EEPROM.get(SAILFACE_EEPROM_ADDRESS, currentWaypoint);
+    EEPROM.get(SF_EEPROM_WAYPOINT_ADDRESS, currentWaypoint);
 
     // TODO: Not sure if this is a good assumption
     navigateToWaypoint = false;
@@ -52,7 +52,7 @@ void NavigationManager::setWaypoint(long latitude, long longitude) {
     currentWaypoint.latitude = latitude;
     currentWaypoint.longitude = longitude;
     navigateToWaypoint = true;
-    EEPROM.put(SAILFACE_EEPROM_ADDRESS, currentWaypoint);
+    EEPROM.put(SF_EEPROM_WAYPOINT_ADDRESS, currentWaypoint);
 }
 
 Waypoint NavigationManager::getNextWaypoint() {
