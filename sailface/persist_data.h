@@ -4,7 +4,7 @@
 #ifndef _SAIL_FACE_PERSIST_DATA
 #define _SAIL_FACE_PERSIST_DATA
 
-#include <EEPROM.h>
+//#include <EEPROM.h>
 
 #include "navigation.h"
 

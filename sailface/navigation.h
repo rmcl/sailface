@@ -2,10 +2,15 @@
 #ifndef _SAIL_FACE_NAVIGATION
 #define _SAIL_FACE_NAVIGATION
 
-#include <Arduino.h>
+// Only import these things if we are building for the device
+// and not compiling to run unit tests.
+#ifdef ARDUINO_VERSION
+    #include "Arduino.h"
+    #include <EEPROM.h>
+#endif
+
 #include <stdint.h>
 #include <math.h>
-#include <EEPROM.h>
 #include <TinyGPS++.h>
 
 // determine if these are defined elsewhere

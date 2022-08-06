@@ -7,7 +7,8 @@
 // from the EEPROM persistant storage.
 //
 void NavigationManager::initialize() {
-    EEPROM.get(SF_EEPROM_WAYPOINT_ADDRESS, currentWaypoint);
+    //EEPROM.get(SF_EEPROM_WAYPOINT_ADDRESS, currentWaypoint);
+    //persistedData->getWaypoints()
 
     // TODO: Not sure if this is a good assumption
     navigateToWaypoint = false;
