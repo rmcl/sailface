@@ -1,6 +1,6 @@
 # Unit Tests
 
-Tests for validating sailface code. Run on a computer utilizing EpoxyDuino and AUnit.
+Tests for validating Sailface code. Run on a computer utilizing EpoxyDuino and AUnit.
 
 # Run Tests
 
