@@ -7,3 +7,10 @@ services:
             context: ./sailface_cloud
         volumes:
             - ./sailface_cloud:/app/sailface_cloud
+
+    arduino:
+        build:
+            dockerfile: Dockerfile
+            context: ./sailface
+        volumes:
+            - ./sailface:/sailface
