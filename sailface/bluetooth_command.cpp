@@ -5,7 +5,8 @@
 
 void BluetoothCommand::initialize() {
 
-    bluetoothActive = true;
+    // Retrieve if Bluetooth is active from EEPROM data
+    bluetoothActive = persistedData->getBluetoothAcive();
 
     // Turn on bluetooth module
     pinMode(BLUETOOTH_ENABLE_PIN, OUTPUT);

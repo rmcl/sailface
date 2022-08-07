@@ -8,6 +8,7 @@
 #include "navigation.h"
 #include "bluetooth_command.h"
 
+PersistDataManager *persistedData;
 PositionManager *position;
 PowerManager *power;
 HelmManager *helm;
@@ -21,6 +22,7 @@ void setup(void) {
     // Uncomment for debug via Serial
     //Serial.begin(115200);
 
+    persistedData = new PersistedData();
     position = new PositionManager();
     power = new PowerManager();
     helm = new HelmManager();
@@ -29,6 +31,7 @@ void setup(void) {
     bluetooth = new BluetoothCommand();
     iridium = new IridiumManager();
 
+    persistedData->initialize();
     position->initialize();
     power->initialize();
     helm->initialize();
