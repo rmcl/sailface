@@ -2,17 +2,23 @@
 #ifndef _SAIL_FACE_NAVIGATION
 #define _SAIL_FACE_NAVIGATION
 
-#include <Arduino.h>
+// Only import these things if we are building for the device
+// and not compiling to run unit tests.
+#ifdef ARDUINO_VERSION
+    #include "Arduino.h"
+    #include <EEPROM.h>
+#endif
+
 #include <stdint.h>
 #include <math.h>
-#include <EEPROM.h>
 #include <TinyGPS++.h>
 
 // determine if these are defined elsewhere
 #define RAD2DEG M_PI/360.0*2.0
 #define DEG2RAD 360.0/M_PI/2.0
 
-#define SAILFACE_EEPROM_ADDRESS 0x0
+#define SF_EEPROM_WAYPOINT_ADDRESS 0x0
+
 
 typedef struct {
     long latitude;

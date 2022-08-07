@@ -1,11 +1,18 @@
-#line 2 "test_navigation.ino"
+#line 2 "tests.ino"
+
+// Adapted from:
+// https://github.com/mmurdoch/arduinounit/blob/master/examples/basic/basic.ino
 
 #include <AUnit.h>
 
-// test-once test named "once"
-test(once) {
+test(correct) {
   int x = 1;
-  assertLessOrEqual(x, 1);
+  assertEqual(x, 1);
+}
+
+test(incorrect) {
+  int x = 1;
+  assertNotEqual(x, 1);
 }
 
 //----------------------------------------------------------------------------
@@ -19,7 +26,7 @@ void setup() {
 
   Serial.println(F("This test should produce the following:"));
   Serial.println(
-    F("1 passed, 0 failed, 0 skipped, 0 timed out, out of 1 test(s).")
+    F("1 passed, 1 failed, 0 skipped, 0 timed out, out of 2 test(s).")
   );
   Serial.println(F("----"));
 }
