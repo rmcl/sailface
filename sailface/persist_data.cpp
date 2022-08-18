@@ -50,17 +50,17 @@ int PersistDataManager::getIridiumTransmitFrequency() {
     return currentData.iridiumTransmitFrequency;
 }
 
-void PersistDataManager::storeWaypoints(Waypoint[] waypoint, int count) {
-    int actualWaypointCount = min(MAX_WAYPOINTS, count)
+void PersistDataManager::storeWaypoints(Waypoint waypoint[], int count) {
+    int actualWaypointCount = min(MAX_WAYPOINTS, count);
 
     // Iterate over the total number of waypoints that can be stored and either
     // persist new value or set to zero.
-    for (int i = 0; i<MAX_WAYPOINTS; i++) {
-        if (i < actualWaypointCount) {
-            currentData.waypoints[i] = waypoint[i];
+    for (int index = 0; index < MAX_WAYPOINTS; index++) {
+        if (index < actualWaypointCount) {
+            currentData.waypoints[index] = waypoint[index];
         } else {
-            currentData.waypoints[i].latitude = 0;
-            currentData.waypoints[i].longitude = 0;
+            currentData.waypoints[index].latitude = 0;
+            currentData.waypoints[index].longitude = 0;
         }
     }
     persist();

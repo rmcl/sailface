@@ -1,4 +1,5 @@
 /* Implementation methods to compute course. Store waypoints in EEPROM */
+#include "sailface.h"
 #include "navigation.h"
 
 
@@ -54,7 +55,7 @@ void NavigationManager::setWaypoint(long latitude, long longitude) {
     currentWaypoint.longitude = longitude;
     navigateToWaypoint = true;
 
-    persistedData->storeWaypoints((Waypoint[])&currentWaypoint, 1);
+    persistedData->storeWaypoints(&currentWaypoint, 1);
 }
 
 Waypoint NavigationManager::getNextWaypoint() {

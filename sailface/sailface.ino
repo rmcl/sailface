@@ -22,7 +22,7 @@ void setup(void) {
     // Uncomment for debug via Serial
     //Serial.begin(115200);
 
-    persistedData = new PersistedData();
+    persistedData = new PersistDataManager();
     position = new PositionManager();
     power = new PowerManager();
     helm = new HelmManager();
