@@ -7,7 +7,7 @@
 
 
 
-#define AVERAGE_HEADING_BUFFER_SIZE 50
+#define AVERAGE_HEADING_BUFFER_SIZE 10
 
 // PIN must be set to HIGH for GPS to be powered
 // GPS FUSED ON IN V0.2
@@ -50,6 +50,7 @@ class PositionManager {
         HardwareSerial &gpsSerial = Serial1;
 
         MPU9250 mpu;
+        uint32_t prev_ms = 0;
 
         PositionInfo currentPosition;
 

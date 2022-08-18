@@ -21,6 +21,10 @@ void PositionManager::initialize() {
 
     gpsSerial.begin(9600);
 
+    // This wire begin call is required for MPU setup.
+    Wire.begin();
+    delay(2000);
+
     if (!mpu.setup(0x68)) {
         if (bluetooth->isBluetoothActive()) {
             HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
@@ -52,7 +56,6 @@ void PositionManager::initialize() {
 void PositionManager::pollForMPU() {
 
     if (mpu.update()) {
-        static uint32_t prev_ms = millis();
         if (millis() > prev_ms + 100) {
             float magX = mpu.getMagX();
             float magY = mpu.getMagY();
