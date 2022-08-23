@@ -2,6 +2,7 @@
 import json
 from datetime import datetime
 import boto3
+from botocore.exceptions import ClientError
 
 from sailface_cloud.status_parser import SailFaceStatusMessageParser
 
@@ -30,10 +31,6 @@ def save_raw_message_to_s3(event):
 
     s3.Bucket(bucket_name).put_object(Key=s3_path, Body=encoded_string)
 
-def parse_message(self, message_body):
-    parser = SailFaceStatusMessageParser()
-    return parser.parse(message_body)
-
 def load_existing_messages_from_s3(message_date):
     bucket = s3.Bucket(bucket_name)
 
@@ -41,7 +38,7 @@ def load_existing_messages_from_s3(message_date):
 
     try:
         file_contents = bucket.Object(expected_file_path).get()['Body'].read()
-    except botocore.exceptions.ClientError as ex:
+    except ClientError as ex:
         if ex.response['Error']['Code'] == 'NoSuchKey':
             return None
         else:
@@ -49,12 +46,11 @@ def load_existing_messages_from_s3(message_date):
 
     return json.load(file_contents)
 
+
 def save_processed_messages_to_s3(messages, message_date):
-    filename = f"{message_date}.json"
-    s3_path = f"processed/{filename}"
+    s3_path = f"processed/{message_date}.json"
 
-    encoded_string = event['body'].encode("utf-8")
-
+    encoded_string = json.dumps(messages).encode("utf-8")
     s3.Bucket(bucket_name).put_object(Key=s3_path, Body=encoded_string)
 
 
@@ -69,12 +65,15 @@ def lambda_handler(event, context):
     save_raw_message_to_s3(event)
 
     # Parse the message a store into a processed JSON file
-    parsed_message = parse_message(event['body'].encode("utf-8"))
+    json_message = json.loads(event['body'])
+
+    parser = SailFaceStatusMessageParser()
+    parsed_message = parser.parse(json_message)
 
     transmit_date = datetime.fromisoformat(parsed_message['transmit_time']).date()
 
-    existing_messages = load_existing_messages_from_s3(transmit_date)
-
+    existing_messages = load_existing_messages_from_s3(transmit_date) or {}
+    
     if parsed_message['message_key'] not in existing_messages:
         existing_messages[parsed_message['message_key']] = parsed_message
 
