@@ -78,11 +78,17 @@ class SailFaceStatusMessageParser:
         transmit_time = datetime.strptime(
             validated_data['transmit_time'],
             '%y-%m-%d %H:%M:%S')
+
+        momsn = validated_data['momsn']
+        transmit_date = transmit_time.date()
+        message_key = f'{transmit_date}--{momsn}'
+    
         result = {
             'iridium_latitude': validated_data['iridium_latitude'],
             'iridium_longitude': validated_data['iridium_longitude'],
             'momsn': validated_data['momsn'],
-            'transmit_time': transmit_time.isoformat()
+            'transmit_time': transmit_time.isoformat(),
+            'message_key': message_key
         }
 
         payload_bytes = bytes.fromhex(validated_data['data'])
