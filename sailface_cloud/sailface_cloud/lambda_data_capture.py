@@ -29,7 +29,10 @@ def save_raw_message_to_s3(event):
 
     encoded_string = event['body'].encode("utf-8")
 
-    s3.Bucket(bucket_name).put_object(Key=s3_path, Body=encoded_string)
+    s3.Bucket(bucket_name).put_object(
+        Key=s3_path,
+        Body=encoded_string,
+        ContentType='application/json')
 
 def load_existing_messages_from_s3(message_date):
     bucket = s3.Bucket(bucket_name)
@@ -73,7 +76,7 @@ def lambda_handler(event, context):
     transmit_date = datetime.fromisoformat(parsed_message['transmit_time']).date()
 
     existing_messages = load_existing_messages_from_s3(transmit_date) or {}
-    
+
     if parsed_message['message_key'] not in existing_messages:
         existing_messages[parsed_message['message_key']] = parsed_message
 
