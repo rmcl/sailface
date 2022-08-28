@@ -14,6 +14,9 @@ void PersistDataManager::load() {
         currentData.iridiumActive = false;
         currentData.iridiumTransmitFrequency = 60;
         currentData.iridiumLastTransmitTime = 0;
+
+        currentData.calibrationParams = {0};
+
     }
 }
 
@@ -81,4 +84,13 @@ void PersistDataManager::storeIridiumActive(bool iridiumActive) {
 }
 bool PersistDataManager::getIridiumActive() {
     return currentData.iridiumActive;
+}
+
+void PersistDataManager::storeMPUCalibrationParams(MPUCalibrationParams params) {
+    currentData.calibrationParams = params;
+    persist();
+}
+
+MPUCalibrationParams PersistDataManager::getMPUCalibrationParams() {
+    return currentData.calibrationParams;
 }

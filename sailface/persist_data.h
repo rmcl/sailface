@@ -7,6 +7,7 @@
 #include <EEPROM.h>
 
 #include "navigation.h"
+#include "position.h"
 
 #define SF_PERSISTED_DATA_ADDRESS 0x0
 #define SF_CURRENT_PERSIST_VALID 0x69
@@ -30,6 +31,8 @@ typedef struct {
     unsigned long iridiumLastTransmitTime;
 
     Waypoint waypoints[MAX_WAYPOINTS];
+
+    MPUCalibrationParams calibrationParams;
 
 } PersistedData;
 
@@ -61,6 +64,9 @@ class PersistDataManager {
 
         void storeWaypoints(Waypoint waypoints[], int count);
         //Waypoint[MAX_WAYPOINTS] getWaypoints();
+
+        void storeMPUCalibrationParams(MPUCalibrationParams params);
+        MPUCalibrationParams getMPUCalibrationParams();
 
 };
 

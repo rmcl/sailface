@@ -27,14 +27,27 @@ void IridiumManager::initialize() {
     lastTransmitTime = persistedData->getIridiumLastTransmitTime();
     updateFrequencyMinutes = persistedData->getIridiumTransmitFrequency();
 
+    iridiumBusy = false;
+
     // If the Iridium was active before the power failure; start it up now.
     if (persistedData->getIridiumActive() == true) {
         wakeIridium();
     }
 }
 
+unsigned long IridiumManager::getLastTransmitTime() {
+    return lastTransmitTime;
+}
+long IridiumManager::getUpdateFrequency() {
+    return updateFrequencyMinutes;
+}
+
 bool IridiumManager::isIridiumActive() {
     return iridiumActive;
+}
+
+bool IridiumManager::isIridiumBusy() {
+    return iridiumBusy;
 }
 
 void IridiumManager::wakeIridium() {
@@ -153,11 +166,12 @@ int IridiumManager::sendStatusReceiveCommandMessage(
     IridiumStatusMessage *txMessage,
     IridiumCommandMessage *rxCommandMessage
 ) {
-
     size_t txMessageSize = 0;
     if (txMessage != NULL) {
         txMessageSize = sizeof(*txMessage);
     }
+
+    iridiumBusy = true;
 
     size_t rxBufferSize = sizeof(*rxCommandMessage);
     int errorCode = modem.sendReceiveSBDBinary(
@@ -165,6 +179,8 @@ int IridiumManager::sendStatusReceiveCommandMessage(
         txMessageSize,
         (uint8_t*)rxCommandMessage,
         rxBufferSize);
+
+    iridiumBusy = false;
 
     if (errorCode != ISBD_SUCCESS) {
         if (bluetooth->isBluetoothActive()) {
@@ -215,7 +231,7 @@ int IridiumManager::pollForCommandMessages(bool forceTransmitStatus) {
     bool shouldTransmit = shouldTransmitStatus();
 
     int messageCount = pollForIridiumRingAlerts();
-    if (messageCount == 0 && !shouldTransmit && !forceTransmitStatus) {
+    if (messageCount == 0 && !shouldTransmit && !forceTransmitStatus && !iridiumBusy) {
         return 0;
     }
 

@@ -55,6 +55,7 @@ class IridiumManager {
 
     private:
         bool iridiumActive;
+        bool iridiumBusy;
         int signalQuality;
 
         // update frequency in minutes
@@ -90,7 +91,11 @@ class IridiumManager {
 
         void wakeIridium();
         void sleepIridium();
+
         bool isIridiumActive();
+        bool isIridiumBusy();
+        unsigned long getLastTransmitTime();
+        long getUpdateFrequency();
 
         void pollIridiumSignalQuality();
         int pollForCommandMessages(bool forceTransmitStatus);
