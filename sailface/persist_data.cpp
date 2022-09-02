@@ -17,6 +17,9 @@ void PersistDataManager::load() {
 
         currentData.calibrationParams = {0};
 
+        currentData.isNavigatingToWaypoint = false;
+        currentData.numWaypoints = 0;
+
     }
 }
 
@@ -53,20 +56,49 @@ int PersistDataManager::getIridiumTransmitFrequency() {
     return currentData.iridiumTransmitFrequency;
 }
 
-void PersistDataManager::storeWaypoints(Waypoint waypoint[], int count) {
-    int actualWaypointCount = min(MAX_WAYPOINTS, count);
+void PersistDataManager::storeIsNavigatingToWaypoint(bool isNavigating) {
+    currentData.isNavigatingToWaypoint = isNavigating;
+    persist();
+}
 
-    // Iterate over the total number of waypoints that can be stored and either
-    // persist new value or set to zero.
-    for (int index = 0; index < MAX_WAYPOINTS; index++) {
-        if (index < actualWaypointCount) {
+bool PersistDataManager::getIsNavigatingToWaypoint() {
+    return currentData.isNavigatingToWaypoint;
+}
+
+// Persist waypoints to EEPROM.
+// appendWaypoints - if true, add new waypoints to existing waypoints; if false
+// overwrite existing waypoints
+void PersistDataManager::storeWaypoints(
+    Waypoint waypoint[],
+    int count,
+    bool appendWaypoints
+) {
+    int numNewWaypoints = min(
+        MAX_WAYPOINTS - currentData.numWaypoints,
+        count);
+
+    int index = currentData.numWaypoints;
+    if (appendWaypoints == false) {
+        index = 0;
+    }
+
+    for (; index < MAX_WAYPOINTS; index++) {
+        if (index < numNewWaypoints) {
             currentData.waypoints[index] = waypoint[index];
         } else {
             currentData.waypoints[index].latitude = 0;
             currentData.waypoints[index].longitude = 0;
+            currentData.waypoints[index].allowedRadiusMeters = 0;
         }
     }
+
+    currentData.numWaypoints += numNewWaypoints;
+
     persist();
+}
+int PersistDataManager::getWaypoints(Waypoint *waypoints) {
+    waypoints = currentData.waypoints;
+    return currentData.numWaypoints;
 }
 
 void PersistDataManager::storeIridiumLastTransmitTime(unsigned long lastTransmitTime) {

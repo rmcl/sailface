@@ -67,24 +67,7 @@ void sailfaceMainLoop(bool iridiumBusy) {
     position->pollGPSForPosition();
     position->pollForMPU();
 
-    PositionInfo curPosition = position->getCurPosition();
-    if (curPosition.positionValid) {
-        if (navigation->isNavigatingToWaypoint()) {
-            double bearing = navigation->computeBearingToNextWaypoint(
-                curPosition.latitude,
-                curPosition.longitude
-            );
-
-            /// figure out a more appopriate error state
-            if (bearing >= -365) {
-                helm->pollForRudderAdjustment(
-                    curPosition.magneticHeading,
-                    curPosition.magneticHeadingVariation,
-                    bearing
-                );
-            }
-        }
-    }
+    navigation->pollForNavigationAdjustments();
 
     bluetooth->pollForBluetoothCommandMessages();
 

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <Arduino.h>
 #include <IridiumSBD.h>
+#include "navigation.h"
 
 #define COMM_MAX_COMMAND_LEN 100
 
@@ -27,6 +28,11 @@ typedef struct {
 
 } IridiumStatusMessage;
 
+
+#define WAYPOINT_NO_CHANGE 0
+#define WAYPOINT_OVERWRITE 1
+#define WAYPOINT_APPEND 2
+
 // Structure of messages received from Iridium.
 typedef struct {
 
@@ -38,15 +44,18 @@ typedef struct {
     // Time in seconds that status updates are sent through Iridium.
     long updateFrequencyMinutes;
 
+
+    bool navigateToWaypoint;
+
     // Desired Waypoint
     // Actions
-    //    Set to 0 for no change.
-    //    Set to 1 delete existing waypoints and add this one
-    //    Set to 2 for append additional
+    //    Set to 0 for no change. (WAYPOINT_NO_CHANGE)
+    //    Set to 1 delete existing waypoints and add this one (WAYPOINT_OVERWRITE)
+    //    Set to 2 for append additional (WAYPOINT_APPEND)
     short waypointAction;
 
-    long waypointLatitude;
-    long waypointLongitude;
+    short numWaypoints;
+    Waypoint waypoints[];
 
 } IridiumCommandMessage;
 

@@ -11,7 +11,7 @@
 
 #define SF_PERSISTED_DATA_ADDRESS 0x0
 #define SF_CURRENT_PERSIST_VALID 0x69
-#define MAX_WAYPOINTS 10
+#define MAX_WAYPOINTS 20
 
 
 //
@@ -30,6 +30,9 @@ typedef struct {
     int iridiumTransmitFrequency;
     unsigned long iridiumLastTransmitTime;
 
+    bool isNavigatingToWaypoint;
+
+    int numWaypoints;
     Waypoint waypoints[MAX_WAYPOINTS];
 
     MPUCalibrationParams calibrationParams;
@@ -62,12 +65,20 @@ class PersistDataManager {
         void storeIridiumLastTransmitTime(unsigned long lastTransmitTime);
         unsigned long getIridiumLastTransmitTime();
 
-        void storeWaypoints(Waypoint waypoints[], int count);
-        //Waypoint[MAX_WAYPOINTS] getWaypoints();
+        void storeIsNavigatingToWaypoint(bool isNavigating);
+        bool getIsNavigatingToWaypoint();
+
+        void storeWaypoints(
+            Waypoint waypoints[],
+            int count,
+            bool appendWaypoints);
+
+        // Returns number of waypoints and assigns the position of the array
+        // to the provided pointer.
+        int getWaypoints(Waypoint *waypoints);
 
         void storeMPUCalibrationParams(MPUCalibrationParams params);
         MPUCalibrationParams getMPUCalibrationParams();
-
 };
 
 #endif
