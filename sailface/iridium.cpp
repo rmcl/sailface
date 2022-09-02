@@ -27,14 +27,27 @@ void IridiumManager::initialize() {
     lastTransmitTime = persistedData->getIridiumLastTransmitTime();
     updateFrequencyMinutes = persistedData->getIridiumTransmitFrequency();
 
+    iridiumBusy = false;
+
     // If the Iridium was active before the power failure; start it up now.
     if (persistedData->getIridiumActive() == true) {
         wakeIridium();
     }
 }
 
+unsigned long IridiumManager::getLastTransmitTime() {
+    return lastTransmitTime;
+}
+long IridiumManager::getUpdateFrequency() {
+    return updateFrequencyMinutes;
+}
+
 bool IridiumManager::isIridiumActive() {
     return iridiumActive;
+}
+
+bool IridiumManager::isIridiumBusy() {
+    return iridiumBusy;
 }
 
 void IridiumManager::wakeIridium() {
@@ -125,7 +138,7 @@ IridiumStatusMessage IridiumManager::buildStatusMessage() {
     IridiumStatusMessage message;
 
     PositionInfo curPosition = position->getCurPosition();
-    Waypoint nextWaypoint = navigation->getNextWaypoint();
+    Waypoint activeWaypoint = navigation->getActiveWaypoint();
 
     PowerInfo powerInfo;
     power->getPowerInfo(&powerInfo);
@@ -133,8 +146,8 @@ IridiumStatusMessage IridiumManager::buildStatusMessage() {
     message.batteryVoltage = powerInfo.batteryVoltage * 10; // multiple by ten to convert to short int
     message.latitude = curPosition.latitude;
     message.longitude = curPosition.longitude;
-    message.waypointLatitude = nextWaypoint.latitude;
-    message.waypointLongitude = nextWaypoint.longitude;
+    message.waypointLatitude = activeWaypoint.latitude;
+    message.waypointLongitude = activeWaypoint.longitude;
     message.propSpeed = prop->getPropellerSpeed();
     return message;
 }
@@ -153,11 +166,12 @@ int IridiumManager::sendStatusReceiveCommandMessage(
     IridiumStatusMessage *txMessage,
     IridiumCommandMessage *rxCommandMessage
 ) {
-
     size_t txMessageSize = 0;
     if (txMessage != NULL) {
         txMessageSize = sizeof(*txMessage);
     }
+
+    iridiumBusy = true;
 
     size_t rxBufferSize = sizeof(*rxCommandMessage);
     int errorCode = modem.sendReceiveSBDBinary(
@@ -165,6 +179,8 @@ int IridiumManager::sendStatusReceiveCommandMessage(
         txMessageSize,
         (uint8_t*)rxCommandMessage,
         rxBufferSize);
+
+    iridiumBusy = false;
 
     if (errorCode != ISBD_SUCCESS) {
         if (bluetooth->isBluetoothActive()) {
@@ -215,7 +231,7 @@ int IridiumManager::pollForCommandMessages(bool forceTransmitStatus) {
     bool shouldTransmit = shouldTransmitStatus();
 
     int messageCount = pollForIridiumRingAlerts();
-    if (messageCount == 0 && !shouldTransmit && !forceTransmitStatus) {
+    if (messageCount == 0 && !shouldTransmit && !forceTransmitStatus && !iridiumBusy) {
         return 0;
     }
 
@@ -257,29 +273,66 @@ int IridiumManager::pollForCommandMessages(bool forceTransmitStatus) {
 
 
 void IridiumManager::processCommandMessage(IridiumCommandMessage *commandMessage) {
+
+    if (bluetooth->isBluetoothActive()) {
+        HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+        bluetoothDebug->println(
+            String("Received Iridium Command Message\n") + \
+            String("PROP SPEED: ") + \
+            String(commandMessage->propSpeed) + \
+            String(" SAT TX FREQ: ") + \
+            String(commandMessage->updateFrequencyMinutes) + \
+            String("\nNAV TO WAYPOINT ENABLED: ") + \
+            String(commandMessage->navigateToWaypoint)  +\
+            String("WAYPOINT ACTION: ") + \
+            String(commandMessage->waypointAction) + \
+            String("NUM PTS: ") + \
+            String(commandMessage->numWaypoints)
+        );
+
+        for (int index = 0; index < commandMessage->numWaypoints; index++) {
+            bluetoothDebug->println(
+                String("  LAT:") + \
+                String(commandMessage->waypoints[index].latitude) + \
+                String(",") + \
+                String(commandMessage->waypoints[index].longitude) + \
+                String("  RADIUS:") + \
+                String(commandMessage->waypoints[index].allowedRadiusMeters)
+            );
+        }
+    }
+
     prop->setPropellerSpeed(commandMessage->propSpeed);
 
     updateFrequencyMinutes = commandMessage->updateFrequencyMinutes;
     persistedData->storeIridiumTransmitFrequency(updateFrequencyMinutes);
 
     switch(commandMessage->waypointAction) {
-        case 2:
+        case WAYPOINT_APPEND:
             // Append new waypoint to existing.
-            //TODO SUPPORT MULTIPLE WAYPOINTS!!!!!!!!!!!!!!!!!!!
-            navigation->setWaypoint(
-                commandMessage->waypointLatitude,
-                commandMessage->waypointLongitude);
+            navigation->updateWaypoints(
+                commandMessage->waypoints,
+                commandMessage->numWaypoints,
+                true);
 
             break;
-        case 1:
+        case WAYPOINT_OVERWRITE:
             // Clear existing waypoints and append
-            navigation->setWaypoint(
-                commandMessage->waypointLatitude,
-                commandMessage->waypointLongitude);
+            navigation->updateWaypoints(
+                commandMessage->waypoints,
+                commandMessage->numWaypoints,
+                false);
             break;
-        case 0:
+
+        case WAYPOINT_NO_CHANGE:
         default:
             break;
+    }
+
+    if (commandMessage->navigateToWaypoint == true) {
+        navigation->startNavigatingToWaypoint();
+    } else {
+        navigation->stopNavigatingToWaypoint();
     }
 }
 

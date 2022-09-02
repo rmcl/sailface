@@ -14,9 +14,10 @@ void BluetoothCommand::initialize() {
 
     delay(1000);
 
-    bluetoothSerial.begin(57600);
+    bluetoothSerial.begin(9600);
 
     bluetoothSerialCommands.SetDefaultHandler(cmdUnrecognized);
+    bluetoothSerialCommands.AddCommand(&blueCmdHelp);
     bluetoothSerialCommands.AddCommand(&blueCmdStatus);
     bluetoothSerialCommands.AddCommand(&blueCmdSetRudder);
     bluetoothSerialCommands.AddCommand(&blueCmdStartProp);
@@ -24,6 +25,7 @@ void BluetoothCommand::initialize() {
     bluetoothSerialCommands.AddCommand(&blueCmdStartIridium);
     bluetoothSerialCommands.AddCommand(&blueCmdSleepIridium);
     bluetoothSerialCommands.AddCommand(&blueCmdPollIridium);
+    bluetoothSerialCommands.AddCommand(&blueCmdCalibrateMPU);
 }
 
 bool BluetoothCommand::isBluetoothActive() {
@@ -50,23 +52,50 @@ void cmdUnrecognized(SerialCommands* sender, const char* cmd) {
     serial->flush();
 }
 
+void cmdHelp(SerialCommands* sender) {
+    sender->GetSerial()->println(
+        String("SAILFACE BLUETOOTH COMMANDS\n") + \
+        String("  status: return status of the craft\n") + \
+        String("  rudder <int:-10-10>: set the angle of the rudder\n") + \
+        String("  engage <int:0-255: Set the speed of the main prop.\n") + \
+        String("  satstart: Start the iridium sat radio.\n") + \
+        String("  satpoll: Force a poll for sat messages.\n")
+    );
+}
+
 void cmdStatus(SerialCommands* sender) {
 
     PositionInfo curPosition = position->getCurPosition();
     sender->GetSerial()->println(
-        String("LAT:") + String(curPosition.latitude) + \
-        String(" LONG:") + String(curPosition.longitude) + \
-        String(" VAL:") + String(curPosition.positionValid) + \
-        String(" MPU:") + String(curPosition.magneticHeading) + \
+        String("POSITION\n") + \
+        String(" LAT:") + String(curPosition.latitude) + String("\n") + \
+        String(" LONG:") + String(curPosition.longitude) + String("\n") + \
+        String(" VAL:") + String(curPosition.positionValid) + String("\n") + \
+        String(" MPU:") + String(curPosition.magneticHeading) + String("\n") + \
         String(" VAR:") + String(curPosition.magneticHeadingVariation)
     );
 
     PowerInfo powInfo;
     power->getPowerInfo(&powInfo);
     sender->GetSerial()->println(
-        String("BAT VOLT:") + String(powInfo.batteryVoltage) + \
+        String("Power:\n") + \
+        String(" BAT VOLT:") + String(powInfo.batteryVoltage) + String("\n") + \
         String(" CURRENT:") + String(powInfo.batteryCurrentDraw)
     );
+
+    sender->GetSerial()->println(
+        String("Propulsion & Navigation:\n") + \
+        String(" PROP SPEED:") + String(prop->getPropellerSpeed()) + String("\n") + \
+        String(" TRANSMIT FREQUENCY:") + String(iridium->getUpdateFrequency())
+    );
+
+    sender->GetSerial()->println(
+        String("SAT\n LAST TRANSMIT:") + String(iridium->getLastTransmitTime()) + String("\n") + \
+        String(" ACTIVE: ") + String(iridium->isIridiumActive()) + String("\n") + \
+        String(" BUSY/TX IN PROG: ") + String(iridium->isIridiumBusy()) + String("\n") + \
+        String(" TRANSMIT FREQUENCY:") + String(iridium->getUpdateFrequency())
+    );
+
     sender->GetSerial()->println();
     sender->GetSerial()->flush();
 
@@ -89,7 +118,7 @@ void cmdSetRudder(SerialCommands* sender) {
 }
 
 void cmdStartProp(SerialCommands* sender) {
-    // Expect one argument of type int specifying the rudder position from -10->+10
+    //Expect one argument from 0-255
     char* propSpeedStr = sender->Next();
 	if (propSpeedStr == NULL) {
 		sender->GetSerial()->println("ERROR: Prop speed not specified");
@@ -117,11 +146,18 @@ void cmdPollIridium(SerialCommands* sender) {
     sender->GetSerial()->println("INFO: IRIDIUM POLL");
     sender->GetSerial()->println(
         String("ACTIVE:" ) + \
-        String(iridium->isIridiumActive())
+        String(iridium->isIridiumActive()) + \
+        String("BUSY:" ) + \
+        String(iridium->isIridiumBusy())
     );
     int messageCount = iridium->pollForCommandMessages(true);
     sender->GetSerial()->println(
         String("Num MSG: ") + \
         String(messageCount)
     );
+}
+
+void cmdCalibrationMPU(SerialCommands* sender) {
+    MPUCalibrationParams params = position->calibrateMPU(sender->GetSerial());
+    position->printMPUCalibrationSettings(&params, sender->GetSerial());
 }

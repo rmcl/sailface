@@ -22,7 +22,7 @@ void setup(void) {
     // Uncomment for debug via Serial
     //Serial.begin(115200);
 
-    persistedData = new PersistedData();
+    persistedData = new PersistDataManager();
     position = new PositionManager();
     power = new PowerManager();
     helm = new HelmManager();
@@ -42,30 +42,38 @@ void setup(void) {
 }
 
 void loop(void) {
+    sailfaceMainLoop(false);
+}
+
+bool ISBDCallback() {
+    sailfaceMainLoop(true);
+
+    // Do not cancel the Iridium transmit operation.
+    return true;
+}
+
+/*
+ * The main loop - Perform actions for each of the subsystems
+ * The reason we are not using the Arduino built-in loop method is that the
+ * IridiumSBD library blocks for 1-10 minutes as it attempts to transmit messages
+ * to the sattelite. During that time it repeatedly calls the ISBDCallback which we
+ * define above. ISBDCallback will call sailfaceMainLoop so that operations can
+ * continue as the Iridium modem attempts to transmit.
+ * More information in the ISBD docs:
+ * https://github.com/mikalhart/IridiumSBD/blob/master/extras/
+    IridiumSBD%20Arduino%20Library%20Documentation.pdf
+ */
+void sailfaceMainLoop(bool iridiumBusy) {
     position->pollGPSForPosition();
     position->pollForMPU();
 
-    PositionInfo curPosition = position->getCurPosition();
-    if (curPosition.positionValid) {
-        if (navigation->isNavigatingToWaypoint()) {
-            double bearing = navigation->computeBearingToNextWaypoint(
-                curPosition.latitude,
-                curPosition.longitude
-            );
-
-            /// figure out a more appopriate error state
-            if (bearing >= -365) {
-                helm->pollForRudderAdjustment(
-                    curPosition.magneticHeading,
-                    curPosition.magneticHeadingVariation,
-                    bearing
-                );
-            }
-        }
-    }
+    navigation->pollForNavigationAdjustments();
 
     bluetooth->pollForBluetoothCommandMessages();
-    //iridium->pollForCommandMessages(false);
+
+    if (!iridiumBusy) {
+        iridium->pollForCommandMessages(false);
+    }
 
     /*
     Todo: think about how we want to incorporate this later.

@@ -1,2 +1,5 @@
 nose
+awslambdaric
 pyjwt[crypto]
+cryptography
+boto3

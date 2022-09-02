@@ -7,7 +7,7 @@
 
 
 
-#define AVERAGE_HEADING_BUFFER_SIZE 50
+#define AVERAGE_HEADING_BUFFER_SIZE 5
 
 // PIN must be set to HIGH for GPS to be powered
 // GPS FUSED ON IN V0.2
@@ -41,6 +41,27 @@ typedef struct {
 
 } PositionInfo;
 
+
+typedef struct {
+    float accBiasX;
+    float accBiasY;
+    float accBiasZ;
+
+    float gyroBiasX;
+    float gyroBiasY;
+    float gyroBiasZ;
+
+    float magBiasX;
+    float magBiasY;
+    float magBiasZ;
+
+    float magScaleX;
+    float magScaleY;
+    float magScaleZ;
+
+} MPUCalibrationParams;
+
+
 class PositionManager {
 
     private:
@@ -50,16 +71,22 @@ class PositionManager {
         HardwareSerial &gpsSerial = Serial1;
 
         MPU9250 mpu;
+        uint32_t prev_ms = 0;
 
         PositionInfo currentPosition;
 
         float averageHeadingBuffer[AVERAGE_HEADING_BUFFER_SIZE];
         int averageHeadingBufferIdx;
 
+        void setMPUCalibrationParams(MPUCalibrationParams calibrationParams);
+
     public:
         void initialize();
         void pollGPSForPosition();
         void pollForMPU();
+
+        MPUCalibrationParams calibrateMPU(Stream *serial);
+        void printMPUCalibrationSettings(MPUCalibrationParams *params, Stream *serial);
 
         PositionInfo getCurPosition();
 };

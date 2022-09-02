@@ -15,6 +15,7 @@
 
 /* Commands */
 void cmdUnrecognized(SerialCommands* sender, const char* cmd);
+void cmdHelp(SerialCommands* sender);
 void cmdStatus(SerialCommands* sender);
 void cmdSetRudder(SerialCommands* sender);
 void cmdStartProp(SerialCommands* sender);
@@ -22,6 +23,7 @@ void cmdStopProp(SerialCommands* sender);
 void cmdStartIridium(SerialCommands* sender);
 void cmdSleepIridium(SerialCommands* sender);
 void cmdPollIridium(SerialCommands* sender);
+void cmdCalibrationMPU(SerialCommands* sender);
 
 
 class BluetoothCommand {
@@ -45,6 +47,7 @@ class BluetoothCommand {
         };
 
         /* Command Calls */
+        SerialCommand blueCmdHelp{"HELP", cmdHelp};
         SerialCommand blueCmdStatus{"STATUS", cmdStatus};
         SerialCommand blueCmdSetRudder{"RUDDER", cmdSetRudder};
         SerialCommand blueCmdStartProp{"ENGAGE", cmdStartProp};
@@ -52,6 +55,7 @@ class BluetoothCommand {
         SerialCommand blueCmdStartIridium{"SATSTART", cmdStartIridium};
         SerialCommand blueCmdSleepIridium{"SATSLEEP", cmdSleepIridium};
         SerialCommand blueCmdPollIridium{"SATPOLL", cmdPollIridium};
+        SerialCommand blueCmdCalibrateMPU{"MPUCAL", cmdCalibrationMPU};
 
 
     public:

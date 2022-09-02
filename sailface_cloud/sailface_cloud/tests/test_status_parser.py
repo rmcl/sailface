@@ -41,7 +41,8 @@ class TestSailFaceStatusMessageParser(unittest.TestCase):
     def test_parse(self):
         """test that we validate the JWT and decode the message."""
         result = self.parser.parse(self.EXAMPLE_MESSAGE_1)
-        self.assertEqual(result, {'battery_current': 1280,
+        self.assertEqual(result, {
+            'battery_current': 1280,
             'battery_voltage': 98,
             'iridium_latitude': '34.4301',
             'iridium_longitude': '-119.3506',

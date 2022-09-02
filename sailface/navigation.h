@@ -23,13 +23,13 @@
 typedef struct {
     long latitude;
     long longitude;
+
+    // The radius in meters defining the circle centered on the waypoint
+    // where the navigation subsystem will accept the waypoint as being reached.
+    long allowedRadiusMeters;
+
 } Waypoint;
 
-typedef struct {
-    // Distance in meters between current location and waypoint.
-    double distanceToWaypoint;
-    double bearing;
-} Bearing;
 
 //
 // Store waypoint goal lat/long in EEPROM so it is persisted across power cycles.
@@ -38,18 +38,35 @@ typedef struct {
 class NavigationManager {
 
     private:
-        Waypoint currentWaypoint;
+        int numWaypoints;
+        Waypoint activeWaypoint;
         bool navigateToWaypoint;
 
     public:
         void initialize();
-        long computeBearingToNextWaypoint(
+        long computeBearingToActiveWaypoint(
             long curLatitude,
             long curLongitude
         );
-        void setWaypoint(long latitude, long longitude);
-        Waypoint getNextWaypoint();
-        bool isNavigatingToWaypoint();
+        long computeDistanceToActiveWaypoint(
+            long curLatitude,
+            long curLongitude
+        );
 
+        void updateWaypoints(Waypoint *waypoints, short numWaypoints, bool appendWaypoints);
+        Waypoint getActiveWaypoint();
+
+        bool isNavigatingToWaypoint();
+        bool startNavigatingToWaypoint();
+        void stopNavigatingToWaypoint();
+
+        bool hasAchievedActiveWaypoint(
+            long curLatitude,
+            long curLongitude
+        );
+
+        bool advanceToNextWaypoint();
+
+        void pollForNavigationAdjustments();
 };
 #endif

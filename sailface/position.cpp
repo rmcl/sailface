@@ -21,6 +21,10 @@ void PositionManager::initialize() {
 
     gpsSerial.begin(9600);
 
+    // This wire begin call is required for MPU setup.
+    Wire.begin();
+    delay(2000);
+
     if (!mpu.setup(0x68)) {
         if (bluetooth->isBluetoothActive()) {
             HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
@@ -30,8 +34,17 @@ void PositionManager::initialize() {
         }
     }
 
-    mpu.setMagBias(171.38, 633.19, -22.61);
-    mpu.setMagScale(1.75, 0.47, 3.22);
+    /*
+    mpu.setAccBias(1021.02, 46.71, 991.75);
+    mpu.setGyroBias(-0.38, 0.81, -0.85);
+    mpu.setMagBias(257.97, 315.69, -295.72);
+    mpu.setMagScale(1.12, 0.92, 0.98);
+    */
+
+    // Load MPU calibration parameters from EPROM storage and configure the MPU
+    // processing library.
+    MPUCalibrationParams calibrationParams = persistedData->getMPUCalibrationParams();
+    setMPUCalibrationParams(calibrationParams);
 
     averageHeadingBufferIdx = 0;
     for ( int n = 0; n < AVERAGE_HEADING_BUFFER_SIZE; ++n ) {
@@ -52,11 +65,13 @@ void PositionManager::initialize() {
 void PositionManager::pollForMPU() {
 
     if (mpu.update()) {
-        static uint32_t prev_ms = millis();
         if (millis() > prev_ms + 100) {
+
+            float instantHeading = mpu.getYaw();
+            /*
             float magX = mpu.getMagX();
             float magY = mpu.getMagY();
-            float instantHeading;
+
             if (magY > 0) {
                 instantHeading = 90 - atan(magX/magY)*(180/M_PI);
             } else if (magY < 0) {
@@ -66,6 +81,7 @@ void PositionManager::pollForMPU() {
             } else if (magY == 0 && magX > 0) {
                 instantHeading = 0;
             }
+            */
 
             averageHeadingBuffer[averageHeadingBufferIdx] = instantHeading;
             averageHeadingBufferIdx = (averageHeadingBufferIdx + 1) % AVERAGE_HEADING_BUFFER_SIZE;
@@ -106,4 +122,91 @@ void PositionManager::pollGPSForPosition() {
 
 PositionInfo PositionManager::getCurPosition() {
     return currentPosition;
+}
+
+MPUCalibrationParams PositionManager::calibrateMPU(Stream *serial) {
+    serial->println("Accel Gyro calibration will start in 5sec.");
+    serial->println("Please leave the device still on the flat plane.");
+    mpu.verbose(true);
+    delay(5000);
+    mpu.calibrateAccelGyro();
+
+    serial->println("Mag calibration will start in 5sec.");
+    serial->println("Please Wave device in a figure eight until done.");
+    delay(5000);
+    mpu.calibrateMag();
+
+    MPUCalibrationParams calibrationParams;
+    calibrationParams.accBiasX = mpu.getAccBiasX();
+    calibrationParams.accBiasY = mpu.getAccBiasY();
+    calibrationParams.accBiasZ = mpu.getAccBiasZ();
+
+    calibrationParams.gyroBiasX = mpu.getGyroBiasX();
+    calibrationParams.gyroBiasY = mpu.getGyroBiasY();
+    calibrationParams.gyroBiasZ = mpu.getGyroBiasZ();
+
+    calibrationParams.magBiasX = mpu.getMagBiasX();
+    calibrationParams.magBiasY = mpu.getMagBiasY();
+    calibrationParams.magBiasZ = mpu.getMagBiasZ();
+
+    calibrationParams.magScaleX = mpu.getMagScaleX();
+    calibrationParams.magScaleY = mpu.getMagScaleY();
+    calibrationParams.magScaleZ = mpu.getMagScaleZ();
+
+    mpu.verbose(false);
+
+    persistedData->storeMPUCalibrationParams(calibrationParams);
+    return calibrationParams;
+}
+
+void PositionManager::setMPUCalibrationParams(MPUCalibrationParams calibrationParams) {
+    mpu.setAccBias(
+        calibrationParams.accBiasX,
+        calibrationParams.accBiasY,
+        calibrationParams.accBiasZ);
+    mpu.setGyroBias(
+        calibrationParams.gyroBiasX,
+        calibrationParams.gyroBiasY,
+        calibrationParams.gyroBiasZ);
+    mpu.setMagBias(
+        calibrationParams.magBiasX,
+        calibrationParams.magBiasY,
+        calibrationParams.magBiasZ);
+    mpu.setMagScale(
+        calibrationParams.magScaleX,
+        calibrationParams.magScaleY,
+        calibrationParams.magScaleZ);
+}
+
+void PositionManager::printMPUCalibrationSettings(MPUCalibrationParams *params, Stream *serial) {
+    serial->println("--Calibration Parameters---");
+    serial->println("accel bias [g]: ");
+    serial->print(params->accBiasX);// * 1000.f / (float)MPU9250::CALIB_ACCEL_SENSITIVITY);
+    serial->print(", ");
+    serial->print(params->accBiasY);// * 1000.f / (float)MPU9250::CALIB_ACCEL_SENSITIVITY);
+    serial->print(", ");
+    serial->print(params->accBiasZ);// * 1000.f / (float)MPU9250::CALIB_ACCEL_SENSITIVITY);
+    serial->println();
+    serial->println("gyro bias [deg/s]: ");
+    serial->print(params->gyroBiasX);// / (float)MPU9250::CALIB_GYRO_SENSITIVITY);
+    serial->print(", ");
+    serial->print(params->gyroBiasY);// / (float)MPU9250::CALIB_GYRO_SENSITIVITY);
+    serial->print(", ");
+    serial->print(params->gyroBiasZ);// / (float)MPU9250::CALIB_GYRO_SENSITIVITY);
+    serial->println();
+    serial->println("mag bias [mG]: ");
+    serial->print(params->magBiasX);
+    serial->print(", ");
+    serial->print(params->magBiasY);
+    serial->print(", ");
+    serial->print(params->magBiasZ);
+    serial->println();
+    serial->println("mag scale []: ");
+    serial->print(params->magScaleX);
+    serial->print(", ");
+    serial->print(params->magScaleY);
+    serial->print(", ");
+    serial->print(params->magScaleZ);
+    serial->println();
+    serial->println("--End Calibration Parameters---");
 }
