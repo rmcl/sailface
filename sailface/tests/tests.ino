@@ -5,6 +5,9 @@
 
 #include <AUnit.h>
 
+Stream Serial1;
+
+
 test(correct) {
   int x = 1;
   assertEqual(x, 1);

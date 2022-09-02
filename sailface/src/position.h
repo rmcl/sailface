@@ -68,7 +68,7 @@ class PositionManager {
         TinyGPSPlus gps;
 
         //serial ports: Serial1 on pins 19 (RX) and 18 (TX)
-        HardwareSerial &gpsSerial = Serial1;
+        Stream &gpsSerial = Serial1;
 
         MPU9250 mpu;
         uint32_t prev_ms = 0;

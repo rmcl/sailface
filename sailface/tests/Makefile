@@ -1,10 +1,14 @@
 ARDUINO_CLI := ./bin/arduino-cli --config-file ./lib/arduino-cli.yaml
 APP_NAME := tests
 ARDUINO_LIBS := \
-	AUnit
+	AUnit \
+	SailfaceMocks \
+	sailface
 
-ARDUINO_LIB_DIR := ./lib/
+ARDUINO_LIB_DIR := ../lib/
 ARDUINO_LIB_DIRS := \
+	../../ \
+	./ \
 	../lib \
 	../lib/libraries
 

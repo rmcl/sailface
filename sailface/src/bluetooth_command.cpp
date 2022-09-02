@@ -39,7 +39,7 @@ void BluetoothCommand::pollForBluetoothCommandMessages() {
     bluetoothSerial.flush();
 }
 
-HardwareSerial *BluetoothCommand::getBluetoothSerial() {
+Stream *BluetoothCommand::getBluetoothSerial() {
     return &bluetoothSerial;
 }
 
