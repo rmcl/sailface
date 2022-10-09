@@ -4,10 +4,6 @@
 #include "position.h"
 
 
-/* NOTE: When configuring accelerometer check out:
- * https://www.i2cdevlib.com/forums/topic/8-mpu6050-connection-failed/
- */
-
 /*
  * Configure the position manager and initialize devices.
  */
@@ -30,7 +26,7 @@ void PositionManager::initialize() {
         if (bluetooth->isBluetoothActive()) {
             HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
             bluetoothDebug->println(
-                String("ERR: MPU connection failed. Please check wiring")
+                String("ERR: compass connection failed. Please check wiring")
             );
         }
     }

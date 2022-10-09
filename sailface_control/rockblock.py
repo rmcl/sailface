@@ -8,7 +8,7 @@ class CommandMessage(NamedTuple):
     prop_power: int
 
 
-class SailFaceAdmin:
+class RockblockAPI:
     """Send commands to SailFace via Iridium SBD."""
 
     def load_credentials(self):
