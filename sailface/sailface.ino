@@ -56,7 +56,7 @@ bool ISBDCallback() {
  * The main loop - Perform actions for each of the subsystems
  * The reason we are not using the Arduino built-in loop method is that the
  * IridiumSBD library blocks for 1-10 minutes as it attempts to transmit messages
- * to the sattelite. During that time it repeatedly calls the ISBDCallback which we
+ * to the satellite. During that time it repeatedly calls the ISBDCallback which we
  * define above. ISBDCallback will call sailfaceMainLoop so that operations can
  * continue as the Iridium modem attempts to transmit.
  * More information in the ISBD docs:
