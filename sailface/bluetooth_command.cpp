@@ -158,6 +158,6 @@ void cmdPollIridium(SerialCommands* sender) {
 }
 
 void cmdCalibrationMPU(SerialCommands* sender) {
-    MPUCalibrationParams params = position->calibrateMPU(sender->GetSerial());
-    position->printMPUCalibrationSettings(&params, sender->GetSerial());
+    //MPUCalibrationParams params = position->calibrateMPU(sender->GetSerial());
+    //position->printMPUCalibrationSettings(&params, sender->GetSerial());
 }

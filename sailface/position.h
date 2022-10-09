@@ -3,8 +3,10 @@
 
 #include <Arduino.h>
 #include <TinyGPS++.h>
-#include "MPU9250.h"
 
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_HMC5883_U.h>
 
 
 #define AVERAGE_HEADING_BUFFER_SIZE 5
@@ -70,7 +72,7 @@ class PositionManager {
         //serial ports: Serial1 on pins 19 (RX) and 18 (TX)
         HardwareSerial &gpsSerial = Serial1;
 
-        MPU9250 mpu;
+        Adafruit_HMC5883_Unified compass = Adafruit_HMC5883_Unified{12345};
         uint32_t prev_ms = 0;
 
         PositionInfo currentPosition;

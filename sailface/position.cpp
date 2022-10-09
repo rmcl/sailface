@@ -25,7 +25,8 @@ void PositionManager::initialize() {
     Wire.begin();
     delay(2000);
 
-    if (!mpu.setup(0x68)) {
+
+    if (!compass.begin()) {
         if (bluetooth->isBluetoothActive()) {
             HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
             bluetoothDebug->println(
@@ -34,17 +35,11 @@ void PositionManager::initialize() {
         }
     }
 
-    /*
-    mpu.setAccBias(1021.02, 46.71, 991.75);
-    mpu.setGyroBias(-0.38, 0.81, -0.85);
-    mpu.setMagBias(257.97, 315.69, -295.72);
-    mpu.setMagScale(1.12, 0.92, 0.98);
-    */
 
     // Load MPU calibration parameters from EPROM storage and configure the MPU
     // processing library.
-    MPUCalibrationParams calibrationParams = persistedData->getMPUCalibrationParams();
-    setMPUCalibrationParams(calibrationParams);
+    //MPUCalibrationParams calibrationParams = persistedData->getMPUCalibrationParams();
+    //setMPUCalibrationParams(calibrationParams);
 
     averageHeadingBufferIdx = 0;
     for ( int n = 0; n < AVERAGE_HEADING_BUFFER_SIZE; ++n ) {
@@ -64,37 +59,47 @@ void PositionManager::initialize() {
 
 void PositionManager::pollForMPU() {
 
-    if (mpu.update()) {
-        if (millis() > prev_ms + 100) {
+    if (millis() > prev_ms + 100) {
 
-            float instantHeading = mpu.getYaw();
-            /*
-            float magX = mpu.getMagX();
-            float magY = mpu.getMagY();
+        sensors_event_t event;
+        compass.getEvent(&event);
 
-            if (magY > 0) {
-                instantHeading = 90 - atan(magX/magY)*(180/M_PI);
-            } else if (magY < 0) {
-                instantHeading = 270 - atan(magX/magY)*(180/M_PI);
-            } else if (magY == 0 && magX < 0) {
-                instantHeading = 180;
-            } else if (magY == 0 && magX > 0) {
-                instantHeading = 0;
-            }
-            */
+        // Hold the module so that Z is pointing 'up' and you can measure the heading with x&y
+        // Calculate heading when the magnetometer is level, then correct for signs of axis.
+        float heading = atan2(event.magnetic.y, event.magnetic.x);
 
-            averageHeadingBuffer[averageHeadingBufferIdx] = instantHeading;
-            averageHeadingBufferIdx = (averageHeadingBufferIdx + 1) % AVERAGE_HEADING_BUFFER_SIZE;
+        // Once you have your heading, you must then add your 'Declination Angle', which is the 'Error' of the magnetic field in your location.
+        // Find yours here: http://www.magnetic-declination.com/
+        // Mine is: -13* 2' W, which is ~13 Degrees, or (which we need) 0.22 radians
+        // If you cannot find your Declination, comment out these two lines, your compass will be slightly off.
+        //float declinationAngle = 0.22;
+        //heading += declinationAngle;
 
-            float sum = 0;
-            for ( int idx = 0; idx < AVERAGE_HEADING_BUFFER_SIZE; ++idx ) {
-                sum += averageHeadingBuffer[idx];
-            }
-            currentPosition.magneticHeading = sum / AVERAGE_HEADING_BUFFER_SIZE;
-
-            prev_ms = millis();
+        // Correct for when signs are reversed.
+        if (heading < 0) {
+            heading += 2*PI;
         }
+
+        // Check for wrap due to addition of declination.
+        if(heading > 2*PI) {
+            heading -= 2*PI;
+        }
+
+        // Convert radians to degrees for readability.
+        float headingDegrees = heading * 180/M_PI;
+
+        averageHeadingBuffer[averageHeadingBufferIdx] = headingDegrees;
+        averageHeadingBufferIdx = (averageHeadingBufferIdx + 1) % AVERAGE_HEADING_BUFFER_SIZE;
+
+        float sum = 0;
+        for ( int idx = 0; idx < AVERAGE_HEADING_BUFFER_SIZE; ++idx ) {
+            sum += averageHeadingBuffer[idx];
+        }
+        currentPosition.magneticHeading = sum / AVERAGE_HEADING_BUFFER_SIZE;
+
+        prev_ms = millis();
     }
+
 }
 void PositionManager::pollGPSForPosition() {
     while (gpsSerial.available() > 0) {
@@ -124,6 +129,7 @@ PositionInfo PositionManager::getCurPosition() {
     return currentPosition;
 }
 
+/*
 MPUCalibrationParams PositionManager::calibrateMPU(Stream *serial) {
     serial->println("Accel Gyro calibration will start in 5sec.");
     serial->println("Please leave the device still on the flat plane.");
@@ -210,3 +216,4 @@ void PositionManager::printMPUCalibrationSettings(MPUCalibrationParams *params, 
     serial->println();
     serial->println("--End Calibration Parameters---");
 }
+*/
