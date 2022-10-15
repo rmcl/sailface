@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.css">
+        <style>
+            .map {
+              height: 500px;
+              width: 100%;
+            }
+        </style>
+
+        <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.js"></script>
+
+
+        <title>OpenSeaMap Example</title>
+    </head>
+    <body>
+        <div id="map" class="map"></div>
+        <script type="text/javascript">
+            var map = new ol.Map({
+                target: 'map',
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    }),
+                    new ol.layer.Tile({
+                        source: new ol.source.XYZ({
+                            url: 'http://t1.openseamap.org/seamark/{z}/{x}/{y}.png'
+                        })
+                    })
+                ],
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([-119.740664, 34.414836]),
+                    //center: ol.proj.transform([12.1, 54.18], 'EPSG:4326', 'EPSG:3857'),
+                    ///center: ol.proj.transform([-34.3506, 119.3506], 'EPSG:4326', 'EPSG:3857'),
+                    zoom: 13
+                })
+            });
+        </script>
+    </body>
+</html>
