@@ -1,14 +1,17 @@
-from typing import NamedTuple, List
+from typing import List
 from struct import Struct
 from ctypes import create_string_buffer, Array
+from dataclasses import dataclass
 
+
+@dataclass
 class Waypoint:
     latitude: float
     longitude: float
     accept_radius: float
 
-
-class SailFaceCommand(NamedTuple):
+@dataclass
+class SailFaceCommand:
     prop_speed: int
     bluetooth_active: bool
     update_frequency_minutes: int
@@ -37,7 +40,7 @@ class SatCommandBuilder:
             long_long,
             waypoint_details.accept_radius)
 
-        return buff_offset + waypoint_struct.calcsize()
+        return buff_offset + waypoint_struct.size
 
     def add_command_message_to_buffer(self, buffer, command_details : SailFaceCommand):
         command_struct = self.get_command_struct()
