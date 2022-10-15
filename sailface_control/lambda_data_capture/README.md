@@ -1,3 +1,7 @@
+# Lambda Data Capture
+
+This module is a lambda function that will receive the messages relayed from the Iridium Short-Burst Data (SBD) network via the RockBLOCK service (https://docs.rockblock.rock7.com/docs/getting-started) 
+
 
 # Docker base lambda functions
 

@@ -2,6 +2,14 @@
 
 An autonomous (non-sail powered) boat thing.
 
+# Photos
+
+## Mark II
+
+## Mark I
+
+
+
 
 # Code organization
 
@@ -11,11 +19,19 @@ Runs on an arduino MEGA. This code manages navigation, communication and power m
 
 ## Control (sailface_control)
 
-Python code for interacting with the microcontroller via serial - wired or bluetooth as well as decoding iridium API messages.
+Python code for controling sailface remotely.
 
-## Cloud (cloud)
+### Lambda Data Capture (lambda_data_capture)
 
-Lambda functions for receiving API callbacks from rock7 and storing them in a s3 bucket.
+This module is a lambda function that will receive the messages relayed from the Iridium Short-Burst Data (SBD) network via the RockBLOCK service (https://docs.rockblock.rock7.com/docs/getting-started). 
+
+### Command Lib (sailface_command)
+
+A python library for creating command messages that can be sent to the vessel.
+
+### Notebooks
+
+Various jupyter notebooks for processing KML + sending commands to the vessel.
 
 ## Schematics
 
