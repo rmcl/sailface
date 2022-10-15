@@ -1,3 +1,4 @@
+from typing import NamedTuple, List
 from struct import Struct
 from ctypes import create_string_buffer, Array
 
@@ -48,7 +49,7 @@ class SatCommandBuilder:
             0,
             command_details.prop_speed,
             command_details.bluetooth_active,
-            command_details.update_frequency_minutes
+            command_details.update_frequency_minutes,
             command_details.waypoint_action,
             num_waypoints
         )

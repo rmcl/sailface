@@ -2,6 +2,7 @@ from struct import Struct
 from datetime import datetime
 import jwt
 
+ROCK7_PUBLIC_KEY_PATH = 'rock7_public.key'
 
 class SailFaceStatusMessageParser:
     """Parse messages received from SailFace"""
@@ -16,8 +17,13 @@ class SailFaceStatusMessageParser:
         ('prop_speed', 'h')
     )
 
-    def __init__(self):
+    def __init__(self, public_key_path=None):
         """Initialize the message struct parser"""
+
+        if not public_key_path:
+            self.public_key_path = ROCK7_PUBLIC_KEY_PATH
+        else:
+            self.public_key_path = public_key_path
 
         # "<" represents little endian
         struct_format_str = '<' + ''.join([
@@ -28,7 +34,7 @@ class SailFaceStatusMessageParser:
         self.sailface_struct = Struct(struct_format_str)
 
     def get_rock7_public_key(self):
-        with open('rock7_public.key', 'r') as fp:
+        with open(self.public_key_path, 'r') as fp:
             return fp.read()
 
     def parse_jwt(self, message_jwt):
