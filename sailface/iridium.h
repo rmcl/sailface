@@ -93,6 +93,7 @@ class IridiumManager {
         );
 
         bool shouldTransmitStatus();
+        unsigned long getIridiumTime();
 
 
     public:

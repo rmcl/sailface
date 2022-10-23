@@ -1,18 +1,26 @@
+import json
 import requests
 
 ROCKBLOCK_MESSAGE_ENDPOINT = 'https://rockblock.rock7.com/rockblock/MT'
 
-class CommandMessage(NamedTuple):
-    latitude: float
-    longitude: float
-    prop_power: int
+class RockblockApiError(Exception):
+    pass
 
 
 class RockblockAPI:
     """Send commands to SailFace via Iridium SBD."""
 
-    def load_credentials(self):
-        pass
+    def __init__(self, rockblock_creds_path=None):
+        if not rockblock_creds_path:
+            self.creds_path = 'rockblock_creds.json'
+        else:
+            self.creds_path = rockblock_creds_path
+
+        self.creds = self.load_credentials()
+
+    def load_credentials(self) -> dict:
+        with open(self.creds_path, 'r') as fp:
+            return json.load(fp)
 
     def send_message(self, hex_data):
         """Send a message to an Iridium device via Rock7
@@ -22,29 +30,31 @@ class RockblockAPI:
         resp = requests.post(
             ROCKBLOCK_MESSAGE_ENDPOINT,
             params={
-                'imei': '',
-                'username': '',
-                'password' : '',
+                'imei': self.creds['imei'],
+                'username': self.creds['username'],
+                'password' : self.creds['password'],
                 'data': hex_data
             },
             headers={
                 'Accept': 'text/plain'
             })
 
-        print(resp.status_code)
-        print(resp.text)
+        if resp.status_code != 200:
+            raise Exception('Unexpected status code', resp.text)
 
+        result = resp.text.split(',')
+        status = result[0]
+        if status == 'OK':
+            mt_id = int(result[1])
+            return mt_id
 
-    def build_command_via_user_prompt(self) -> CommandMessage:
-        new_command = CommandMessage()
-        new_command.latitude = float(
-            input("Enter waypoint latitude (0 to retain current waypoint)"))
-        new_command.longitude = float(
-            input("Enter waypoint longitude (0 to retain current waypoint)"))
-        new_command.prop_power = int(
-            input("Enter prop speed (0-255, -1 to retain current value)"))
+        elif status == 'FAILED':
+            try:
+                error_code = int(result[1])
+                error_message = result[2]
+            except:
+                raise RockblockApiError('Could not parse API failed response')
 
-        return new_command
-
-    def send_command(self):
-        command = self.build_command_via_user_prompt()
+            raise RockblockApiError(error_code, error_message)
+        else:
+            raise RockblockApiError('API returned unknown response format')

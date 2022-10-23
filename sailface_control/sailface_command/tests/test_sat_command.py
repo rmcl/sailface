@@ -4,7 +4,10 @@ from ctypes import create_string_buffer
 
 from sailface_command.sat_command import (
     SatCommandBuilder,
-    Waypoint
+    SailFaceCommand,
+    Waypoint,
+
+    WAYPOINT_OVERWRITE
 )
 
 class SatCommandTest(TestCase):
@@ -39,3 +42,45 @@ class SatCommandTest(TestCase):
         self.assertEqual(waypoint_1.latitude, round(parsed_waypoint[0] * 1e-6, 6))
         self.assertEqual(waypoint_1.longitude, round(parsed_waypoint[1] * 1e-6, 6))
         self.assertEqual(waypoint_1.accept_radius, parsed_waypoint[2])
+
+    def test_add_command_message_to_buffer(self):
+        buff = create_string_buffer(500)
+        cmd_1 = self.mk_command_message()
+
+        res_len = self.cmd_builder.add_command_message_to_buffer(buff, cmd_1)
+
+        self.assertEqual(res_len, 37)
+
+    def test_get_command(self):
+        """"""
+        cmd_1 = self.mk_command_message()
+        result = self.cmd_builder.get_command(cmd_1)
+        self.assertEqual(
+            result,
+            '960001003c0000000101000200f010200798b9470264000000709e7b07b8c467024b000000')
+
+
+
+    def mk_command_message(self):
+        waypoint_1 = Waypoint(
+            latitude=119.542,
+            longitude=38.255,
+            accept_radius=100
+        )
+        waypoint_2 = Waypoint(
+            latitude=125.542,
+            longitude=40.355,
+            accept_radius=75
+        )
+
+        return SailFaceCommand(
+            prop_speed=150,
+            bluetooth_active=True,
+            update_frequency_minutes=60,
+            navigate_to_waypoint=True,
+            waypoint_action=WAYPOINT_OVERWRITE,
+            waypoints=[
+                waypoint_1,
+                waypoint_2
+            ]
+        )

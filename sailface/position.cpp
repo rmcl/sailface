@@ -48,6 +48,7 @@ void PositionManager::initialize() {
     currentPosition.gpsFixAge = 0;
     currentPosition.course = 0;
     currentPosition.speed = 0;
+    currentPosition.time = 0;
 
     currentPosition.magneticHeading = 0;
     currentPosition.magneticHeadingVariation = 0;

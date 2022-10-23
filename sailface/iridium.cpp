@@ -152,8 +152,16 @@ IridiumStatusMessage IridiumManager::buildStatusMessage() {
     return message;
 }
 
+unsigned long getIridiumTime() {
+    unsigned long curTime;
+    modem.getSystemTime(curTime);
+    return curTime;
+}
+
 bool IridiumManager::shouldTransmitStatus() {
-    unsigned long curTime = millis();
+
+    // Todo: Maybe replace this with getIridiumTime();
+    unsigned long curTime = millis(); 
     if ((curTime - lastTransmitTime) < (updateFrequencyMinutes * 60000)) {
         return false;
     }
@@ -186,7 +194,7 @@ int IridiumManager::sendStatusReceiveCommandMessage(
         if (bluetooth->isBluetoothActive()) {
             HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
             bluetoothDebug->println(
-                String("ERROR: sendReceiveSBDBinary error") + \
+                String("ERROR: sendReceiveSBDBinary error ") + \
                 String(errorCode)
             );
         }
@@ -196,7 +204,7 @@ int IridiumManager::sendStatusReceiveCommandMessage(
             //TODO: Maybe we put a retry in place?
         }
 
-        return -1;
+        return 0;
 
     } else {
         if (bluetooth->isBluetoothActive()) {

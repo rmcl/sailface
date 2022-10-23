@@ -1,7 +1,13 @@
+from binascii import hexlify
 from typing import List
 from struct import Struct
 from ctypes import create_string_buffer, Array
 from dataclasses import dataclass
+
+# these constants are defined in Iridium.h
+WAYPOINT_NO_CHANGE = 0
+WAYPOINT_OVERWRITE = 1
+WAYPOINT_APPEND = 2
 
 
 @dataclass
@@ -21,6 +27,16 @@ class SailFaceCommand:
 
 
 class SatCommandBuilder:
+
+    def get_command(self, command_details : SailFaceCommand):
+        """Return the hex representation of encoded command message."""
+        buff = create_string_buffer(200)
+        offset = self.add_command_message_to_buffer(
+            buff,
+            command_details)
+        
+        return hexlify(buff[0:offset])
+
     def add_waypoint_to_buffer(
         self,
         buff : Array,
@@ -42,7 +58,11 @@ class SatCommandBuilder:
 
         return buff_offset + waypoint_struct.size
 
-    def add_command_message_to_buffer(self, buffer, command_details : SailFaceCommand):
+    def add_command_message_to_buffer(self, buffer : Array, command_details : SailFaceCommand) -> int:
+        """Add a command message to a buffer.
+        
+        Returns the offset in the buffer to the end of the message.
+        """
         command_struct = self.get_command_struct()
 
         num_waypoints = len(command_details.waypoints)
@@ -53,23 +73,17 @@ class SatCommandBuilder:
             command_details.prop_speed,
             command_details.bluetooth_active,
             command_details.update_frequency_minutes,
+            command_details.navigate_to_waypoint,
             command_details.waypoint_action,
             num_waypoints
         )
 
-        offset = command_struct.calcsize()
+        offset = command_struct.size
         for waypoint in command_details.waypoints:
-            offset = self._add_waypoint_to_buffer(buffer, offset, waypoint)
+            offset = self.add_waypoint_to_buffer(buffer, offset, waypoint)
 
         return offset
 
-    def build_command(self):
-
-        buff = create_string_buffer(500)
-
-    
-
-    
     def get_command_struct(self):
         """
             typedef struct {
