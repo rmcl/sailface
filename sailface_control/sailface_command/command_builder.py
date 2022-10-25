@@ -1,36 +1,15 @@
+import math
 from binascii import hexlify
 from typing import List
 from struct import Struct
 from ctypes import create_string_buffer, Array
-from dataclasses import dataclass
-
-# these constants are defined in Iridium.h
-WAYPOINT_NO_CHANGE = 0
-WAYPOINT_OVERWRITE = 1
-WAYPOINT_APPEND = 2
-
-
-@dataclass
-class Waypoint:
-    latitude: float
-    longitude: float
-    accept_radius: float
-
-@dataclass
-class SailFaceCommand:
-    prop_speed: int
-    bluetooth_active: bool
-    update_frequency_minutes: int
-    navigate_to_waypoint: bool
-    waypoint_action: int
-    waypoints: List[Waypoint]
-
+from .types import Waypoint, SailFaceCommand
 
 class SatCommandBuilder:
 
     def get_command(self, command_details : SailFaceCommand):
         """Return the hex representation of encoded command message."""
-        buff = create_string_buffer(200)
+        buff = create_string_buffer(500)
         offset = self.add_command_message_to_buffer(
             buff,
             command_details)
@@ -48,13 +27,14 @@ class SatCommandBuilder:
 
         long_lat = int(waypoint_details.latitude * 1e6)
         long_long = int(waypoint_details.longitude * 1e6)
+        accept_radius = math.ceil(waypoint_details.accept_radius)
 
         waypoint_struct.pack_into(
             buff,
             buff_offset,
             long_lat,
             long_long,
-            waypoint_details.accept_radius)
+            accept_radius)
 
         return buff_offset + waypoint_struct.size
 

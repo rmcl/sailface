@@ -4,12 +4,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.css">
-        <style>
-            .map {
-              height: 500px;
-              width: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="main.css">
+
 
         <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v7.0.0/legacy/ol.js"></script>
 
@@ -18,6 +14,11 @@
     </head>
     <body>
         <div id="map" class="map"></div>
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content"></div>
+        </div>
+
         <script type="text/javascript">
             var map = new ol.Map({
                 target: 'map',
@@ -37,6 +38,56 @@
                     ///center: ol.proj.transform([-34.3506, 119.3506], 'EPSG:4326', 'EPSG:3857'),
                     zoom: 13
                 })
+            });
+
+            function addPoint(pointInfo) {
+
+                var layer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [
+                            new ol.Feature({
+                                geometry: new ol.geom.Point(ol.proj.fromLonLat([
+                                    pointInfo.lat,
+                                    pointInfo.long
+                                ]))
+                            })
+                        ]
+                    })
+                });
+                map.addLayer(layer);
+            }
+
+            addPoint({lat: -119.740608, long: 34.414456});
+
+            var container = document.getElementById('popup');
+            var content = document.getElementById('popup-content');
+            var closer = document.getElementById('popup-closer');
+
+            var overlay = new ol.Overlay({
+                element: container,
+                autoPan: true,
+                autoPanAnimation: {
+                    duration: 250
+                }
+            });
+            map.addOverlay(overlay);
+
+            closer.onclick = function() {
+                overlay.setPosition(undefined);
+                closer.blur();
+                return false;
+            };
+
+            map.on('singleclick', function (event) {
+                if (map.hasFeatureAtPixel(event.pixel) === true) {
+                    var coordinate = event.coordinate;
+
+                    content.innerHTML = '<b>Hello world!</b><br />I am a popup.';
+                    overlay.setPosition(coordinate);
+                } else {
+                    overlay.setPosition(undefined);
+                    closer.blur();
+                }
             });
         </script>
     </body>
