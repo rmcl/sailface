@@ -8,6 +8,7 @@
 
 #include "navigation.h"
 #include "position.h"
+#include "helm.h"
 
 #define SF_PERSISTED_DATA_ADDRESS 0x0
 #define SF_CURRENT_PERSIST_VALID 0x69
@@ -36,6 +37,7 @@ typedef struct {
     Waypoint waypoints[MAX_WAYPOINTS];
 
     MPUCalibrationParams calibrationParams;
+    PIDParams pidParams;
 
 } PersistedData;
 
@@ -73,12 +75,14 @@ class PersistDataManager {
             int count,
             bool appendWaypoints);
 
-        // Returns number of waypoints and assigns the position of the array
-        // to the provided pointer.
-        int getWaypoints(Waypoint *waypoints);
+        Waypoint *getWaypoints();
+        int getNumWaypoints();
 
         void storeMPUCalibrationParams(MPUCalibrationParams params);
         MPUCalibrationParams getMPUCalibrationParams();
+
+        void storePIDParams(PIDParams pidParams);
+        PIDParams getPIDParams();
 };
 
 #endif

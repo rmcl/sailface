@@ -8,9 +8,7 @@
 
 //#define COMM_MAX_COMMAND_LEN 500
 
-#define SERIAL_COMMANDS_DEBUG true
-
-
+#define SERIAL_COMMANDS_DEBUG false
 
 
 /* Commands */
@@ -24,7 +22,10 @@ void cmdStartIridium(SerialCommands* sender);
 void cmdSleepIridium(SerialCommands* sender);
 void cmdPollIridium(SerialCommands* sender);
 void cmdCalibrationMPU(SerialCommands* sender);
-
+void cmdStartNavWaypoint(SerialCommands* sender);
+void cmdStopNavWaypoint(SerialCommands* sender);
+void cmdWaypointAppend(SerialCommands* sender);
+void cmdSetPIDParams(SerialCommands* sender);
 
 class BluetoothCommand {
 
@@ -56,6 +57,10 @@ class BluetoothCommand {
         SerialCommand blueCmdSleepIridium{"SATSLEEP", cmdSleepIridium};
         SerialCommand blueCmdPollIridium{"SATPOLL", cmdPollIridium};
         SerialCommand blueCmdCalibrateMPU{"MPUCAL", cmdCalibrationMPU};
+        SerialCommand blueCmdStartNavWaypoint{"NAVSTART", cmdStartNavWaypoint};
+        SerialCommand blueCmdStopNavWaypoint{"NAVSTOP", cmdStopNavWaypoint};
+        SerialCommand blueCmdSetPIDParams{"NAVPID",cmdSetPIDParams};
+        SerialCommand blueCmdWaypointAppend{"WPA", cmdWaypointAppend};
 
 
     public:

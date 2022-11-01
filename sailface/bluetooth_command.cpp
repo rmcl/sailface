@@ -26,6 +26,12 @@ void BluetoothCommand::initialize() {
     bluetoothSerialCommands.AddCommand(&blueCmdSleepIridium);
     bluetoothSerialCommands.AddCommand(&blueCmdPollIridium);
     bluetoothSerialCommands.AddCommand(&blueCmdCalibrateMPU);
+
+    bluetoothSerialCommands.AddCommand(&blueCmdStartNavWaypoint);
+    bluetoothSerialCommands.AddCommand(&blueCmdStopNavWaypoint);
+    bluetoothSerialCommands.AddCommand(&blueCmdSetPIDParams);
+
+    bluetoothSerialCommands.AddCommand(&blueCmdWaypointAppend);
 }
 
 bool BluetoothCommand::isBluetoothActive() {
@@ -36,7 +42,7 @@ void BluetoothCommand::pollForBluetoothCommandMessages() {
     bluetoothSerialCommands.ReadSerial();
 
     // wait for send buffer to empty before proceeding.
-    bluetoothSerial.flush();
+    //bluetoothSerial.flush();
 }
 
 HardwareSerial *BluetoothCommand::getBluetoothSerial() {
@@ -59,7 +65,12 @@ void cmdHelp(SerialCommands* sender) {
         String("  rudder <int:-10-10>: set the angle of the rudder\n") + \
         String("  engage <int:0-255: Set the speed of the main prop.\n") + \
         String("  satstart: Start the iridium sat radio.\n") + \
-        String("  satpoll: Force a poll for sat messages.\n")
+        String("  satsleep: Sleep the iridium sat radio.\n") + \
+        String("  satpoll: Force a poll for sat messages.\n") + \
+        String("  wpa <lat> <lon> <accept radius>: Append a waypoint.\n") + \
+        String("  navstart: start navigating towards the active waypoint.\n") + \
+        String("  navstop: stop navigating towards the active waypoint.\n")
+
     );
 }
 
@@ -85,9 +96,24 @@ void cmdStatus(SerialCommands* sender) {
 
     sender->GetSerial()->println(
         String("Propulsion & Navigation:\n") + \
-        String(" PROP SPEED:") + String(prop->getPropellerSpeed()) + String("\n") + \
-        String(" TRANSMIT FREQUENCY:") + String(iridium->getUpdateFrequency())
+        String(" PROP SPEED:") + String(prop->getPropellerSpeed()) + String("\n")
     );
+
+    PIDParams params = helm->getPIDParams();
+    sender->GetSerial()->println(
+        String(" NAV TO WAYPOINT:") + String(navigation->isNavigatingToWaypoint()) + String("\n") + \
+        String("Kp: ") + String(params.Kp) + String(" Ki: ") + String(params.Ki) + String(" Kd: ") + String(params.Kd) + String("\n")
+    );    
+
+    Waypoint activeWaypoint = navigation->getActiveWaypoint();
+    //if (activeWaypoint != NULL) {
+        sender->GetSerial()->println(
+            String("ACTIVE WP:\n") + \
+            String(" LAT:") + String(activeWaypoint.latitude) + \
+            String(" LONG:") + String(activeWaypoint.longitude) + \
+            String(" RADIUS:") + String(activeWaypoint.allowedRadiusMeters) + String("\n")
+        );
+    //}
 
     sender->GetSerial()->println(
         String("SAT\n LAST TRANSMIT:") + String(iridium->getLastTransmitTime()) + String("\n") + \
@@ -160,4 +186,43 @@ void cmdPollIridium(SerialCommands* sender) {
 void cmdCalibrationMPU(SerialCommands* sender) {
     //MPUCalibrationParams params = position->calibrateMPU(sender->GetSerial());
     //position->printMPUCalibrationSettings(&params, sender->GetSerial());
+}
+
+void cmdStartNavWaypoint(SerialCommands* sender) {
+    sender->GetSerial()->println("INFO: START NAVIGATING TO WAYPOINT");
+    navigation->startNavigatingToWaypoint();
+}
+
+void cmdStopNavWaypoint(SerialCommands* sender) {
+    sender->GetSerial()->println("INFO: STOP NAVIGATING TO WAYPOINT");
+    navigation->stopNavigatingToWaypoint();
+}
+
+void cmdWaypointAppend(SerialCommands* sender) {
+    sender->GetSerial()->println("INFO: APPEND WAYPOINT");
+    char* longitudeStr = sender->Next();
+    char* latitudeStr = sender->Next();
+    char* acceptRadiusStr = sender->Next();
+    
+    Waypoint newWaypoint;
+    newWaypoint.longitude = atol(longitudeStr);
+    newWaypoint.latitude = atol(latitudeStr);
+    newWaypoint.allowedRadiusMeters = atol(acceptRadiusStr);
+
+    navigation->updateWaypoints(&newWaypoint, 1, true);
+
+}
+
+void cmdSetPIDParams(SerialCommands* sender) {
+    sender->GetSerial()->println("INFO: SET PID PARAMS");
+    char* kpStr = sender->Next();
+    char* kiStr = sender->Next();
+    char* kdStr = sender->Next();
+
+    PIDParams newParams;
+    newParams.Kp = (double)atof(kpStr);
+    newParams.Ki = (double)atof(kiStr);
+    newParams.Kd = (double)atof(kdStr);
+
+    helm->setPIDParams(newParams);
 }

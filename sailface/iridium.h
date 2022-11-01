@@ -55,7 +55,7 @@ typedef struct {
     short waypointAction;
 
     short numWaypoints;
-    Waypoint waypoints[];
+    Waypoint waypoints[10];
 
 } IridiumCommandMessage;
 
@@ -93,7 +93,7 @@ class IridiumManager {
         );
 
         bool shouldTransmitStatus();
-        unsigned long getIridiumTime();
+        //unsigned long getIridiumTime();
 
 
     public:

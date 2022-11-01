@@ -9,12 +9,11 @@
 //
 void NavigationManager::initialize() {
 
-    Waypoint *waypoints;
-    numWaypoints = persistedData->getWaypoints(waypoints);
+    Waypoint *waypoints = persistedData->getWaypoints();
+    numWaypoints = persistedData->getNumWaypoints();
 
     if (numWaypoints > 0) {
         activeWaypoint = waypoints[0];
-
         navigateToWaypoint = persistedData->getIsNavigatingToWaypoint();
     } else {
         // If no waypoints are defined then we shouldn't try to navigate to them
@@ -35,6 +34,7 @@ bool NavigationManager::startNavigatingToWaypoint() {
 
 void NavigationManager::stopNavigatingToWaypoint() {
     navigateToWaypoint = false;
+    helm->disablePID();
 }
 
 bool NavigationManager::isNavigatingToWaypoint() {
@@ -85,15 +85,18 @@ long NavigationManager::computeDistanceToActiveWaypoint(
 //
 // Update the lat/long which sailface should head towards.
 //
-void NavigationManager::updateWaypoints(Waypoint *waypoints, short numWaypoints, bool appendWaypoints) {
+void NavigationManager::updateWaypoints(Waypoint *waypoints, short newNumWaypoints, bool appendWaypoints) {
     if (appendWaypoints == false) {
-        if (numWaypoints == 0) {
+        numWaypoints = newNumWaypoints;
+        if (newNumWaypoints == 0) {
             activeWaypoint = {0};
             navigateToWaypoint = false;
         } else {
             activeWaypoint = waypoints[0];
             navigateToWaypoint = true;
         }
+    } else {
+        numWaypoints += newNumWaypoints;
     }
 
     persistedData->storeWaypoints(waypoints, numWaypoints, appendWaypoints);
@@ -128,8 +131,7 @@ bool NavigationManager::hasAchievedActiveWaypoint(
 bool NavigationManager::advanceToNextWaypoint() {
     if (numWaypoints > 1) {
         // There are additional waypoints to navigate to.
-        Waypoint *waypoints;
-        persistedData->getWaypoints(waypoints);
+        Waypoint *waypoints = persistedData->getWaypoints();
         activeWaypoint = waypoints[1];
 
         numWaypoints--;
@@ -185,7 +187,7 @@ void NavigationManager::pollForNavigationAdjustments() {
             curPosition.longitude
         );
 
-        /// figure out a more appopriate error state
+        // figure out a more appopriate error state
         helm->pollForRudderAdjustment(
             curPosition.magneticHeading,
             curPosition.magneticHeadingVariation,

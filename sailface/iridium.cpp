@@ -152,11 +152,13 @@ IridiumStatusMessage IridiumManager::buildStatusMessage() {
     return message;
 }
 
-unsigned long getIridiumTime() {
-    unsigned long curTime;
-    modem.getSystemTime(curTime);
-    return curTime;
+/*
+unsigned long IridiumManager::getIridiumTime() {
+    //time_t curTime;
+    //modem.getSystemTime(curTime);
+    return -1;
 }
+*/
 
 bool IridiumManager::shouldTransmitStatus() {
 
@@ -210,8 +212,9 @@ int IridiumManager::sendStatusReceiveCommandMessage(
         if (bluetooth->isBluetoothActive()) {
             HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
             bluetoothDebug->println(
-                String("INFO: sendReceiveSBDBinary success") + \
-                String(errorCode)
+                String("INFO: sendReceiveSBDBinary success ERROR CODE: ") + \
+                String(errorCode) + \
+                String("\n RX BUF SIZE: " + rxBufferSize)
             );
         }
 

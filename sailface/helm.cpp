@@ -18,7 +18,7 @@ In the case of SailFACE,
 
 */
 #include "helm.h"
-
+#include "sailface.h"
 
 // TODO: If we wanna setup the RC receiver for close range driving.
 // https://www.youtube.com/watch?v=u0Ft8SB3pkw
@@ -31,7 +31,23 @@ void HelmManager::initialize() {
         HELM_PWM_RANGE_MAX
     );
 
+    // LOAD PID parameters from persisted data.
+    pidParams = persistedData->getPIDParams();
+
     enablePIDControl = false;
+}
+
+/* Update the PID parameters and reinitilize the PID controller to use them. */
+void HelmManager::setPIDParams(PIDParams params) {
+    pidParams = params;
+    persistedData->storePIDParams(params);
+
+    disablePID();
+    setBearingAndEnablePID(desiredBearing);
+}
+
+PIDParams HelmManager::getPIDParams() {
+    return pidParams;
 }
 
 /* Set the position of the rudder */
@@ -77,7 +93,10 @@ void HelmManager::setBearingAndEnablePID(int bearing) {
         &difference,
         &pidRudderPositionOut,
         &setPoint,
-        Kp, Ki, Kd, DIRECT);
+        pidParams.Kp,
+        pidParams.Ki,
+        pidParams.Kd,
+        DIRECT);
 
     rudderPID->SetMode(AUTOMATIC);
     rudderPID->SetOutputLimits(-10, 10);
@@ -97,16 +116,19 @@ void HelmManager::pollForRudderAdjustment(
     double curMagHeadingVariation,
     double desiredBearing
 ) {
-    if (enablePIDControl == false) {
-        return;
-    }
 
     // only recompute rudder position every 2 seconds.
     unsigned long curTime = millis();
-    if ((curTime - lastAdjustTime) < 1000) {
+    if ((curTime - lastAdjustTime) < 2000) {
         return;
     }
     lastAdjustTime = curTime;
+
+
+    // Either initialize PID controller or reinitialize if we have
+    // changed our desired bearing.
+    setBearingAndEnablePID(desiredBearing);
+
 
     // TODO(rmcl): This likely doesn't quite work. Revisit later.
     difference = curMagHeading - curMagHeadingVariation - desiredBearing;
@@ -114,4 +136,15 @@ void HelmManager::pollForRudderAdjustment(
 
     int newRudderPosition = int(pidRudderPositionOut);
     setRudderPosition(newRudderPosition);
+
+    /*
+    if (bluetooth->isBluetoothActive()) {
+        HardwareSerial *bluetoothDebug = bluetooth->getBluetoothSerial();
+        bluetoothDebug->println(
+            String("INFO: NEW RUDDER POS") + String(newRudderPosition) + String("\n") + \
+            String("CUR MAG:") + String(curMagHeading) + String(" MAG VAR:") + String(curMagHeadingVariation) + \
+            String("Bearing to waypoint: ") + String(desiredBearing)
+        );
+    }
+    */
 }

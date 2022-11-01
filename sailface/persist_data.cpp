@@ -20,6 +20,9 @@ void PersistDataManager::load() {
         currentData.isNavigatingToWaypoint = false;
         currentData.numWaypoints = 0;
 
+        currentData.pidParams.Kd = 3.0;
+        currentData.pidParams.Ki = 1.0;
+        currentData.pidParams.Kp = 1.0;
     }
 }
 
@@ -73,31 +76,33 @@ void PersistDataManager::storeWaypoints(
     int count,
     bool appendWaypoints
 ) {
-    int numNewWaypoints = min(
-        MAX_WAYPOINTS - currentData.numWaypoints,
-        count);
 
-    int index = currentData.numWaypoints;
     if (appendWaypoints == false) {
-        index = 0;
-    }
+        int numNewWaypoints = min(
+            MAX_WAYPOINTS,
+            count);
 
-    for (; index < MAX_WAYPOINTS; index++) {
-        if (index < numNewWaypoints) {
-            currentData.waypoints[index] = waypoint[index];
-        } else {
-            currentData.waypoints[index].latitude = 0;
-            currentData.waypoints[index].longitude = 0;
-            currentData.waypoints[index].allowedRadiusMeters = 0;
+        for (int index=0; index < MAX_WAYPOINTS; index++) {
+            if (index < numNewWaypoints) {
+                currentData.waypoints[index] = waypoint[index];
+            } else {
+                currentData.waypoints[index].latitude = 0;
+                currentData.waypoints[index].longitude = 0;
+                currentData.waypoints[index].allowedRadiusMeters = 0;
+            }
         }
-    }
+        currentData.numWaypoints = numNewWaypoints;
 
-    currentData.numWaypoints += numNewWaypoints;
+    } else {
+        // APPEND NOT SUPPORTED AT THIS TIME!
+    }  
 
     persist();
 }
-int PersistDataManager::getWaypoints(Waypoint *waypoints) {
-    waypoints = currentData.waypoints;
+Waypoint* PersistDataManager::getWaypoints() {
+    return currentData.waypoints;
+}
+int PersistDataManager::getNumWaypoints() {
     return currentData.numWaypoints;
 }
 
@@ -125,4 +130,12 @@ void PersistDataManager::storeMPUCalibrationParams(MPUCalibrationParams params) 
 
 MPUCalibrationParams PersistDataManager::getMPUCalibrationParams() {
     return currentData.calibrationParams;
+}
+
+void PersistDataManager::storePIDParams(PIDParams pidParams) {
+    currentData.pidParams = pidParams;
+    persist();
+}
+PIDParams PersistDataManager::getPIDParams() {
+    return currentData.pidParams;
 }

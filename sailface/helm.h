@@ -31,12 +31,18 @@ http://wiki.sunfounder.cc/images/9/9a/TD-8120MG_Digital_Servo.pdf
 #define HELM_PWM_RANGE_MIN 500
 #define HELM_PWM_RANGE_MAX 2500
 
+typedef struct {
+    double Kp;
+    double Ki;
+    double Kd;
+} PIDParams;
 
 class HelmManager {
 
     private:
         Servo helmServo;
         PID *rudderPID;
+        PIDParams pidParams;
 
         // Desired bearing to meet waypoint objective
         // Course is the direction from the previous waypoint to the next waypoint.
@@ -49,15 +55,15 @@ class HelmManager {
         double pidRudderPositionOut = 0;
         double difference = 0;
         double setPoint = 0;
-        int Kp = 3;
-        int Ki = 2;
-        int Kd = 1;
-
+        
         long lastAdjustTime = 0;
 
 
     public:
         void initialize();
+
+        void setPIDParams(PIDParams params);
+        PIDParams getPIDParams();
 
         // The angle that we want the boat to go in
         void setBearingAndEnablePID(int bearing);
