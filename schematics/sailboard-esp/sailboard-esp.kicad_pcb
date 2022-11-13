@@ -1899,6 +1899,9 @@
   (gr_rect (start 157.21 65.04) (end 172.45 72.66) (layer "F.SilkS") (width 0.2) (fill none) (tstamp 5e3ae0db-55c4-465d-bae3-9eaba137e019))
   (gr_rect (start 203.2 22.86) (end 184.15 38.1) (layer "F.SilkS") (width 0.2) (fill none) (tstamp acae7a8a-1c43-42ee-800d-190fb682937f))
   (gr_rect (start 149.86 22.55) (end 255.27 73.93) (layer "Edge.Cuts") (width 0.2) (fill none) (tstamp f5c970c4-9ee6-4fe1-bac2-16d6045330a7))
+  (gr_text "SailBOARD 1.0 (11/11/22)\nby rmcl " (at 191.77 52.34) (layer "F.SilkS") (tstamp e30a9db3-ca98-4a84-b383-36ff76701696)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
 
   (segment (start 224.79 47.26) (end 222.25 44.72) (width 0.2) (layer "F.Cu") (net 1) (tstamp 13c9d4c1-4ab5-4ba5-8ba4-0c9d5714c91a))
   (segment (start 234.475 71.19) (end 243.66 71.19) (width 0.25) (layer "F.Cu") (net 1) (tstamp 1ab53511-cbd5-4b2d-b9e1-c2d83429d1e7))
