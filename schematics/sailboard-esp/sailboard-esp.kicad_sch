@@ -1580,7 +1580,7 @@
     (uuid 1c32450b-32f4-4dca-8cd7-fa69196d822e)
     (property "Reference" "MAINSWITCH1" (id 0) (at 22.225 36.83 0))
     (property "Value" "MainPowerSwitch" (id 1) (at 22.225 39.37 0))
-    (property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" (id 2) (at 21.59 41.91 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 21.59 41.91 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 21.59 41.91 0)
@@ -1617,7 +1617,7 @@
     (uuid 20e4f168-b2ff-4be5-8df9-c3aa2255b665)
     (property "Reference" "BATIN1" (id 0) (at 22.225 22.86 0))
     (property "Value" "BatteryInput" (id 1) (at 20.32 26.67 0))
-    (property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" (id 2) (at 21.59 27.94 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 21.59 27.94 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 21.59 27.94 0)
@@ -1652,7 +1652,7 @@
     (property "Value" "RUDDERSERVO" (id 1) (at 180.34 123.1899 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_1x03_P2.00mm_Vertical" (id 2) (at 177.8 121.92 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" (id 2) (at 177.8 121.92 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 177.8 121.92 0)
@@ -1782,22 +1782,6 @@
     (pin "1" (uuid 1fbd7918-92b8-42e3-8119-2c605a89242c))
   )
 
-  (symbol (lib_id "power:+5V") (at 21.59 78.74 0) (unit 1)
-    (in_bom yes) (on_board yes) (fields_autoplaced)
-    (uuid 4a93f704-d5cb-4204-99a5-99ad240b4b5a)
-    (property "Reference" "#PWR0136" (id 0) (at 21.59 82.55 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "+5V" (id 1) (at 21.59 73.66 0))
-    (property "Footprint" "" (id 2) (at 21.59 78.74 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (id 3) (at 21.59 78.74 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 61775db7-cabd-4cc4-aa8c-ec218964cc86))
-  )
-
   (symbol (lib_id "power:GND") (at 224.79 113.03 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid 535de704-a901-4126-b827-664c51cb0c34)
@@ -1867,7 +1851,7 @@
     (uuid 6a262e40-15f4-4bfc-b575-39ef2f86d95f)
     (property "Reference" "SOLARIN1" (id 0) (at 22.225 48.26 0))
     (property "Value" "SolarPanel" (id 1) (at 20.32 52.07 0))
-    (property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" (id 2) (at 21.59 53.34 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 21.59 53.34 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 21.59 53.34 0)
@@ -1966,12 +1950,28 @@
     (pin "1" (uuid d43fb6ae-15cc-4922-b864-0ceda92a5396))
   )
 
+  (symbol (lib_id "power:+3.3V") (at 21.59 78.74 0) (unit 1)
+    (in_bom yes) (on_board yes) (fields_autoplaced)
+    (uuid af6fffb2-814c-4fce-935e-cd253dd7e2aa)
+    (property "Reference" "#PWR0136" (id 0) (at 21.59 82.55 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+3.3V" (id 1) (at 21.59 73.66 0))
+    (property "Footprint" "" (id 2) (at 21.59 78.74 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (id 3) (at 21.59 78.74 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid f2691744-1f71-4dfc-bf0b-364e11996c83))
+  )
+
   (symbol (lib_id "Device:LED") (at 45.72 81.28 180) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid b0e566c3-0469-4470-8762-aa348871e5ef)
     (property "Reference" "D2" (id 0) (at 47.3075 73.66 0))
     (property "Value" "LED" (id 1) (at 47.3075 76.2 0))
-    (property "Footprint" "LED_SMD:LED_0402_1005Metric" (id 2) (at 45.72 81.28 0)
+    (property "Footprint" "LED_SMD:LED_0603_1608Metric" (id 2) (at 45.72 81.28 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 45.72 81.28 0)
@@ -1986,7 +1986,7 @@
     (uuid b265728d-a538-4111-9e95-1b5dc4d0bf65)
     (property "Reference" "BATCHRG1" (id 0) (at 15.24 62.23 0))
     (property "Value" "BatteryCharge" (id 1) (at 21.59 59.69 0))
-    (property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" (id 2) (at 22.86 60.96 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 22.86 60.96 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 22.86 60.96 0)
@@ -2030,7 +2030,7 @@
   (symbol (lib_id "Connector:Micro_SD_Card") (at 259.08 104.14 0) (unit 1)
     (in_bom yes) (on_board yes) (fields_autoplaced)
     (uuid c0826052-1270-4dc8-967d-3ccc9bc5794a)
-    (property "Reference" "MICRO_SD" (id 0) (at 259.715 85.09 0))
+    (property "Reference" "MICRO_SD1" (id 0) (at 259.715 85.09 0))
     (property "Value" "Micro_SD_Card" (id 1) (at 259.715 87.63 0))
     (property "Footprint" "Connector_Card:microSD_HC_Molex_104031-0811" (id 2) (at 288.29 96.52 0)
       (effects (font (size 1.27 1.27)) hide)
@@ -2398,8 +2398,8 @@
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/0924d727-1f32-4669-a540-33b946e121d9"
       (reference "#PWR0108") (unit 1) (value "GND") (footprint "")
     )
-    (path "/646f8b99-5d19-4d75-969e-577fa29dc718/35677b2a-3255-4ee6-8e26-f36f61954655"
-      (reference "#PWR0109") (unit 1) (value "+5V") (footprint "")
+    (path "/646f8b99-5d19-4d75-969e-577fa29dc718/c3f20993-703b-4ef4-a2a5-e61dca408474"
+      (reference "#PWR0109") (unit 1) (value "+3.3V") (footprint "")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/f7426d7a-e06c-4520-adcd-836ef3b8416b"
       (reference "#PWR0110") (unit 1) (value "GND") (footprint "")
@@ -2479,8 +2479,8 @@
     (path "/27a2706d-a6e5-4ad1-bfe0-d51dda17403d"
       (reference "#PWR0135") (unit 1) (value "GND") (footprint "")
     )
-    (path "/4a93f704-d5cb-4204-99a5-99ad240b4b5a"
-      (reference "#PWR0136") (unit 1) (value "+5V") (footprint "")
+    (path "/af6fffb2-814c-4fce-935e-cd253dd7e2aa"
+      (reference "#PWR0136") (unit 1) (value "+3.3V") (footprint "")
     )
     (path "/d800a68a-b097-4844-953b-f506858f898f"
       (reference "#PWR0137") (unit 1) (value "GND") (footprint "")
@@ -2515,20 +2515,17 @@
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/22caf4f9-1ded-4522-a9b0-ed72642ea99b"
       (reference "#PWR0147") (unit 1) (value "GND") (footprint "")
     )
-    (path "/646f8b99-5d19-4d75-969e-577fa29dc718/23609877-3dea-4d8c-97b2-a43bc284cf08"
-      (reference "#PWR0148") (unit 1) (value "+5V") (footprint "")
+    (path "/646f8b99-5d19-4d75-969e-577fa29dc718/8304e128-fcea-43b3-b9b8-b49217930df6"
+      (reference "#PWR0148") (unit 1) (value "+3.3V") (footprint "")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/7dfeb57d-6fe3-4f4a-b407-904970e5d564"
       (reference "#PWR0149") (unit 1) (value "GND") (footprint "")
     )
-    (path "/646f8b99-5d19-4d75-969e-577fa29dc718/96db91c8-5540-4330-a0a3-a518871f9f86"
-      (reference "#PWR0150") (unit 1) (value "+5V") (footprint "")
+    (path "/646f8b99-5d19-4d75-969e-577fa29dc718/4c28b569-cef3-40ae-80a8-53ad3246cbfa"
+      (reference "#PWR0150") (unit 1) (value "+3.3V") (footprint "")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/57c11d52-356a-42e8-b462-e55f52cb62b4"
       (reference "#PWR0151") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/646f8b99-5d19-4d75-969e-577fa29dc718/644f6e85-dd1d-4b1c-ba3d-18e75e67a517"
-      (reference "#PWR0152") (unit 1) (value "+5V") (footprint "")
     )
     (path "/7a85f1c8-4b71-41a9-8803-d105b98e9320/833461f6-8bad-4cce-a8a6-2e7557987be6"
       (reference "#PWR0153") (unit 1) (value "+3.3V") (footprint "")
@@ -2537,10 +2534,10 @@
       (reference "ArduCam1") (unit 1) (value "ArduCamShield_OV2640") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical")
     )
     (path "/b265728d-a538-4111-9e95-1b5dc4d0bf65"
-      (reference "BATCHRG1") (unit 1) (value "BatteryCharge") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "BATCHRG1") (unit 1) (value "BatteryCharge") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/20e4f168-b2ff-4be5-8df9-c3aa2255b665"
-      (reference "BATIN1") (unit 1) (value "BatteryInput") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "BATIN1") (unit 1) (value "BatteryInput") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/51c45aa0-32bb-466f-ad0a-8fa67626b138"
       (reference "C1") (unit 1) (value "10uF") (footprint "")
@@ -2567,7 +2564,7 @@
       (reference "D1") (unit 1) (value "D_Schottky") (footprint "Diode_THT:D_5W_P5.08mm_Vertical_AnodeUp")
     )
     (path "/b0e566c3-0469-4470-8762-aa348871e5ef"
-      (reference "D2") (unit 1) (value "LED") (footprint "LED_SMD:LED_0402_1005Metric")
+      (reference "D2") (unit 1) (value "LED") (footprint "LED_SMD:LED_0603_1608Metric")
     )
     (path "/7a85f1c8-4b71-41a9-8803-d105b98e9320/4940d571-7598-442c-bd21-1a8a4a260dc6"
       (reference "ESP32") (unit 1) (value "ESP32-DEVKITC") (footprint "ESP32-DEVKITC:MODULE_ESP32-DEVKITC-RESIZED")
@@ -2582,16 +2579,16 @@
       (reference "LEVEL_TRANSLATE1") (unit 1) (value "TXB0108PWR") (footprint "SOP65P640X120-20N")
     )
     (path "/1c32450b-32f4-4dca-8cd7-fa69196d822e"
-      (reference "MAINSWITCH1") (unit 1) (value "MainPowerSwitch") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "MAINSWITCH1") (unit 1) (value "MainPowerSwitch") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/c0826052-1270-4dc8-967d-3ccc9bc5794a"
-      (reference "MICRO_SD") (unit 1) (value "Micro_SD_Card") (footprint "Connector_Card:microSD_HC_Molex_104031-0811")
+      (reference "MICRO_SD1") (unit 1) (value "Micro_SD_Card") (footprint "Connector_Card:microSD_HC_Molex_104031-0811")
     )
     (path "/96f7984a-83d5-40aa-b38c-0b027701a1c8/e041920d-b43c-4909-bb86-f3181b925256"
-      (reference "MOTOR1") (unit 1) (value "MOTOR") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "MOTOR1") (unit 1) (value "MOTOR") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/96f7984a-83d5-40aa-b38c-0b027701a1c8/4e61bf96-81b2-466e-b245-17b998b919c6"
-      (reference "MOTOR2") (unit 1) (value "MOTOR") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "MOTOR2") (unit 1) (value "MOTOR") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/b502c931-5fd6-463b-a803-b08a5926f599"
       (reference "R1") (unit 1) (value "1K") (footprint "Resistor_SMD:R_0603_1608Metric")
@@ -2618,7 +2615,7 @@
       (reference "RADIO1") (unit 1) (value "RADIO") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
     )
     (path "/233f1ce8-fd0b-448f-8d1b-84d4d750d93f"
-      (reference "RUDDER1") (unit 1) (value "RUDDERSERVO") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x03_P2.00mm_Vertical")
+      (reference "RUDDER1") (unit 1) (value "RUDDERSERVO") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/a9654ecd-7c40-4441-a656-9e905467f463"
       (reference "R_SHUNT1") (unit 1) (value "100mOhms") (footprint "Resistor_SMD:R_2512_6332Metric")
@@ -2633,7 +2630,7 @@
       (reference "Regulator5V1") (unit 1) (value "MPM3610AGQV-P") (footprint "MPM3610AGQV-P:MPM3620AGQV-P")
     )
     (path "/6a262e40-15f4-4bfc-b575-39ef2f86d95f"
-      (reference "SOLARIN1") (unit 1) (value "SolarPanel") (footprint "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical")
+      (reference "SOLARIN1") (unit 1) (value "SolarPanel") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/96f7984a-83d5-40aa-b38c-0b027701a1c8/b9fd611f-b8fa-4bd1-98bd-f9a1bb7af07a"
       (reference "U3") (unit 1) (value "L293D") (footprint "Package_DIP:DIP-16_W7.62mm")

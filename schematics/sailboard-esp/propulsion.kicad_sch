@@ -295,6 +295,7 @@
     )
   )
 
+
   (junction (at 74.93 111.76) (diameter 0) (color 0 0 0 0)
     (uuid 19a41e3c-e8b8-4b8d-b4e6-7d19f87f35bf)
   )
@@ -420,7 +421,7 @@
     (property "Value" "MOTOR" (id 1) (at 102.87 87.6299 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" (id 2) (at 100.33 85.09 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 100.33 85.09 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 100.33 85.09 0)
@@ -472,7 +473,7 @@
     (property "Value" "MOTOR" (id 1) (at 102.87 72.3899 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Connector_PinHeader_2.00mm:PinHeader_1x02_P2.00mm_Vertical" (id 2) (at 100.33 69.85 0)
+    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (id 2) (at 100.33 69.85 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 100.33 69.85 0)
