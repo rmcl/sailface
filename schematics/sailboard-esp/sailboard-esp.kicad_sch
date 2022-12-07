@@ -2540,16 +2540,16 @@
       (reference "BATIN1") (unit 1) (value "BatteryInput") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/51c45aa0-32bb-466f-ad0a-8fa67626b138"
-      (reference "C1") (unit 1) (value "10uF") (footprint "")
+      (reference "C1") (unit 1) (value "10uF") (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/76112207-619c-4771-b339-ea0523fa1da0"
-      (reference "C2") (unit 1) (value "10uF") (footprint "")
+      (reference "C2") (unit 1) (value "10uF") (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/d885c796-6217-4908-9bb8-57d16bf736d1"
-      (reference "C3") (unit 1) (value "22uF") (footprint "")
+      (reference "C3") (unit 1) (value "22uF") (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/b729b70f-efd8-44da-97ce-e46cfed3775c"
-      (reference "C4") (unit 1) (value "22uF") (footprint "")
+      (reference "C4") (unit 1) (value "22uF") (footprint "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder")
     )
     (path "/1cd4d1a3-45f5-417d-b61e-2caadbb9fed8"
       (reference "COMPASS1") (unit 1) (value "QMC5883L") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical")
