@@ -626,7 +626,6 @@
     )
   )
 
-
   (junction (at 82.55 58.42) (diameter 0) (color 0 0 0 0)
     (uuid 0cc2d5a8-dfe9-460f-89e3-8cfd3ddcfaf6)
   )
@@ -1338,7 +1337,7 @@
     (property "Reference" "R2" (id 0) (at 184.15 73.6599 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "39K" (id 1) (at 184.15 76.1999 0)
+    (property "Value" "53.6K" (id 1) (at 184.15 76.1999 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (id 2) (at 182.626 75.184 90)
@@ -1480,7 +1479,7 @@
     (property "Reference" "R5" (id 0) (at 233.68 66.0399 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "19K" (id 1) (at 233.68 68.5799 0)
+    (property "Value" "19.1K" (id 1) (at 233.68 68.5799 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (id 2) (at 231.14 67.31 0)

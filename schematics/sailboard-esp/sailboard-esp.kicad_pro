@@ -56,6 +56,7 @@
         }
       ],
       "drc_exclusions": [
+        "courtyards_overlap|194265001|53870001|2acaf542-364f-4d23-806a-31125348045e|c93f794c-22cb-4d87-b8c0-351a4642a62d",
         "courtyards_overlap|194265001|53870001|c93f794c-22cb-4d87-b8c0-351a4642a62d|2acaf542-364f-4d23-806a-31125348045e",
         "courtyards_overlap|201885001|53870001|b2ed88fe-13cf-44f7-86a2-92df3f8abca0|2acaf542-364f-4d23-806a-31125348045e",
         "courtyards_overlap|205850001|55990001|2acaf542-364f-4d23-806a-31125348045e|c36ac18d-68fe-476e-ac44-333c74ae443c",
@@ -155,9 +156,7 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [
-      "power_pin_not_driven|1130300|1739900|ea7ed51d-e842-4e12-8149-63dddfca4e54|00000000-0000-0000-0000-000000000000"
-    ],
+    "erc_exclusions": [],
     "meta": {
       "version": 0
     },

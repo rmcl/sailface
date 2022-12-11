@@ -2694,7 +2694,7 @@
       (reference "R1") (unit 1) (value "1K") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/73c569d9-d7a3-4c9f-8fb9-cb396cb0a683"
-      (reference "R2") (unit 1) (value "39K") (footprint "Resistor_SMD:R_0603_1608Metric")
+      (reference "R2") (unit 1) (value "53.6K") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/1d394b5d-bdc7-47a0-9ee4-95c21bb21ef5"
       (reference "R3") (unit 1) (value "100K") (footprint "Resistor_SMD:R_0603_1608Metric")
@@ -2703,7 +2703,7 @@
       (reference "R4") (unit 1) (value "100K") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/646f8b99-5d19-4d75-969e-577fa29dc718/bcd28c4b-8bf2-4f12-8111-ecf098a00ebe"
-      (reference "R5") (unit 1) (value "19K") (footprint "Resistor_SMD:R_0603_1608Metric")
+      (reference "R5") (unit 1) (value "19.1K") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/3650fde5-10fa-4c21-88eb-2ae23fe8dec4"
       (reference "RADIO1") (unit 1) (value "RADIO") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
