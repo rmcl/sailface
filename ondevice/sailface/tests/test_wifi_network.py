@@ -1,5 +1,7 @@
-from unittest import TestCase, Mock
+from unittest import TestCase
+from unittest.mock import Mock
 from sailface.wifi_network import WifiNetwork
+
 
 class WifiNetworkTest(TestCase):
     """Test the WifiNetwork class"""
@@ -28,5 +30,6 @@ EXAMPLE_WIFI_SCAN_1 = [
 ]
 
 EXAMPLE_WIFI_CREDS_1 = [
+    {'ssid': 'poopooo', 'key': 'test'},
     {'ssid': 'PartyPalace', 'key': 'test'},
 ]

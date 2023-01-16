@@ -1,6 +1,14 @@
 version: '3.7'
 
 services:
+    ondevice-test:
+        build:
+            dockerfile: ../ondevice.Dockerfile
+            context: ./ondevice
+        command: nosetests
+        volumes:
+            - ./ondevice:/app
+
     cloud:
         build:
             dockerfile: Dockerfile
