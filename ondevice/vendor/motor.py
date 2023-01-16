@@ -1,3 +1,5 @@
+"""Control a DC Motor with an L298N Motor Driver"""
+
 from machine import Pin, PWM
 
 class DCMotor:    

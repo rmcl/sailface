@@ -1,3 +1,4 @@
+"""
 from navigate import Navigate
 from position import Position
 from rudder import Rudder
@@ -15,3 +16,4 @@ def main():
         position_manager.update()
     
         navigation.update_and_adjust_rudder(rudder)
+"""

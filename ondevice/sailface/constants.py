@@ -1,8 +1,8 @@
 """Constants for the Sailface Board."""
 
 # I2C Configuration
-I2C_SCL_PIN = 27
-I2C_SDA_PIN = 28
+I2C_SCL_PIN = 22
+I2C_SDA_PIN = 21
 
 
 # SDCard Configuration
