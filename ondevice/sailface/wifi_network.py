@@ -2,6 +2,7 @@ import network
 import webrepl
 import json
 import time
+import ntptime
 
 
 class WifiNetwork:
@@ -16,6 +17,8 @@ class WifiNetwork:
     def on_connect(self):
         """Setup the webrepl for remote access to the micropython REPL."""
         webrepl.start()
+
+        ntptime.settime()
 
     def start(self):
         """Attempt to connect to all known wifi network.

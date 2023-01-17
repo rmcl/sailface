@@ -1,3 +1,4 @@
+import sys
 from machine import SoftI2C
 
 from ina219 import INA219
@@ -36,8 +37,9 @@ class PowerMonitor:
         try:
             self.mainpower_ina.configure()
             self.mainpower_ready = True
-        except OSError:
-            self.logger.error("Failed to configure main power monitor")
+        except OSError as error:
+            sys.print_exception(error)
+            self.logger.error("Failed to configure main power monitor" + str(error))
 
         self.solar_ina = INA219(
             POWER_SOLAR_SHUNT_OHMS,
@@ -48,8 +50,8 @@ class PowerMonitor:
         try:
             self.solar_ina.configure()
             self.solarpower_ready = True
-        except OSError:
-            self.logger.error("Failed to configure solar power monitor")
+        except OSError as error:
+            self.logger.error("Failed to configure solar power monitor" + str(error))
 
     def poll(self) -> dict:
         """Poll the power monitor and update the values"""
