@@ -108,7 +108,7 @@ class INA219:
     __CURRENT_LSB_FACTOR = 32800
 
     def __init__(self, shunt_ohms, i2c, max_expected_amps=None,
-                 address=__ADDRESS, log_level=logging.ERROR):
+                 address=__ADDRESS, log_level=logging.INFO):
         """Construct the class.
 
         At a minimum pass in the resistance of the shunt resistor and I2C

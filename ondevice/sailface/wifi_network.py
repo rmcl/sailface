@@ -3,6 +3,7 @@ import webrepl
 import json
 import time
 import ntptime
+from .utils import load_config
 
 
 class WifiNetwork:
@@ -72,15 +73,11 @@ class WifiNetwork:
         print('network config:', self.wlan.ifconfig())
         return True
 
-
     def _load_wifi_creds(self):
-        try:
-            with open('/sd/wifi_creds.json', 'r') as fp:
-                return json.load(fp)
-        except OSError:
-            pass
+        """Load the wifi credentials from the SD card or onboard flash."""
+        config = load_config()
 
-        # If SD card is not mounted then as a fallback, 
-        # load the wifi creds from the onboard flash memory.
-        with open('fallback_creds.json', 'r') as fp:
-            return json.load(fp)
+        if 'wifi' in config:
+            return config['wifi']
+        else:
+            return []

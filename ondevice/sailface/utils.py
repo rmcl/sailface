@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from io import StringIO
 from machine import (
     Pin,
@@ -37,3 +38,16 @@ def get_exception_string(error):
     sys.print_exception(error, tmp_error_buf)
     tmp_error_buf.seek(0)
     return tmp_error_buf.read()
+
+def load_config():
+    """Load the config file from the SD card. If SD not available then load backup from flash."""
+    try:
+        with open('/sd/config.json', 'r') as fp:
+            return json.load(fp)
+    except OSError:
+        pass
+
+    # If SD card is not mounted then as a fallback,
+    # load the wifi creds from the onboard flash memory.
+    with open('fallback_config.json', 'r') as fp:
+        return json.load(fp)

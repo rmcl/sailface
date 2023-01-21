@@ -82,6 +82,10 @@ def request(method, url, data=None, json=None, headers={}, auth=None, stream=Non
             resp_d = {}
 
         s = usocket.socket(ai[0], ai[1], ai[2])
+
+        # set socket timeout to 10 seconds!
+        s.settimeout(10)
+
         try:
             s.connect(ai[-1])
             if proto == "https:":
